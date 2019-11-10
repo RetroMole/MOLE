@@ -1,5 +1,9 @@
-upload.git
-__pychache__
-LA.debug.py
-.git
+LAdebug.py
 upload.bat
+
+
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
