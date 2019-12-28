@@ -1,28 +1,12 @@
 trigger:
 - master
 
-strategy:
-  matrix:
-    linux:
-      imageName: "ubuntu-latest"
-    mac:
-      imageName: "macos-latest"
-    windows:
-      imageName: "windows-latest"
-  maxParallel: 3
 
 pool:
-  vmImage: $(imageName)
-
+  vmImage: windows-latest
 
 
 steps:
-
-#  - task: UseDotNet@2
-#    inputs:
-#      packageType: 'sdk'
-#      version: '3.0.x'
-#      includePreviewVersions: true
   - task: VSBuild@1
     inputs:
       solution: '**\*.sln'
