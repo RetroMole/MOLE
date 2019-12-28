@@ -19,7 +19,7 @@ pool:
 steps:
   - task: UseDotNet@2
     inputs:
-      packageType: 'sdk'
+      packageType: 'runtime'
       version: '4.8.x'
   - task: DotNetCoreCLI@2
     inputs:
