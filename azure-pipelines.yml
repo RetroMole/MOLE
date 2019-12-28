@@ -1,0 +1,20 @@
+trigger:
+- master
+
+strategy:
+  matrix:
+    ubuntu:
+      imageName: "ubuntu-latest"
+    windows:
+      imageName: "windows-latest"
+  maxParallel: 2
+
+pool:
+  vmImage: $(imageName)
+
+steps:
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--force --nologo'
