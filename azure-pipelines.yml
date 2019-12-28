@@ -14,9 +14,15 @@ strategy:
 pool:
   vmImage: $(imageName)
 
+
+
 steps:
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/*.csproj'
-    arguments: '--force --nologo'
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '4.8.x'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: '**/*.csproj'
+      arguments: '--force --nologo'
