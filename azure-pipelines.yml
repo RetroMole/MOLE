@@ -18,12 +18,17 @@ pool:
 
 steps:
 
-  - task: UseDotNet@2
+#  - task: UseDotNet@2
+#    inputs:
+#      packageType: 'sdk'
+#      version: '3.0.x'
+#      includePreviewVersions: true
+  - task: VSBuild@1
     inputs:
-      packageType: 'sdk'
-      version: '3.0.x'
-      includePreviewVersions: true
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: 'build'
-      projects: '**/*.csproj'
+      solution: '**\*.sln'
+      msbuildArgs: '-nologo'
+      platform: 'any cpu'
+      configuration: 'debug'
+      clean: true
+      maximumCpuCount: true
+      logProjectEvents: false
