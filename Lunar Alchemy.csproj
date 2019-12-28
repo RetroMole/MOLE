@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9B4D612E-FCEC-43CE-8516-E1A278E4849F}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Lunar_Alchemy2</RootNamespace>
-    <AssemblyName>Lunar Alchemy2</AssemblyName>
+    <RootNamespace>Lunar_Alchemy</RootNamespace>
+    <AssemblyName>Lunar Alchemy</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
