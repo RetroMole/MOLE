@@ -50,12 +50,13 @@ namespace LA
 
 			Console.WriteLine("Saving as {0} ... ", rh.ROMName + "_TEST.smc");
 			rh.Save();
-
-			Console.Write("Downloading Asar Build From Build History: \n\t recordsNumber: 1, Branch: master, Status: success\n");
-			web.Downloader.getAsarBuild("recordsNumber=1&branch=master&Status=success");
 			*/
 
-			GFXHandler gh = new GFXHandler(String.Format("../../ROMs/Clean/{0}", args[0]));
+			//GFXHandler gh = new GFXHandler(String.Format("../../ROMs/Clean/{0}", args[0]));
+
+			web.Downloader.GetAsarBuild("recordsNumber=1&branch=master&Status=success");
+			web.Downloader.GetAsarLatestRelease();
+
 			Console.ReadKey();
 		}
 	}

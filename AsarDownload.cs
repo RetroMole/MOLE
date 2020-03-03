@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Net;
+using System.IO.Compression;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -8,7 +8,7 @@ namespace LA.web
 {
 	public static class Downloader
 	{
-		public static void getAsarBuild(string reqstr)
+		public static void GetAsarBuild(string reqstr)
 		{
 			// Initial Request (Appveyor BNR)
 			JObject resp0 = web.WebUtils.GetJsonResponse("https://ci.appveyor.com/api/projects/RPGHacker/asar/history?" + reqstr);
@@ -21,21 +21,44 @@ namespace LA.web
 			Console.WriteLine("JID: " + JID);
 
 			// Download
-			using (var client = new WebClient())
-			{
-				client.DownloadFile("https://ci.appveyor.com/api/buildjobs/" + JID + "/artifacts/build%2Fasar%2Flibasar.dll", "asar.dll - " + BNR + " - " + JID + ".dll");
-			}
-			Console.WriteLine("Successfully Downloaded asar dll as: " + "asar.dll - " + BNR + " - " + JID + ".dll");
+			web.WebUtils.DownloadFile
+			(
+				"https://ci.appveyor.com/api/buildjobs/" + JID + "/artifacts/build%2Fasar%2Flibasar.dll",
+				"asar.dll - " + BNR + " - " + JID + ".dll"
+			);
 
 		}
 		
-		[Obsolete("Currently Investigating appveyors history system to search more freely",true)]
-		public static void getAsarLatestRelease()
+		public static void GetAsarLatestRelease()
 		{
-			// Initial Request (GITHUB tag)
-			JObject resp0 = web.WebUtils.GetJsonResponse("https://api.github.com/repos/RPGHacker/asar/releases/latest");
-			string tag = resp0.SelectToken("tag_name", true).Value<String>();
-			
+			//Single Request (GITHUB)
+			JObject resp = web.WebUtils.GetJsonResponse(@"http://api.github.com/repos/RPGHacker/asar/releases/latest", true);
+			string dl = resp.SelectToken("assets", true).First.SelectToken("browser_download_url",true).Value<String>();
+			string name = resp.SelectToken("assets", true).First.SelectToken("name", true).Value<String>();
+
+			// Download
+			web.WebUtils.DownloadFile(dl, name);
+
+			var extractPath = Path.GetFullPath(name).Replace(".zip",String.Empty);
+
+			if (!extractPath.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
+				extractPath += Path.DirectorySeparatorChar;
+
+			using (ZipArchive archive = ZipFile.Open(name, ZipArchiveMode.Update))
+			{
+				foreach (ZipArchiveEntry entry in archive.Entries)
+				{
+					if (entry.FullName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) || 
+						entry.FullName.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
+					{
+						string destinationPath = Path.GetFullPath(Path.Combine(extractPath, entry.FullName));
+						if (destinationPath.StartsWith(extractPath, StringComparison.Ordinal))
+							entry.ExtractToFile(destinationPath);
+					}
+				}
+			}
+
+			Directory.SetCurrentDirectory(extractPath);
 
 		}
 	}

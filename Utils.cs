@@ -59,12 +59,21 @@ namespace LA
 			switch (rm)
 			{
 				case RomMapping.LoRom:
-					if (addr < 0 || addr > 0xFFFFFF ||//not 24bit
-					(addr & 0xFE0000) == 0x7E0000 ||//wram
-					(addr & 0x408000) == 0x000000)//hardware regs
-						return -1;
-					addr = ((addr & 0x7F0000) >> 1 | (addr & 0x7FFF));
-					if (header) addr += 512;
+					if (addr < 0 || addr > 0xFFFFFF)
+					{
+						throw new Exception("Address Out of Range (not 24bit?)");
+					}
+					else if (!LA.Settings.AllowDangerAddress &&
+							((addr & 0xFE0000) == 0x7E0000) ||  // wram
+							((addr & 0x408000) == 0x000000))    //hardware regs
+					{
+						throw new Exception("Accessing WRAM or Hardware Registers can be dangerous; If you really need to access these addresses, enable 'AllowDangerAddress'");
+					}
+					else
+					{
+						addr = ((addr & 0x7F0000) >> 1 | (addr & 0x7FFF));
+						if (header) addr += 512;
+					}
 					break;
 				case RomMapping.HiRom:
 					break;
@@ -108,4 +117,5 @@ namespace LA
 			return addr;
 
 		}
+	}
 }
