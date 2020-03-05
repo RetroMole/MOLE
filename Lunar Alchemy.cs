@@ -9,7 +9,7 @@ namespace LA
 		public static void Main(string[] args)
 		{
 
-			/*MHandler rh = new ROMHandler(String.Format("../../ROMs/Clean/{0}",args[0]));
+			/*ROMHandler rh = new ROMHandler(String.Format("../../ROMs/Clean/{0}",args[0]));
 
 			Console.WriteLine("Testing HexWrite() and Undo-Redo system");
 			Console.WriteLine("Initial Value of first 8 bytes: ");
@@ -54,8 +54,10 @@ namespace LA
 
 			//GFXHandler gh = new GFXHandler(String.Format("../../ROMs/Clean/{0}", args[0]));
 
-			web.Downloader.GetAsarBuild("recordsNumber=1&branch=master&Status=success");
+			//web.Downloader.GetAsarBuild("recordsNumber=1&branch=master&Status=success");
 			web.Downloader.GetAsarLatestRelease();
+
+
 
 			Console.ReadKey();
 		}
