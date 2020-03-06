@@ -32,6 +32,24 @@ namespace LA.web
 				"asar.dll - " + BNR + " - " + JID + ".dll"
 			);
 
+			web.WebUtils.DownloadFile
+			(
+				"https://raw.githubusercontent.com/RPGHacker/asar/master/src/asar-dll-bindings/c_sharp/asar.cs",
+				"asar.cs"
+			);
+
+			CompileAsarHook();
+
+			// Clean Up
+			File.Delete(AppDomain.CurrentDomain.BaseDirectory+@"\asarhook.dll");
+			File.Delete(AppDomain.CurrentDomain.BaseDirectory+@"\asar.dll");
+			File.Move("asarhook.dll", AppDomain.CurrentDomain.BaseDirectory+@"\asarhook.dll");
+			File.Move("asar.dll - " + BNR + " - " + JID + ".dll", AppDomain.CurrentDomain.BaseDirectory+@"\asar.dll");
+			File.Delete("asar.cs");
+			Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+			File.Delete("asar.dll - " + BNR + " - " + JID + ".dll");
+
+
 		}
 
 		public static void GetAsarLatestRelease()
@@ -66,8 +84,21 @@ namespace LA.web
 				Directory.SetCurrentDirectory(extractPath);
 			}
 
-			// Integrate binding
-			// Compile Hook
+			CompileAsarHook();
+			
+			// Clean up
+			File.Delete(AppDomain.CurrentDomain.BaseDirectory+@"\asarhook.dll");
+			File.Delete(AppDomain.CurrentDomain.BaseDirectory+@"\asar.dll");
+			File.Move("asarhook.dll", AppDomain.CurrentDomain.BaseDirectory+@"\asarhook.dll");
+			File.Move("asar.dll", AppDomain.CurrentDomain.BaseDirectory+@"\asar.dll");
+			File.Delete("asar.cs");
+			Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+			Directory.Delete(extractPath);
+			File.Delete(name);
+		}
+
+		public static  void CompileAsarHook()
+		{
 			CSharpCodeProvider provider = new CSharpCodeProvider();
 			CompilerParameters parameters = new CompilerParameters();
 			string code = "";
@@ -103,15 +134,11 @@ namespace LA.web
 				throw new InvalidOperationException(sb.ToString());
 			}
 
-			// Clean up
-			File.Delete(@"..\..\..\asarhook.dll");
-			File.Delete(@"..\..\..\asar.dll");
-			File.Move("asarhook.dll", @"..\..\..\asarhook.dll");
-			File.Move("asar.dll", @"..\..\..\asar.dll");
-			File.Delete("asar.cs");
-			Directory.SetCurrentDirectory(@"..\");
-			Directory.Delete(extractPath);
-			File.Delete(name);
+		}
+
+		public struct PresetAppveyorRequest
+		{
+			public static string latestSuccess = "recordsNumber=1&branch=master&Status=success";
 		}
 	}
 }

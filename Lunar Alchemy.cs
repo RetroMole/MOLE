@@ -54,8 +54,9 @@ namespace LA
 
 			//GFXHandler gh = new GFXHandler(String.Format("../../ROMs/Clean/{0}", args[0]));
 
-			//web.Downloader.GetAsarBuild("recordsNumber=1&branch=master&Status=success");
+			//web.Downloader.GetAsarBuild(web.Downloader.PresetAppveyorRequest.latestSuccess);
 			web.Downloader.GetAsarLatestRelease();
+			
 
 
 
