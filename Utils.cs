@@ -1,4 +1,5 @@
 using System;
+using AsarCLR;
 
 namespace LA
 {
@@ -51,70 +52,6 @@ namespace LA
 				c[i * 2 + 1] = (char)(55 + b + (((b - 10) >> 31) & -7));
 			}
 			return new string(c);
-
-		}
-
-		public static int SnesToPc(int addr, RomMapping rm, bool header)
-		{
-			switch (rm)
-			{
-				case RomMapping.LoRom:
-					if (addr < 0 || addr > 0xFFFFFF)
-					{
-						throw new Exception("Address Out of Range (not 24bit?)");
-					}
-					else if (!LA.Settings.AllowDangerAddress &&
-							((addr & 0xFE0000) == 0x7E0000) ||  // wram
-							((addr & 0x408000) == 0x000000))    //hardware regs
-					{
-						throw new Exception("Accessing WRAM or Hardware Registers can be dangerous; If you really need to access these addresses, enable 'AllowDangerAddress'");
-					}
-					else
-					{
-						addr = ((addr & 0x7F0000) >> 1 | (addr & 0x7FFF));
-						if (header) addr += 512;
-					}
-					break;
-				case RomMapping.HiRom:
-					break;
-				case RomMapping.Sa1Rom:
-					break;
-				case RomMapping.ExLoRom:
-					break;
-				case RomMapping.ExHiRom:
-					break;
-				case RomMapping.HiRomFastRom:
-					break;
-				case RomMapping.LoRomFastRom:
-					break;
-			}
-			return addr;
-		}
-
-		public static int PcToSnes(int addr, RomMapping rm, bool header)
-		{
-			switch (rm)
-			{
-				case RomMapping.LoRom:
-					if (header) addr -= 512;
-					if (addr < 0 || addr >= 0x400000) return -1;
-					addr = ((addr << 1) & 0x7F0000) | (addr & 0x7FFF) | 0x8000;
-					if ((addr & 0xF00000) == 0x700000) addr |= 0x800000;
-					break;
-				case RomMapping.HiRom:
-					break;
-				case RomMapping.Sa1Rom:
-					break;
-				case RomMapping.ExLoRom:
-					break;
-				case RomMapping.ExHiRom:
-					break;
-				case RomMapping.HiRomFastRom:
-					break;
-				case RomMapping.LoRomFastRom:
-					break;
-			}
-			return addr;
 
 		}
 	}

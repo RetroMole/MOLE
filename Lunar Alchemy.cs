@@ -55,9 +55,15 @@ namespace LA
 			//GFXHandler gh = new GFXHandler(String.Format("../../ROMs/Clean/{0}", args[0]));
 
 			//web.Downloader.GetAsarBuild(web.Downloader.PresetAppveyorRequest.latestSuccess);
-			web.Downloader.GetAsarLatestRelease();
-			
+			//web.Downloader.GetAsarLatestRelease();
 
+			AsarCLR.Asar.init();
+			var input = 0x088000;
+			var pc = AsarCLR.AsarExt.SnesToPc(input);
+			var snes = AsarCLR.AsarExt.PcToSnes(pc);
+			Console.WriteLine("0x{0:X}", input);
+			Console.WriteLine("0x{0:X}", pc);
+			Console.WriteLine("0x{0:X}", snes);
 
 
 			Console.ReadKey();

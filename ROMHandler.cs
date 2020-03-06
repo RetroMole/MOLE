@@ -7,18 +7,7 @@ using System.Runtime.Serialization;
 using AsarCLR;
 
 namespace LA
-{
-	public enum RomMapping
-	{
-		LoRom,
-		HiRom,
-		Sa1Rom,
-		LoRomFastRom,
-		HiRomFastRom,
-		ExLoRom,
-		ExHiRom
-	}
-
+{ 
 	public class ROMHandler
 	{
 		public UndoRedo UR {get;} = new UndoRedo();
@@ -32,7 +21,6 @@ namespace LA
 		}
 		protected byte[] _ROM;
 
-		public RomMapping ROMMapping = RomMapping.LoRom;
 		public string ROMName
 		{
 			get;
@@ -95,7 +83,8 @@ namespace LA
 				() =>
 				{
 					/*
-					 * UNFORTUNATELY, SERIALIZING ANONYMOUS LAMBDA EXPRESSIONS AIN'T OK
+					// UNFORTUNATELY, SERIALIZING ANONYMOUS LAMBDA EXPRESSIONS AIN'T OK
+
 					FileStream s = File.Open("UR.bin", FileMode.OpenOrCreate);
 					BinaryFormatter b = new BinaryFormatter();
 					b.Serialize(s, UR);
