@@ -26,7 +26,7 @@ namespace AsarCLR
 						(addr & 0x408000) == 0x000000 ||//hardware regs, ram mirrors, other strange junk
 						(addr & 0x708000) == 0x700000)//sram (low parts of banks 70-7D)
 						return -1;
-					addr = ((addr & 0x7F0000) >> 1 | (addr & 0x7FFF));
+					addr = (((addr & 0x7F0000) >> 1) | (addr & 0x7FFF));
 					return addr;
 				case MapperType.HiRom:
 					if ((addr & 0xFE0000) == 0x7E0000 ||//wram
