@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using Newtonsoft.Json.Linq;
 
-namespace LA.web
+namespace LA_Back.web
 {
     public static class WebUtils
     {
@@ -21,21 +21,29 @@ namespace LA.web
 			return parsed;
 		}
 
-		public static bool DownloadFile(string url, string name, bool err = false)
+		public static bool DownloadFile(string url, string name, bool err = true)
 		{
-			using (var client = new WebClient())
+			try
 			{
-				client.DownloadFile(url, name);
+				using (var client = new WebClient())
+				{
+					client.DownloadFile(url, name);
+				}
 			}
-			if(err && !File.Exists(name))
+			catch
 			{
-				throw new Exception("File '"+name+"' Failed to Download");
+				if (err)
+				{
+					throw new Exception(String.Format("File '{0}' Failed to Download",name));
+				}
+				else
+				{
+					Console.WriteLine("File '{0}' Failed to Download, but an exception was deliberately not thrown",name);
+				}
+				return false;
 			}
-			else
-			{
-				Console.WriteLine(File.Exists(name) ? "File '" + name + "' Succesfully Downloaded" : "File '{0}' Failed to Download, but an exception was not thrown");
-				return File.Exists(name);
-			}
+			Console.WriteLine("File '{0}' Failed to Download", name);
+			return true;
 		}
 	}
 }

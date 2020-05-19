@@ -1,21 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AsarCLR
-{
-	/// <summary>
-	/// Copies of ASAR functions and variables that LA needs but are inaccessible trough the asar hook
-	/// </summary>
-	class AsarExt
-	{
 		public static int[] sa1banks = new int[8] { 0 << 20, 1 << 20, -1, -1, 2 << 20, 3 << 20, -1, -1 };
-			
+
 		public static int SnesToPc(int addr)
 		{
-			MapperType mapper = Asar.getmapper();
+			MapperType mapper = GetMapper();
 			if (addr < 0 || addr > 0xFFFFFF) return -1;//not 24bit
 			switch (mapper)
 			{
@@ -50,8 +37,9 @@ namespace AsarCLR
 					if ((addr & 0xFE0000) == 0x7E0000 ||//wram
 					(addr & 0x408000) == 0x000000)//hardware regs, ram mirrors, other strange junk
 						return -1;
-					if ((addr & 0xC00000) != 0xC00000) return (addr & 0x3FFFFF) | 0x400000;
-						return addr & 0x3FFFFF;
+					if ((addr & 0xC00000) != 0xC00000) 
+						return (addr & 0x3FFFFF) | 0x400000;
+					return addr & 0x3FFFFF;
 				case MapperType.SfxRom:
 					// Asar emulates GSU1, because apparently emulators don't support the extra ROM data from GSU2
 					if ((addr & 0x600000) == 0x600000 ||//wram, sram, open bus
@@ -60,8 +48,7 @@ namespace AsarCLR
 						return -1;
 					if ((addr & 0x400000) != 0) 
 						return addr & 0x3FFFFF;
-					else 
-						return (addr & 0x7F0000) >> 1 | (addr & 0x7FFF);
+					return (addr & 0x7F0000) >> 1 | (addr & 0x7FFF);
 				case MapperType.Sa1Rom:
 					if ((addr & 0x408000) == 0x008000)
 					{
@@ -80,7 +67,7 @@ namespace AsarCLR
 					if ((addr & 0xC00000) == 0x000000 || (addr & 0xC00000) == 0x800000)//lorom
 					{
 						if ((addr & 0x008000) == 0x000000) return -1;
-						return (addr & 0x800000) >> 2 | (addr & 0x3F0000) >> 1 | (addr & 0x7FFF);
+							return (addr & 0x800000) >> 2 | (addr & 0x3F0000) >> 1 | (addr & 0x7FFF);
 					}
 					return -1;
 				case MapperType.NoRom:
@@ -91,7 +78,7 @@ namespace AsarCLR
 
 		public static int PcToSnes(int addr)
 		{
-			MapperType mapper = Asar.getmapper();
+			MapperType mapper = GetMapper();
 			if (addr < 0) return -1;
 			if (mapper == MapperType.LoRom)
 			{
@@ -161,5 +148,3 @@ namespace AsarCLR
 			}
 			return -1;
 		}
-	}
-}

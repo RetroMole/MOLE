@@ -1,12 +1,9 @@
 using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
 using AsarCLR;
 
-namespace LA
+namespace LA_Back
 { 
 	public class ROMHandler
 	{
@@ -21,11 +18,7 @@ namespace LA
 		}
 		protected byte[] _ROM;
 
-		public string ROMName
-		{
-			get;
-			protected set;
-		}
+		public string ROMName;
 		
 		public ROMHandler(string Name)
 		{
@@ -45,9 +38,7 @@ namespace LA
 				() =>
 				{
 					byte[] HexArr = Utils.HexStrToByteArr(HexStr);
-					
 					UndoStr += Utils.ByteArrToHexStr(_ROM, HexStr.Length/2, (int)PcAddr);
-					
 					HexArr.CopyTo(_ROM, PcAddr);
 				},
 				() =>
@@ -60,13 +51,13 @@ namespace LA
 		
 		public void Patch(string patch, [CallerMemberName] string caller = "")
 		{
-			UR.Do
+            UR.Do
 			(
 				() =>
 				{
-					Asar.init();
-					Asar.patch(patch, ref _ROM);
-					Asar.close();
+                    Asar.Init();
+                    Asar.Patch(patch, ref _ROM);
+                    Asar.Close();
 				},
 				() =>
 				{
@@ -83,7 +74,8 @@ namespace LA
 				() =>
 				{
 					/*
-					// UNFORTUNATELY, SERIALIZING ANONYMOUS LAMBDA EXPRESSIONS AIN'T OK
+					// UNFORTUNATELY, SERIALIZING ANONYMOUS LA_BackMBDA EXPRESSIONS AIN'T OK
+					// I might have another idea though, TODO i guess
 
 					FileStream s = File.Open("UR.bin", FileMode.OpenOrCreate);
 					BinaryFormatter b = new BinaryFormatter();

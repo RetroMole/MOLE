@@ -1,7 +1,6 @@
 using System;
-using AsarCLR;
 
-namespace LA
+namespace LA_Back
 {
 	public static class Utils
 	{
@@ -20,7 +19,7 @@ namespace LA
 			return arr;
 		}
 
-		private static int GetHexVal(char hex)
+		public static int GetHexVal(char hex)
 		{
 			int val = (int)hex;
 			//For uppercase A-F letters:
@@ -29,7 +28,7 @@ namespace LA
 			//return val - (val < 58 ? 48 : 87);
 		}
 
-		public static string ByteArrToHexStr(byte[] bytes, int? count, int offset)
+		public static string ByteArrToHexStr(byte[] bytes, int offset, int? count)
 		{
 			int b;
 			char[] c;
