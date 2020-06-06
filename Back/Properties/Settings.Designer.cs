@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LA_Back_Back.Properties {
+namespace LA_Back.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

@@ -9,8 +9,15 @@ using Newtonsoft.Json.Linq;
 
 namespace LA_Back.web
 {
-	public static class Downloader
+	/// <summary>
+	/// Deals with downloading Asar updates, and patching the hook and compiling it
+	/// </summary>
+	public static class AsarUpdater
 	{
+		/// <summary>
+		/// Get any Asar build from Appveyor CI
+		/// </summary>
+		/// <param name="reqstr">Request String used to filter Appveyor build history (if you're unsure, check PresetAppveyorRequests</param>
 		public static void GetAsarBuild(string reqstr)
 		{
 			// Initial Request (Appveyor BNR)
@@ -51,6 +58,9 @@ namespace LA_Back.web
 
 		}
 
+		/// <summary>
+		/// Get the latest build of Asar from the official github
+		/// </summary>
 		public static void GetAsarLatestRelease()
 		{
 			//Single Request (GITHUB)
@@ -96,6 +106,9 @@ namespace LA_Back.web
 			//File.Delete(name);
 		}
 
+		/// <summary>
+		/// Compiles the Asar C# Hook
+		/// </summary>
 		public static  void CompileAsarHook()
 		{
 			CSharpCodeProvider provider = new CSharpCodeProvider();
@@ -137,6 +150,10 @@ namespace LA_Back.web
 
 		}
 
+		/// <summary>
+		/// Moddifies and patches the Asar Hook code
+		/// </summary>
+		/// <param name="code">Ref to Asar Hook code</param>
 		public static void PatchAsarHook(ref string code)
 		{
 			string add;
@@ -180,11 +197,21 @@ namespace LA_Back.web
 			code = code.Replace("class Asar\n    {", "class Asar\n    {        " + add + "\n");
 		}
 
-		public struct PresetAppveyorRequest
+		/// <summary>
+		/// Collection of presets for Appveyor request strings
+		/// </summary>
+		public struct PresetAppveyorRequests
 		{
+			/// <summary>
+			/// Latest successful build
+			/// </summary>
 			public static string latestSuccess = "recordsNumber=1&branch=master&Status=success";
 		}
 
+		/// <summary>
+		/// god is dead
+		/// </summary>
+		/// <param name="code">Ref to Asar Hook Code</param>
 		public static void illfixitlater(ref string code)
 		{
 			code = code.Replace("_Init", 			 "_init");

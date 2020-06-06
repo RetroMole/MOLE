@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Windows.Forms;
 using System.IO;
-using System.Reflection;
+using System.Text.RegularExpressions;
 using AsarCLR;
 using LA_Back;
 namespace win
@@ -33,7 +33,7 @@ namespace win
             RH = new ROMHandler(openFileDialog1.FileName);
             treeView1.CollapseAll();
             treeView1.Nodes.Clear();
-            treeView1.Nodes.Add(openFileDialog1.FileName);
+            treeView1.Nodes.Add(RH.ROMName);
 
             ThreadStart threadStart = new ThreadStart(LoadTreeView);
             Thread thread = new Thread(threadStart);
@@ -54,7 +54,7 @@ namespace win
             saveFileDialog1.Filter = "Common ROM Files (*.smc *.sfc) | *.smc, *.sfc | All files(*.*) | *.*";
             saveFileDialog1.ShowHelp = true;
             saveFileDialog1.ShowDialog();
-            RH.ROMName = saveFileDialog1.FileName;
+            RH.ROMPath = saveFileDialog1.FileName;
             RH.Save();
         }
 
@@ -62,20 +62,50 @@ namespace win
         {
             if (RH != null)
             {
-                int addr = Convert.ToInt32(treeView1.SelectedNode.Text);
-                string val = RH.ROM[addr].ToString();
-                label1.Text = (treeView1.SelectedNode != null) ? val : "unknown";
+                int addr;
+                string val = "";
+                string pre = "";
+                if (treeView1.SelectedNode != null && (!treeView1.SelectedNode.Text.Contains(".smc") && !treeView1.SelectedNode.Text.Contains(".sfc")))
+                {
+                    addr = Asar.SnesToPc(Convert.ToInt32(treeView1.SelectedNode.Text.Replace("$", String.Empty)));
+                    val = Utils.ByteArrToHexStr(new byte[1] { RH.ROM[addr] });
+                    pre = "#$";
+                }
+                else { val = "unknown"; }
+
+                label1.Text = "Value: "+pre+val;
+                textBox1.Text = val;
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            int addr = 0;
+            if (treeView1.SelectedNode != null && (!treeView1.SelectedNode.Text.Contains(".smc") && !treeView1.SelectedNode.Text.Contains(".sfc")))
+            {
+                addr = Asar.SnesToPc(Convert.ToInt32(treeView1.SelectedNode.Text.Replace("$", String.Empty)));
+                Regex regex = new Regex(@"^[\dA-F]{2}$");
+                Match match = regex.Match(textBox1.Text);
+                if (match.Success)
+                {
+                    RH.HexWrite(textBox1.Text, (uint)addr, "Main");
+                    treeView1_AfterSelect(new object(), new TreeViewEventArgs(treeView1.SelectedNode));
+                }
             }
         }
 
         private void LoadTreeView()
         {
             Asar.Init();
-            for (int i = 0; i < 500; i++)
+            for (int i = 0; i < RH.ROM.Length; i++)
             {
-                var a = treeView1.BeginInvoke(new Del(AddNode), i);
-                Thread.Sleep(10);
-                treeView1.EndInvoke(a);
+                try
+                {
+                    var a = treeView1.BeginInvoke(new Deleg(AddNode), i);
+                    Thread.Sleep(10);
+                    treeView1.EndInvoke(a);
+                }
+                catch { Thread.CurrentThread.Abort(); }
             }
             Asar.Close();
             foreach (TreeNode node in treeView1.Nodes[0].Nodes)
@@ -83,10 +113,10 @@ namespace win
                 if (node.Text == "-1") node.Remove();
             }
         }
-        private delegate void Del(int i);
+        private delegate void Deleg(int i);
         private void AddNode(int i)
         {
-            treeView1.Nodes[0].Nodes.Add(Asar.PcToSnes(i).ToString());
+            treeView1.Nodes[0].Nodes.Add("$"+Asar.PcToSnes(i).ToString());
         }
 
         private void testBackendToolStripMenuItem_Click(object sender, EventArgs e)

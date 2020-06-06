@@ -3,6 +3,9 @@ using AsarCLR;
 
 namespace LA_Back
 {
+	/// <summary>
+	/// LA Backend
+	/// </summary>
 	public class Lunar_Alchemy 
 	{
 		public static void Main(string[] args)
@@ -59,7 +62,7 @@ namespace LA_Back
 				Console.WriteLine("0x{0:X}", snes);
 			}*/
 
-			web.Downloader.CompileAsarHook();
+			web.AsarUpdater.CompileAsarHook();
 
 			
 		}

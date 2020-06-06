@@ -5,31 +5,64 @@ using AsarCLR;
 
 namespace LA_Back
 { 
+	/// <summary>
+	/// Deals with ""direct"" ROM access
+	/// </summary>
 	public class ROMHandler
 	{
+		/// <summary>
+		/// UndoRedo system required for ROM operations
+		/// </summary>
 		public UndoRedo UR {get;} = new UndoRedo();
-		public byte[] ROM 
-		{
-			get 
-			{
-				return _ROM;
-			}
-
-		}
+		/// <summary>
+		/// The currently loaded ROM
+		/// </summary>
+		public byte[] ROM => _ROM;
 		protected byte[] _ROM;
 
-		public string ROMName;
-		
-		public ROMHandler(string Name)
+		/// <summary>
+		/// Full Path to currently loaded ROM
+		/// </summary>
+		public string ROMPath
 		{
-			ROMName = Name;
-			FileStream fs = new FileStream(ROMName, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+			get
+			{
+				return _ROMPath;
+			}
+			set
+			{
+				_ROMPath = value;
+				ROMName = Path.GetFileName(_ROMPath);
+			}
+			
+		}
+		protected string _ROMPath;
+		/// <summary>
+		///	Name of currently loaded ROM
+		/// </summary>
+		public string ROMName;
+
+		/// <summary>
+		/// Creates a GFXHandler from a ROM Path
+		/// </summary>
+		/// <param name="path">ROM Path</param>
+		public ROMHandler(string path)
+		{
+			ROMPath = path;
+			ROMName = Path.GetFileName(path);
+			FileStream fs = new FileStream(ROMPath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
 			BinaryReader r = new BinaryReader(fs);
 			
-			FileInfo f = new FileInfo(ROMName);
+			FileInfo f = new FileInfo(ROMPath);
 			_ROM = r.ReadBytes((int)f.Length);
 		}
 		
+		/// <summary>
+		/// Writes HEX data to ROM
+		/// </summary>
+		/// <param name="HexStr">String of HEX characters, make sure its an even length</param>
+		/// <param name="PcAddr">PC Address to start writing at</param>
+		/// <param name="caller"></param>
 		public void HexWrite(string HexStr, uint PcAddr, [CallerMemberName] string caller = "")
 		{
 			string UndoStr = "";
@@ -38,8 +71,8 @@ namespace LA_Back
 				() =>
 				{
 					byte[] HexArr = Utils.HexStrToByteArr(HexStr);
-					UndoStr += Utils.ByteArrToHexStr(_ROM, HexStr.Length/2, (int)PcAddr);
-					HexArr.CopyTo(_ROM, PcAddr);
+					UndoStr += Utils.ByteArrToHexStr(ROM, HexStr.Length/2, (int)PcAddr);
+					HexArr.CopyTo(ROM, PcAddr);
 				},
 				() =>
 				{
@@ -49,6 +82,11 @@ namespace LA_Back
 			);
 		}
 		
+		/// <summary>
+		/// Insert a Patch into the ROM using Asar
+		/// </summary>
+		/// <param name="patch">Path to Patch</param>
+		/// <param name="caller"></param>
 		public void Patch(string patch, [CallerMemberName] string caller = "")
 		{
             UR.Do
@@ -61,12 +99,15 @@ namespace LA_Back
 				},
 				() =>
 				{
-					
+					// oh god what do i even do here...
 				},
 				caller == "Main"
 			);
 		}
 		
+		/// <summary>
+		/// Save ROM Changes
+		/// </summary>
 		public void Save()
 		{
 			UR.Do
@@ -74,7 +115,7 @@ namespace LA_Back
 				() =>
 				{
 					/*
-					// UNFORTUNATELY, SERIALIZING ANONYMOUS LA_BackMBDA EXPRESSIONS AIN'T OK
+					// UNFORTUNATELY, SERIALIZING ANONYMOUS LAMBDA EXPRESSIONS AIN'T OK
 					// I might have another idea though, TODO i guess
 
 					FileStream s = File.Open("UR.bin", FileMode.OpenOrCreate);

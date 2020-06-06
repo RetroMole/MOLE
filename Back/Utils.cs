@@ -2,8 +2,16 @@ using System;
 
 namespace LA_Back
 {
+	/// <summary>
+	/// Utility class with random useful methods
+	/// </summary>
 	public static class Utils
 	{
+		/// <summary>
+		/// Converts a HEX string to an array of Bytes
+		/// </summary>
+		/// <param name="hex">HEX String, make sure it has an even length</param>
+		/// <returns>Byte array containing the values from the HEX string</returns>
 		public static byte[] HexStrToByteArr(string hex)
 		{
 			if (hex.Length % 2 == 1)
@@ -19,6 +27,11 @@ namespace LA_Back
 			return arr;
 		}
 
+		/// <summary>
+		/// Gets the HEX value a character represents, meant for internal use in other functions
+		/// </summary>
+		/// <param name="hex"></param>
+		/// <returns></returns>
 		public static int GetHexVal(char hex)
 		{
 			int val = (int)hex;
@@ -28,16 +41,20 @@ namespace LA_Back
 			//return val - (val < 58 ? 48 : 87);
 		}
 
-		public static string ByteArrToHexStr(byte[] bytes, int offset, int? count)
+		/// <summary>
+		/// Converts an array of bytes to a string of HEX
+		/// </summary>
+		/// <param name="bytes">Byte Array to convert</param>
+		/// <param name="offset">Offset into the array</param>
+		/// <param name="count">Amount of bytes to be copied</param>
+		/// <returns>String of HEX characters representing the data in the input Byte Array</returns>
+		public static string ByteArrToHexStr(byte[] bytes, int offset = 0, int count = -1)
 		{
 			int b;
 			char[] c;
 			byte[] nb;
 
-			if (count == null)
-			{
-				count = bytes.Length * 2;
-			}
+			if (count == -1) count = bytes.Length;
 			nb = new byte[(int)count];
 			c = new char[(int)count * 2];
 
