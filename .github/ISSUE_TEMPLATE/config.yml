@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: FAQ
+    url: https://coming.soon
+    about: Please Check the FAQ before asking anything or posting any bugs that may already be known.
+  - name: Wiki
+    url: https://coming.soon
+    about: Also check the Wiki before asking anything or posting any bugs that may already be known.
+  - name: Discord
+    url: https://discord.gg/5zYH9n3
+    about: Join the community to further discuss any issues or features you wish were included.

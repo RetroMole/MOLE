@@ -19,7 +19,7 @@ namespace win
         }
 
         Graphics g;
-        readonly GFXHandler gh = new GFXHandler(@"C:\Users\Leuu\source\repos\Lunar Alchemy\TEST\CleanROMs\SMW_U.smc");
+        readonly GFXHandler gh = new GFXHandler(@"C:\Users\Vawlpe\source\repos\Lunar Alchemy\TEST\CleanROMs\SMW_U.smc");
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
