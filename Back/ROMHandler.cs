@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using AsarCLR;
 
@@ -37,13 +38,19 @@ namespace MOLE_Back
 			
 		}
 		protected string _ROMPath;
+
 		/// <summary>
 		///	Name of currently loaded ROM
 		/// </summary>
 		public string ROMName;
 
 		/// <summary>
-		/// Creates a GFXHandler from a ROM Path
+		/// Boolean Used to detrmine wether or not the ROM has a 0x200 byte Header
+		/// </summary>
+		public bool hasHeader = false;
+
+		/// <summary>
+		/// Creates a ROMHandler from a ROM Path
 		/// </summary>
 		/// <param name="path">ROM Path</param>
 		public ROMHandler(string path)
@@ -55,6 +62,11 @@ namespace MOLE_Back
 			
 			FileInfo f = new FileInfo(ROMPath);
 			_ROM = r.ReadBytes((int)f.Length);
+			if (!Utils.CompareBytesAndString(_ROM, "789C0042"))
+			{
+				_ROM = _ROM.Skip(0x200).ToArray();
+				hasHeader = true;
+			}
 		}
 		
 		/// <summary>
@@ -83,7 +95,7 @@ namespace MOLE_Back
 		}
 		
 		/// <summary>
-		/// Insert a Patch into the ROM using Asar
+		/// Applies a Patch to the ROM using Asar
 		/// </summary>
 		/// <param name="patch">Path to Patch</param>
 		/// <param name="caller"></param>

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace MOLE_Back
 {
@@ -68,7 +69,18 @@ namespace MOLE_Back
 				c[i * 2 + 1] = (char)(55 + b + (((b - 10) >> 31) & -7));
 			}
 			return new string(c);
-
 		}
+
+		public static bool CompareBytesAndString(byte[] bytes, string hex, int offset = 0)
+        {
+			if (hex.Length % 2 == 1)
+				throw new Exception("The hex string cannot have an odd number of digits");
+
+			byte[] nb = new byte[hex.Length/2];
+			Array.Copy(bytes, nb, nb.Length);
+			byte[] cmp = HexStrToByteArr(hex);
+
+			return nb.SequenceEqual(cmp);
+        }
 	}
 }
