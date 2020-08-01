@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
-using LA_Back;
+using MOLE_Back;
 using AsarCLR;
 
 namespace win
@@ -19,7 +19,7 @@ namespace win
         }
 
         Graphics g;
-        readonly GFXHandler gh = new GFXHandler(@"C:\Users\Vawlpe\source\repos\Lunar Alchemy\TEST\CleanROMs\SMW_U.smc");
+        readonly GFXHandler gh = new GFXHandler(Program.args[0]);
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {

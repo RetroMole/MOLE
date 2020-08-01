@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Text.RegularExpressions;
 using AsarCLR;
-using LA_Back;
+using MOLE_Back;
 namespace win
 {
     public partial class Form1 : Form
@@ -19,7 +19,7 @@ namespace win
         {
             openFileDialog1.DefaultExt = ".smc";
             openFileDialog1.DereferenceLinks = true;
-            openFileDialog1.InitialDirectory = Path.GetDirectoryName(@"C:\Users\Leuu\source\repos\Lunar Alchemy");
+            openFileDialog1.InitialDirectory = Path.GetDirectoryName(Program.args[0]);
             openFileDialog1.Multiselect = false;
             openFileDialog1.Title = "Open ROM";
             openFileDialog1.Filter = "Common ROM Files (*.smc; *.sfc) | *.smc; *.sfc | All files (*.*) | *.*";
@@ -49,7 +49,7 @@ namespace win
         {
             saveFileDialog1.DefaultExt = ".smc";
             saveFileDialog1.DereferenceLinks = true;
-            saveFileDialog1.InitialDirectory = Path.GetDirectoryName(@"C:\Users\Leuu\source\repos\Lunar Alchemy");
+            saveFileDialog1.InitialDirectory = Path.GetDirectoryName(Program.args[0]);
             saveFileDialog1.Title = "Open ROM";
             saveFileDialog1.Filter = "Common ROM Files (*.smc *.sfc) | *.smc, *.sfc | All files(*.*) | *.*";
             saveFileDialog1.ShowHelp = true;
@@ -121,7 +121,7 @@ namespace win
 
         private void testBackendToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Lunar_Alchemy.Main(Program.args);
+            MOLE.Main(Program.args);
         }
     }
 }

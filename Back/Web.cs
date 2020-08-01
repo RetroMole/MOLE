@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using Newtonsoft.Json.Linq;
 
-namespace LA_Back.web
+namespace MOLE_Back.web
 {
 	/// <summary>
 	/// Utility class for random Web-related methods

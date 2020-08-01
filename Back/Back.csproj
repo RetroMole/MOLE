@@ -60,7 +60,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <RootNamespace>LA_Back</RootNamespace>
+    <RootNamespace>MOLE_Back</RootNamespace>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>

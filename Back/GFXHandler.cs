@@ -1,7 +1,7 @@
 ﻿using AsarCLR;
 using System;
 
-namespace LA_Back
+namespace MOLE_Back
 {
     /// <summary>
     /// Handles Graphics and Palettes

@@ -1,6 +1,6 @@
 using System;
 
-namespace LA_Back
+namespace MOLE_Back
 {
 	/// <summary>
 	/// Utility class with random useful methods

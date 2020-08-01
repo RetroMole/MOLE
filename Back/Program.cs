@@ -1,12 +1,12 @@
 using System;
 using AsarCLR;
 
-namespace LA_Back
+namespace MOLE_Back
 {
 	/// <summary>
 	/// LA Backend
 	/// </summary>
-	public class Lunar_Alchemy 
+	public class MOLE 
 	{
 		public static void Main(string[] args)
 		{
@@ -43,8 +43,8 @@ namespace LA_Back
 
 			//GFXHandler gh = new GFXHandler(String.Format(@"C:\Users\Leuu\source\repos\Lunar Alchemy\TEST\ROMs\Clean\{0}", args[0]));
 
-			//web.Downloader.GetAsarBuild(web.Downloader.PresetAppveyorRequest.LA_BacktestSuccess);
-			//web.Downloader.GetAsarLatestRelease();
+			//web.AsarUpdater.GetAsarBuild(web.Downloader.PresetAppveyorRequest.MOLE_BacktestSuccess);
+			//web.AsarUpdater.GetAsarLatestRelease();
 
 
 
@@ -62,7 +62,7 @@ namespace LA_Back
 				Console.WriteLine("0x{0:X}", snes);
 			}*/
 
-			web.AsarUpdater.CompileAsarHook();
+			//web.AsarUpdater.CompileAsarHook();
 
 			
 		}

@@ -7,7 +7,7 @@ using System.Text;
 using Microsoft.CSharp;
 using Newtonsoft.Json.Linq;
 
-namespace LA_Back.web
+namespace MOLE_Back.web
 {
 	/// <summary>
 	/// Deals with downloading Asar updates, and patching the hook and compiling it
@@ -157,7 +157,7 @@ namespace LA_Back.web
 		public static void PatchAsarHook(ref string code)
 		{
 			string add;
-			using (FileStream fs = new FileStream("AsarExtPatch.txt", FileMode.Open, FileAccess.Read, FileShare.Read))
+			using (FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory+@"\AsarExtPatch.txt", FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
 				using (StreamReader reader = new StreamReader(fs))
 				{

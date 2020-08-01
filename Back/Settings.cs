@@ -1,4 +1,4 @@
-﻿namespace LA_Back.Properties {
+﻿namespace MOLE_Back.Properties {
     
     
     // This class allows you to handle specific events on the settings class:
