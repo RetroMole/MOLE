@@ -1,5 +1,7 @@
 ﻿using AsarCLR;
 using System;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MOLE_Back
 {
@@ -70,66 +72,145 @@ namespace MOLE_Back
         /// god is dead
         /// </summary>
         /// <returns>sprite</returns>
-        public byte[] tempSPR()
+        public byte[] tempSPR(int s)
         {
-            return new byte[]  { 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ,
-  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ,
-  0,  0,  0,  0,  8,  8,  8,  8,  8,  0,  0,  0,  0,  0,  0,  0 ,
-  0,  0,  0,  8,  9,  9,  5,  9,  9,  8,  8,  0,  0,  0,  0,  0 ,
-  0,  0,  0,  8, 13,  1,  5,  4,  8, 13, 13,  8,  0,  0,  0,  0 ,
-  0,  0,  2,  2,  2,  2,  2,  2,  2,  9,  9, 13,  8,  0,  0,  0 ,
-  0,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2, 13,  9,  8,  0,  0 ,
-  0,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2, 13, 13,  8,  0 ,
-  0,  0,  2,  2,  1,  1, 14,  1,  1, 14,  2,  2, 13, 13,  8,  0 ,
-  0,  0,  0,  0,  1,  2,  6,  2,  1, 14, 14,  2,  2,  6, 14,  0 ,
-  0,  0,  3,  6,  1,  2,  6,  2,  1,  6, 14,  2,  2,  6,  3, 14 ,
-  0,  0,  3,  6,  6,  6, 14, 14,  6,  6,  2,  2,  2, 14,  3, 14 ,
-  0,  0,  3, 14, 14, 14, 14,  3,  2,  6,  6,  2, 14, 14, 14,  0 ,
-  0,  2,  2,  2,  2,  2,  2,  2,  2,  2, 14, 14, 14,  2,  2,  0 ,
-  0,  0,  2,  2,  2,  2,  2,  2,  6,  6, 14, 14,  2,  2,  0,  0 ,
-  0,  0,  0,  3, 14, 14, 14, 14, 14, 14, 14,  3,  2,  0,  0,  0 ,
-  0,  0,  0,  0,  3,  3,  3,  8,  8, 13, 13,  8,  0,  0,  0,  0 ,
-  0,  0,  0,  3,  1,  1,  1,  3, 13,  8,  9,  9,  8,  0,  0,  0 ,
-  0,  0,  3,  1,  1,  1,  1,  1,  3,  9,  9, 13, 13,  8,  0,  0 ,
-  0,  0,  3,  1,  1,  1,  1,  1,  3,  9,  9, 13, 13,  8,  0,  0 ,
-  0,  0,  0,  3,  1,  1,  1,  3, 13,  9, 13, 13,  8, 10,  0,  0 ,
-  0,  0,  0,  1,  3,  3,  3,  8,  8, 13, 13,  8, 10, 10,  0,  0 ,
-  0,  0,  0, 10, 11, 12, 12, 12,  8,  8,  8, 10, 11, 10,  0,  0 ,
-  0,  0,  0, 10, 11, 12, 12, 12, 12, 12, 10, 11, 11, 10,  0,  0 ,
-  0,  0,  0,  0, 10, 11, 10, 12, 12, 11, 11, 11, 10,  0,  0,  0 ,
-  0,  0,  0,  0, 10, 11, 10, 12, 12, 11, 11, 11, 10,  0,  0,  0 ,
-  0,  0,  0,  0,  0, 10, 10, 10, 10, 10, 10, 10,  0,  0,  0,  0 ,
-  0,  0,  0,  0,  2,  3,  2,  3,  3,  3,  3,  3,  0,  0,  0,  0 ,
-  0,  0,  0,  2,  5,  2,  5,  3,  3,  3,  3,  2,  0,  0,  0,  0 ,
-  0,  0,  0,  2,  2,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0,  0 ,
-  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 };
+            GFXTile[] spr = new GFXTile[]
+            {
+                new GFXTile(Utils.HexStrToByteArr(Utils.ByteArrToHexStr(ROMHandler.ROM,  0x02FC00, 32)), 4),
+                new GFXTile(Utils.HexStrToByteArr(Utils.ByteArrToHexStr(ROMHandler.ROM,  0x02FC00+32, 32)), 4),
+                new GFXTile(Utils.HexStrToByteArr(Utils.ByteArrToHexStr(ROMHandler.ROM,  0x02FE00, 32)), 4),
+                new GFXTile(Utils.HexStrToByteArr(Utils.ByteArrToHexStr(ROMHandler.ROM,  0x02FE00+32, 32)), 4),
+
+                new GFXTile(Utils.HexStrToByteArr(Utils.ByteArrToHexStr(ROMHandler.ROM,  0x02E080, 32)), 4),
+                new GFXTile(Utils.HexStrToByteArr(Utils.ByteArrToHexStr(ROMHandler.ROM,  0x02E080+32, 32)), 4),
+                new GFXTile(Utils.HexStrToByteArr(Utils.ByteArrToHexStr(ROMHandler.ROM,  0x02E280, 32)), 4),
+                new GFXTile(Utils.HexStrToByteArr(Utils.ByteArrToHexStr(ROMHandler.ROM,  0x02E280+32, 32)), 4)
+
+            };
+            
+            
+            return spr[s].img;
         }
     }
 
     /// <summary>
-    /// 8x8 4BPPP GFX Tile
+    /// 8x8 GFX Tile
     /// </summary>
     public class GFXTile
     {
-        int GFXOffset
-        {
-            get
-            {
-                Asar.Init();
-                var a = Asar.SnesToPc(0x088000);
-                Asar.Close();
-                return a;
-            }
-        }
-        readonly int Length = 130317;
+        public byte[] img;
 
         /// <summary>
-        /// Creates an 8x8 GFX Tile from data as seen in ROM
+        /// Creates an 8x8 GFX Tile from data as seen in ROM<br/>
+        /// Supports: 2BPP (data length 16, 4 colors), 3BPP (data length 24, 8 colors),<br/>
+        /// and 4BPP (data length 32, 16 colors)
         /// </summary>
         /// <param name="bpp">Bits per pixel (amount of bitplanes)</param>
-        /// <param name="data">Byte array containing the data for an 8x8 GFX Tile as seen in ROM<br/>Supports: 2BPP (length 16, colors 0-3), 3BPP (length 24, colors 0-7),<br/>4BPP (length 32, colors 0-15), and 8BPP (length 64, colors 0-255)</param>
-        public GFXTile(byte bpp, byte[] data)
-        { 
+        /// <param name="data">Byte array containing the data for an 8x8 GFX Tile as seen in ROM</param>
+        public GFXTile(byte[] data,byte bpp=4)
+        {
+            switch (bpp)
+            {
+                case 2:
+                    byte[] bp0 = new byte[8];
+                    byte[] bp1 = new byte[8];
+                    img = new byte[64];
+                    for (int i = 0; i < data.Length; i++)
+                    {
+                        if (i % 2 == 1)
+                        {
+                            bp0[i / 2] = data[i];
+                        }
+                        else
+                        {
+                            bp1[i / 2] = data[i];
+                        }
+                    }
+                    for (int i = 0; i < 8; i++)
+                    {
+                        for (int j = 0; j < 8; j++)
+                        {
+                            byte b0 = (byte)((bp0[i] & (1 << j)) >> j);
+                            byte b1 = (byte)((bp1[i] & (1 << j)) >> j);
+                            img[8 * i + j] = (byte)((b0 << 1) | b1);
+                        }
+                    }
+                    for (int i = 0; i < 8; i++)
+                    {
+                        Array.Reverse(img, i * 8, 8);
+                    }
+                    break;
+
+                case 3:
+                    bp0 = new byte[8];
+                    bp1 = new byte[8];
+                    byte[] bp2 = new byte[8];
+                    img = new byte[64];
+                    for (int i = 0; i < 16; i++)
+                    {
+                        if (i % 2 == 1) bp0[i / 2] = data[i];
+                        if (i % 2 != 1) bp1[i / 2] = data[i];
+                    }
+                    for (int i = 0; i < 8; i++)
+                    {
+                        bp2[i] = data[i + 16];
+                    }
+                    for (int i = 0; i < 8; i++)
+                    {
+                        for (int j = 0; j < 8; j++)
+                        {
+                            byte b0 = (byte)((bp0[i] & (1 << j)) >> j);
+                            byte b1 = (byte)((bp1[i] & (1 << j)) >> j);
+                            byte b2 = (byte)((bp2[i] & (1 << j)) >> j);
+                            img[8 * i + j] = (byte)((b2 << 2) | (b0 << 1) | b1);
+                        }
+                    }
+                    for (int i = 0; i < 8; i++)
+                    {
+                        Array.Reverse(img, i * 8, 8);
+                    }
+                    break;
+
+                case 4:
+                    bp0 = new byte[8];
+                    bp1 = new byte[8];
+                    bp2 = new byte[8];
+                    byte[] bp3 = new byte[8];
+                    img = new byte[64];
+                    for (int i = 0; i < data.Length / 2; i++)
+                    {
+                        if (i % 2 == 1)
+                        {
+                            bp0[i / 2] = data[i];
+                            bp2[i / 2] = data[i + 16];
+                        }
+                        else
+                        {
+                            bp1[i / 2] = data[i];
+                            bp3[i / 2] = data[i + 16];
+                        }
+                    }
+                    for (int i = 0; i < 8; i++)
+                    {
+                        for (int j = 0; j < 8; j++)
+                        {
+                            byte b0 = (byte)((bp0[i] & (1 << j)) >> j);
+                            byte b1 = (byte)((bp1[i] & (1 << j)) >> j);
+                            byte b2 = (byte)((bp2[i] & (1 << j)) >> j);
+                            byte b3 = (byte)((bp3[i] & (1 << j)) >> j);
+                            img[8 * i + j] = (byte)((b2 << 3) | (b3 << 2) | (b0 << 1) | b1);
+                        }
+                    }
+                    for (int i = 0; i < 8; i++)
+                    {
+                        Array.Reverse(img, i * 8, 8);
+                    }
+                    break;
+                case 8:
+                    throw new Exception("8BPP Is currently Unavailable");
+                default:
+                    throw new Exception("Invalid BPP parameter, please chose 2, 3, 4, or 8");
+            }
         }
     }
 }
