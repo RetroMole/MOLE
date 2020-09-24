@@ -54,9 +54,6 @@
     <StartupObject>win.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="asarhook">
-      <HintPath>..\asarhook.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -130,6 +127,14 @@
       <Project>{e23d05a4-3170-467b-9887-5e81d9861a51}</Project>
       <Name>Back</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="asar.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
+    <AdditionalFiles Include="lunarcompress.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

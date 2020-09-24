@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using AsarCLR;
+using MOLE_Back.Libs;
 
 namespace MOLE_Back
 { 
@@ -50,6 +50,11 @@ namespace MOLE_Back
 		public bool hasHeader = false;
 
 		/// <summary>
+		/// ROMType
+		/// </summary>
+		public LC.AddressFlags ROMType = LC.AddressFlags.LC_NOBANK;
+
+		/// <summary>
 		/// Creates a ROMHandler from a ROM Path
 		/// </summary>
 		/// <param name="path">ROM Path</param>
@@ -66,6 +71,21 @@ namespace MOLE_Back
 			{
 				_ROM = _ROM.Skip(0x200).ToArray();
 				hasHeader = true;
+			}
+			ushort chksum = BitConverter.ToUInt16(new byte[2] { (byte)ROM[0x07FDF], (byte)ROM[0x07FDE] }, 0);
+			ushort invchksum = BitConverter.ToUInt16(new byte[2] { (byte)ROM[0x07FDD], (byte)ROM[0x07FDC] }, 0);
+			if((chksum | invchksum) == 0xFFFF) 
+			{
+				ROMType = LC.AddressFlags.LC_LOROM;
+            }
+            else
+            {
+				chksum = BitConverter.ToUInt16(new byte[2] { (byte)ROM[0x0FFDF], (byte)ROM[0x0FFDE] }, 0);
+				invchksum = BitConverter.ToUInt16(new byte[2] { (byte)ROM[0x0FFDD], (byte)ROM[0x0FFDC] }, 0);
+				if ((chksum | invchksum) == 0xFFFF)
+                {
+					ROMType = LC.AddressFlags.LC_HIROM;
+                }
 			}
 		}
 		

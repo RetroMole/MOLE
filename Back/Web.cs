@@ -11,16 +11,17 @@ namespace MOLE_Back.web
     public static class WebUtils
     {
 		/// <summary>
-		/// Gets a JSON response from a website (http(s) request))
+		/// Gets an HTTP response from a website
 		/// </summary>
-		/// <param name="url">URL to request from</param>
-		/// <param name="github">If true adds a special required UserAgent header to the request for github</param>
+		/// <param name="URL">URL to request from</param>
+		/// <param name="UserAgent">UserAgent for the request, defaults to github repo name for github requests</param>
+		/// <param name="ContentType">What Type of Content to return, defaults to JSON</param>
 		/// <returns></returns>
-        public static JObject GetJsonResponse(string url, bool github = false)
+		public static JObject GetHttpResponse(string URL, string UserAgent = @"Vawlpe/MOLE", string ContentType = @"application/json; charset=utf-8")
         {
-			HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-			if (github) req.UserAgent = @"Vawlpe/Lunar-Alchemy";
-			req.ContentType = "application/json; charset=utf-8";
+			HttpWebRequest req = (HttpWebRequest)WebRequest.Create(URL);
+			req.UserAgent = UserAgent;
+			req.ContentType = ContentType;
 			var resp = (HttpWebResponse)req.GetResponse();
 			var parsed = new JObject();
 			using (var sr = new StreamReader(resp.GetResponseStream()))
@@ -37,7 +38,7 @@ namespace MOLE_Back.web
 		/// <param name="name">Destination Path</param>
 		/// <param name="err">If false it will stop errors from throwing (will still display them)</param>
 		/// <returns>True if file successfully downloaded</returns>
-		public static bool DownloadFile(string url, string name, bool err = true)
+		public static bool DownloadFile(string url, string name, bool err = false)
 		{
 			try
 			{
