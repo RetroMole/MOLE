@@ -72,13 +72,34 @@ namespace MOLE_Back
 
         public unsafe byte[] tempSPR()
         {
-            LC.OpenFile(ROMHandler.ROMPath, 2);
-            byte[] GFX = new byte[32808];
-            uint size = LC.Decompress(GFX, LC.SNEStoPC(0x088000, (uint)LC.AddressFlags.LC_LOROM, (uint)LC.Header.LC_HEADER), 32808, (uint)LC.CompressionFormats.LC_LZ2, 0, null);
-            
-            byte[] spr = new byte[size];
-            LC.CreatePixelMap(GFX, spr, size/64, (uint)LC.GraphicsFormats.LC_4BPP);
-            return spr;
+            byte[] buff  = new byte[0x10000];
+            byte[] pxmap = new byte[0x10000];
+            uint size;
+            byte[] title = new byte[22];
+            string tit = "5355504552204D4152494F574F524C44202020202020";
+            byte cntry;
+            byte ver;
+
+            Array.Copy(ROMHandler.ROM, 0x7FC0, title, 0, 22);
+            if (Utils.CompareBytesAndString(title, tit))
+            {
+                cntry = ROMHandler.ROM[0x7FD9];
+                ver = ROMHandler.ROM[0x7FDB];
+                if (ver==0 && cntry==1)
+                {
+                    if (LC.OpenFile(ROMHandler.ROMPath, 2))
+                    {
+                        size = LC.Decompress(buff, 0x40000, 0x10000, 1, 0, null);
+                        LC.CloseFile();
+                        if (size!=0)
+                        {
+                            if (size > 0x10000) size = 0x10000;
+                            LC.CreatePixelMap(buff, pxmap, size / 32, 4);
+                        }
+                    }
+                }
+            }
+            return pxmap;
         }
     }
 }
