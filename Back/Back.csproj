@@ -3,7 +3,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{E23D05A4-3170-467B-9887-5E81D9861A51}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
     <AssemblyName>Back</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
@@ -63,8 +63,7 @@
     <RootNamespace>MOLE_Back</RootNamespace>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>MOLE_Back.MOLE</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>
@@ -129,9 +128,9 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="asar.cs" />
+    <Compile Include="Libs.Asar.cs" />
     <Compile Include="GFXHandler.cs" />
-    <Compile Include="lunarcompress.cs" />
+    <Compile Include="Libs.LC.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -143,8 +142,8 @@
     <Compile Include="Settings.cs" />
     <Compile Include="UndoRedo.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="AsarDownload.cs" />
-    <Compile Include="Web.cs" />
+    <Compile Include="Libs.Update.cs" />
+    <Compile Include="web.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">
