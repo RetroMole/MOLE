@@ -1,11 +1,10 @@
 using System;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
-using Microsoft.CSharp;
-using Newtonsoft.Json.Linq;
+using System.Net;
+
 
 namespace MOLE_Back.Libs
 {
@@ -14,6 +13,7 @@ namespace MOLE_Back.Libs
 	/// </summary>
 	public static class Update
 	{
+		/*
 		const int ExpectedAsarVer = 10701;
 		const int ExpectedLCVer = 181;
 
@@ -21,7 +21,7 @@ namespace MOLE_Back.Libs
 		/// Get any Asar build from Appveyor CI
 		/// </summary>
 		/// <param name="reqstr">Request String used to filter Appveyor build history (if unsure, check PresetAppveyorRequests</param>
-		public static void GetAsarBuild(string reqstr)
+		public static void GetAsarBuildAppveyor(string reqstr)
 		{
 			// Initial Request (Appveyor BNR)
 			JObject resp0 = web.WebUtils.GetHttpResponse("https://ci.appveyor.com/api/projects/RPGHacker/asar/history?" + reqstr);
@@ -81,29 +81,6 @@ namespace MOLE_Back.Libs
 			Directory.Delete(extractPath);
 		}
 
-		/// <summary>
-		/// Make sure all libraries are found, up to date, and compatible
-		/// </summary>
-		public static void VerifyLibs()
-        {
-			Console.WriteLine("Verifying Libs...        Expected | Current");
-			Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-			if (File.Exists("asar.dll"))
-            {
-				Asar.Init();
-				Console.WriteLine("Asar DLL found:             {0} |   {1}", ExpectedAsarVer, Asar.Version());
-				if (Asar.Version() != ExpectedAsarVer) throw new Exception("Asar Version Not Compatible");
-				Asar.Close();
-            }
-			else throw new Exception("Asar Not Found");
-
-			if (File.Exists("lunarcompress.dll"))
-			{
-				Console.WriteLine("LunarCompress DLL found:      {0} |     {1}", ExpectedLCVer, LC.Version());
-				if (LC.Version() != ExpectedLCVer) throw new Exception("LunarCompress Version Not Compatible");
-			}
-			else throw new Exception("LunarCompress Not Found");
-		}
 
 		/// <summary>
 		/// Collection of presets for Appveyor request strings
@@ -115,5 +92,56 @@ namespace MOLE_Back.Libs
 			/// </summary>
 			public static string LatestSuccess = "recordsNumber=1&branch=master&Status=success";
 		}
+		*/
+		/// <summary>
+		/// Make sure all libraries are found, up to date, and compatible
+		/// </summary>
+		public static void VerifyLibs()
+        {
+			Console.WriteLine("Verifying Libs");
+			Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+			if (!File.Exists("asar.dll")) Console.WriteLine("Asar Not Found");
+			//if (!File.Exists("lunarcompress.dll")) Console.WriteLine("LunarCompress Not Found"); // do this later
+			// if autoupdate enabled
+			// if releases only
+			// ...
+			// else if latest build\
+
+			// Request file
+			HttpWebRequest req= (HttpWebRequest)WebRequest.Create(
+				new Uri("https://random.muncher.se/ftp/asar/windows/win32/build/asar/MinSizeRel/asar.dll"));
+			
+			// Add IfModifiedSince Header
+			DateTime targetDate = File.GetLastWriteTime("asar.dll");	// Set a target date to the current files modified date
+			req.IfModifiedSince = targetDate;
+			try
+			{
+				// Assign the response object of 'HttpWebRequest' to a 'HttpWebResponse' variable.
+				HttpWebResponse resp=(HttpWebResponse)req.GetResponse();
+				using (StreamReader sr = new StreamReader(resp.GetResponseStream()))
+				{
+					using (StreamWriter sw = new StreamWriter("asar.dll"))
+					{
+						sw.Write(sr.ReadToEnd());
+						Console.WriteLine("Asar Updated to build last modified at {0}",resp.LastModified);
+					}
+				}
+			}
+			catch(WebException e)
+			{
+				if (e.Response != null)
+			  	{
+			    	if ( ((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.NotModified)
+			      		Console.WriteLine("\nFile has not been modified");
+			    	else
+			      		Console.WriteLine("\nUnexpected status code = " + ((HttpWebResponse)e.Response).StatusCode);
+			  	}
+			  	else
+			  	{
+			  		Console.WriteLine("\nUnexpected Web Exception " + e.Message);
+			 	}
+			}
+		}
+
 	}
 }
