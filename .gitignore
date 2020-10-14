@@ -1,5 +1,7 @@
 #Test files
 TEST
+Back/*.dll
+Win/*.dll
 
 #thumbnail
 Thumbs.db

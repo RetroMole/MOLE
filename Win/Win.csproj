@@ -128,5 +128,15 @@
       <Name>Back</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="asar.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="lunarcompress.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
