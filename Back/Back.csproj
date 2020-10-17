@@ -165,12 +165,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="asar.dll">
+    <None Include="asar.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AdditionalFiles>
-    <AdditionalFiles Include="lunarcompress.dll">
+    </None>
+    <None Include="lunarcompress.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </AdditionalFiles>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
