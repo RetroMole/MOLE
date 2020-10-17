@@ -68,7 +68,7 @@ namespace win
                 if (treeView1.SelectedNode != null && (!treeView1.SelectedNode.Text.Contains(".smc") && !treeView1.SelectedNode.Text.Contains(".sfc")))
                 {
                     addr = Asar.SnesToPc(Convert.ToInt32(treeView1.SelectedNode.Text.Replace("$", String.Empty)));
-                    val = Utils.ByteArrToHexStr(new byte[1] { RH.ROM[addr] });
+                    val = MOLE_Back.Utils.Hex.ByteArrToHexStr(new byte[1] { RH.ROM[addr] });
                     pre = "#$";
                 }
                 else { val = "unknown"; }

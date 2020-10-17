@@ -141,9 +141,9 @@
     <Compile Include="ROMHandler.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UndoRedo.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="Utils.Hex.cs" />
     <Compile Include="Libs.Update.cs" />
-    <Compile Include="web.cs" />
+    <Compile Include="Utils.Web.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">

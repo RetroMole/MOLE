@@ -19,13 +19,13 @@ namespace MOLE_Back
 			Console.WriteLine("Settings:\n" +
 				"	Asar autoupdate = {0}\n" +
 				"	Asar autoupdate mode = {1}\n", Settings.Default.UPDATE_asar, Settings.Default.UPDATE_asar_mode);
-			Update.VerifyLibs();
+			Update.UpdateSequence();
 
 			Settings.Default.UPDATE_asar_mode = "build";
 			Console.WriteLine("\n\nSettings:\n" +
 				"	Asar autoupdate = {0}\n" +
 				"	Asar autoupdate mode = {1}\n", Settings.Default.UPDATE_asar, Settings.Default.UPDATE_asar_mode);
-			Update.VerifyLibs();
+			Update.UpdateSequence();
 
 			Console.ReadKey(true);
 		}

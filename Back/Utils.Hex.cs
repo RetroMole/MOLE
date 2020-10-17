@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
 
-namespace MOLE_Back
+namespace MOLE_Back.Utils
 {
 	/// <summary>
-	/// Utility class with random useful methods
+	/// Hex Utility Methods
 	/// </summary>
-	public static class Utils
+	public static class Hex
 	{
 		/// <summary>
 		/// Converts a HEX string to an array of Bytes

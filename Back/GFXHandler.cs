@@ -81,7 +81,7 @@ namespace MOLE_Back
             byte ver;
 
             Array.Copy(ROMHandler.ROM, 0x7FC0, title, 0, 22);
-            if (Utils.CompareBytesAndString(title, tit))
+            if (Utils.Hex.CompareBytesAndString(title, tit))
             {
                 cntry = ROMHandler.ROM[0x7FD9];
                 ver = ROMHandler.ROM[0x7FDB];

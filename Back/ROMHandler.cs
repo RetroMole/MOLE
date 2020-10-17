@@ -67,7 +67,7 @@ namespace MOLE_Back
 			
 			FileInfo f = new FileInfo(ROMPath);
 			_ROM = r.ReadBytes((int)f.Length);
-			if (!Utils.CompareBytesAndString(_ROM, "789C0042"))
+			if (!Utils.Hex.CompareBytesAndString(_ROM, "789C0042"))
 			{
 				_ROM = _ROM.Skip(0x200).ToArray();
 				hasHeader = true;
@@ -102,8 +102,8 @@ namespace MOLE_Back
 			(
 				() =>
 				{
-					byte[] HexArr = Utils.HexStrToByteArr(HexStr);
-					UndoStr += Utils.ByteArrToHexStr(ROM, HexStr.Length/2, (int)PcAddr);
+					byte[] HexArr = Utils.Hex.HexStrToByteArr(HexStr);
+					UndoStr += Utils.Hex.ByteArrToHexStr(ROM, HexStr.Length/2, (int)PcAddr);
 					HexArr.CopyTo(ROM, PcAddr);
 				},
 				() =>
