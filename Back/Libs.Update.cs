@@ -2,10 +2,12 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using MOLE_Back.Properties;
+using System.IO.Compression;
 
 namespace MOLE_Back.Libs
 {
@@ -17,23 +19,6 @@ namespace MOLE_Back.Libs
 		/*
 		const int ExpectedAsarVer = 10701;
 		const int ExpectedLCVer = 181;
-
-			//	Extract
-			string extractPath = Path.GetFullPath(name).Replace(".zip", String.Empty);
-			if (!extractPath.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal)) extractPath += Path.DirectorySeparatorChar;
-			Directory.CreateDirectory(extractPath);
-			using (ZipArchive archive = ZipFile.OpenRead(name))
-			{
-				archive.GetEntry(@"dll\asar.dll").ExtractToFile(Path.Combine(extractPath, @"asar.dll"), true);
-			}
-
-			// Cleanup
-			Directory.SetCurrentDirectory(extractPath);
-			File.Delete(name);
-			File.Delete(AppDomain.CurrentDomain.BaseDirectory+@"\asar.dll");
-			File.Move("asar.dll", AppDomain.CurrentDomain.BaseDirectory+@"\asar.dll");
-			Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-			Directory.Delete(extractPath);
 		*/
 
 		/// <summary>
@@ -49,12 +34,27 @@ namespace MOLE_Back.Libs
 			{
 				if (Settings.Default.UPDATE_asar_mode == "release") // releases only
 				{
-					Dictionary<string, string> rels = Utils.Web.GetGHReleases("RPGHacker", "Asar");
-					Console.WriteLine("DLURL									:	Prerelease?		Draft?");
-					foreach (KeyValuePair<string, string> entry in rels)
+					string url = Utils.Web.GetGHReleases("RPGHacker", "Asar",1,1).Keys.First<string>();
+					string name = Regex.Replace(url, "https://github.com/RPGHacker/asar/releases/download/v*.*/", String.Empty);
+					WebClient wc = new WebClient();
+					wc.DownloadFile(url, name);
+
+					//	Extract
+					string extractPath = Path.GetFullPath(name).Replace(".zip", String.Empty);
+					if (!extractPath.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal)) extractPath += Path.DirectorySeparatorChar;
+					Directory.CreateDirectory(extractPath);
+					using (ZipArchive archive = ZipFile.OpenRead(name))
 					{
-						Console.WriteLine("{0}	:	{1}", entry.Key, entry.Value);
+						archive.GetEntry(@"\dll\asar.dll").ExtractToFile(Path.Combine(extractPath, @"asar.dll"), true);
 					}
+
+					// Cleanup
+					Directory.SetCurrentDirectory(extractPath);
+					File.Delete(name);
+					File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"\asar.dll");
+					File.Move("asar.dll", AppDomain.CurrentDomain.BaseDirectory + @"\asar.dll");
+					Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+					Directory.Delete(extractPath);
 				}
 				else if (Settings.Default.UPDATE_asar_mode == "build") // latest build
 				{

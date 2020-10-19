@@ -6,11 +6,11 @@ using System.Collections.Generic;
 
 namespace MOLE_Back.Utils
 {
-    /// <summary>
-    /// Web Utility Methods
-    /// </summary>
-    public static class Web
-    {
+	/// <summary>
+	/// Web Utility Methods
+	/// </summary>
+	public static class Web
+	{
 		public static Dictionary<String, String> GetGHReleases(string Owner, string Repo, int Page = 1, int Per_Page = 100)
 		{
 			Dictionary<string, string> Releases = new Dictionary<string, string>();
@@ -34,10 +34,9 @@ namespace MOLE_Back.Utils
 			for (int i = 0; i < parsed.Count; i++)
 			{
 				JObject asst = (JObject)parsed[i].SelectToken("assets", true).First;
-				Releases.Add(asst.SelectToken("browser_download_url", true).Value<String>(), "p+" + parsed[i].SelectToken("prerelease", true).Value<String>() + "			d+" + parsed[i].SelectToken("draft", true).Value<String>());
+				Releases.Add(asst.SelectToken("browser_download_url", true).Value<String>(), parsed[i].SelectToken("prerelease", true).Value<String>());
 			}
 			return Releases;
 		}
-
 	}
 }
