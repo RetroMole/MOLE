@@ -1,4 +1,4 @@
-blank_issues_enabled: false
+blank_issues_enabled: true
 contact_links:
   - name: FAQ
     url: https://coming.soon
@@ -7,5 +7,5 @@ contact_links:
     url: https://coming.soon
     about: Also check the Wiki before asking anything or posting any bugs that may already be known.
   - name: Discord
-    url: https://discord.gg/5zYH9n3
+    url: https://discord.gg/62p4Huv
     about: Join the community to further discuss any issues or features you wish were included.
