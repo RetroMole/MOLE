@@ -7,7 +7,7 @@ updates:
       day: "sunday"
       
     commit-message:
-      prefix: "Update NuGet Dependencies for 'Back'"
+      prefix: "Deps Nuget Back"
       include: "scope"
   - package-ecosystem: "nuget"
     directory: "/src/Win"
@@ -16,5 +16,5 @@ updates:
       day: "sunday"
       
     commit-message:
-      prefix: "Update NuGet Dependencies for 'Back'"
+      prefix: "Deps Nuget Win"
       include: "scope"
