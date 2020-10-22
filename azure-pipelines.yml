@@ -1,0 +1,31 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: VSBuild@1
+  inputs:
+    solution: '**\*.sln'
+    platform: 'Any CPU'
+    configuration: 'Release'
+    clean: true
+    restoreNugetPackages: true
+    createLogFile: true
+
+#Tests
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      (new-object System.Net.WebClient).DownloadFile($env:TESTROMURL, "smwu.sfc")
+      $Command = "Back.exe"
+      $Params = "smwu.sfc"
+      & "$Command" $Parms.Split(" ")
+    workingDirectory: 'src\Back\bin\Release'
