@@ -40,3 +40,4 @@ steps:
       $Params = "smwu.sfc"
       & "$Command" $Parms.Split(" ")
     workingDirectory: 'src\Back\bin\Release'
+    errorActionPreference: 'continue'
