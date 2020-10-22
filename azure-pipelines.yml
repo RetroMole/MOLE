@@ -25,7 +25,8 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      (new-object System.Net.WebClient).DownloadFile($env:TESTROMURL, "smwu.sfc")
+      $url = $env:TESTROMURL
+      (new-object System.Net.WebClient).DownloadFile($url, "smwu.sfc")
       $Command = "Back.exe"
       $Params = "smwu.sfc"
       & "$Command" $Parms.Split(" ")
