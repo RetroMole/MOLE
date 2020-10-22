@@ -3,14 +3,16 @@ updates:
   - package-ecosystem: "nuget"
     directory: "/src/Back/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+        day: "sunday"
     commit-mesage:
       prefix: "Update NuGet Dependencies for 'Back'"
       include: "scope"
   - package-ecosystem: "nuget"
     directory: "/src/Win"
     schedule:
-      interval: "daily"
-      commit-mesage:
+      interval: "weekly"
+        day: "sunday"
+    commit-mesage:
       prefix: "Update NuGet Dependencies for 'Back'"
       include: "scope"
