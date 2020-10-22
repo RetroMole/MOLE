@@ -6,7 +6,7 @@ updates:
       interval: "weekly"
       day: "sunday"
       
-    commit-mesage:
+    commit-message:
       prefix: "Update NuGet Dependencies for 'Back'"
       include: "scope"
   - package-ecosystem: "nuget"
@@ -15,6 +15,6 @@ updates:
       interval: "weekly"
       day: "sunday"
       
-    commit-mesage:
+    commit-message:
       prefix: "Update NuGet Dependencies for 'Back'"
       include: "scope"
