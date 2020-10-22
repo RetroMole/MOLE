@@ -13,7 +13,7 @@ steps:
 - task: VSBuild@1
   inputs:
     solution: '**\*.sln'
-    msbuildArgs: '/unsafe'
+    msbuildArgs: '/p:AllowUnsafeBlocks=true'
     platform: 'Any CPU'
     configuration: 'Release'
     clean: true
