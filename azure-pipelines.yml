@@ -26,6 +26,7 @@ steps:
     targetType: 'inline'
     script: |
       $url = $env:TESTROMURL
+      echo $url
       (new-object System.Net.WebClient).DownloadFile($url, "smwu.sfc")
       $Command = "Back.exe"
       $Params = "smwu.sfc"
