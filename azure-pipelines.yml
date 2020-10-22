@@ -10,6 +10,15 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: NuGetToolInstaller@1
+  inputs:
+    checkLatest: true
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
 - task: VSBuild@1
   inputs:
     solution: '**\*.sln'
@@ -17,7 +26,6 @@ steps:
     platform: 'Any CPU'
     configuration: 'Release'
     clean: true
-    restoreNugetPackages: true
     createLogFile: true
 
 #Tests
