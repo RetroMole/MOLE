@@ -5,6 +5,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+      
     commit-mesage:
       prefix: "Update NuGet Dependencies for 'Back'"
       include: "scope"
@@ -13,6 +14,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+      
     commit-mesage:
       prefix: "Update NuGet Dependencies for 'Back'"
       include: "scope"
