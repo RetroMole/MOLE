@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/src/Back/"
+    schedule:
+      interval: "daily"
+    commit-mesage:
+      prefix: "Update NuGet Dependencies for 'Back'"
+      include: "scope"
+  - package-ecosystem: "nuget"
+    directory: "/src/Win"
+    schedule:
+      interval: "daily"
+      commit-mesage:
+      prefix: "Update NuGet Dependencies for 'Back'"
+      include: "scope"
