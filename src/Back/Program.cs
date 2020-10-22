@@ -27,7 +27,7 @@ namespace MOLE_Back
 				"	Asar autoupdate mode = {1}\n", Settings.Default.UPDATE_asar, Settings.Default.UPDATE_asar_mode);
 			Update.UpdateSequence();
 
-			Console.ReadKey(true);
+			//Console.ReadKey(true);
 		}
 	}
 }
