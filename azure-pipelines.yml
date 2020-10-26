@@ -56,6 +56,6 @@ jobs:
     # Run Backend Tests on clean unheadered ROM
     - task: CmdLine@2
       inputs:
-        script: 'Back.exe SMW_u.sfc'
+        script: 'Backend\Release\Back.exe SMW_u.sfc'
         workingDirectory: '$(Agent.TempDirectory)'
         failOnStderr: true
