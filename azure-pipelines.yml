@@ -10,39 +10,42 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-steps:
-- task: NuGetToolInstaller@1
-  inputs:
-    checkLatest: true
+jobs:
+  - job: 'Build'
+    steps: 
+      - task: NuGetToolInstaller@1
+        inputs:
+          checkLatest: true
+      - task: NuGetCommand@2
+        inputs:
+          command: 'restore'
+          restoreSolution: '**/*.sln'
+          feedsToUse: 'select'
+      - task: VSBuild@1
+        inputs:
+          solution: '**\*.sln'
+          msbuildArgs: '/p:AllowUnsafeBlocks=true'
+          platform: 'Any CPU'
+          configuration: 'Release'
+          clean: true
+          createLogFile: true
 
-- task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: '**/*.sln'
-    feedsToUse: 'select'
-- task: VSBuild@1
-  inputs:
-    solution: '**\*.sln'
-    msbuildArgs: '/p:AllowUnsafeBlocks=true'
-    platform: 'Any CPU'
-    configuration: 'Release'
-    clean: true
-    createLogFile: true
-
-# Prepare for Tests
-- task: DownloadSecureFile@1
-  inputs:
-    secureFile: 'SMW_U.sfc'
-    retryCount: 5
-- task: DownloadBuildArtifacts@0
-  inputs:
-    buildType: 'current'
-    downloadType: 'specific'
-    itemPattern: '**.exe'
-    downloadPath: '$(Agent.TempDirectory)'
-# Run Backend Tests on clean unheadered ROM
-- task: CmdLine@2
-  inputs:
-    script: 'Back.exe SMW_u.sfc'
-    workingDirectory: '$(Agent.TempDirectory)'
-    failOnStderr: true
+  # Run Some Tests
+  - job: 'Test'
+    steps:
+    - task: DownloadSecureFile@1
+      inputs:
+        secureFile: 'SMW_U.sfc'
+        retryCount: 5
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(Agent.TempDirectory)'
+        Contents: 'SMW_U.sfc'
+        TargetFolder: 'src\Back\bin\Release'
+        OverWrite: true
+    # Run Backend Tests on clean unheadered ROM
+    - task: CmdLine@2
+      inputs:
+        script: 'Back.exe SMW_u.sfc'
+        workingDirectory: 'src\Back\bin\Release'
+        failOnStderr: true
