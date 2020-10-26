@@ -41,6 +41,7 @@ jobs:
 
   # Run Some Tests
   - job: 'Test'
+    dependsOn: 'Build'
     steps:
     - task: DownloadSecureFile@1
       inputs:
