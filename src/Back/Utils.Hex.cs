@@ -77,7 +77,7 @@ namespace MOLE_Back.Utils
 				throw new Exception("The hex string cannot have an odd number of digits");
 
 			byte[] nb = new byte[hex.Length/2];
-			Array.Copy(bytes, nb, nb.Length);
+			Array.Copy(bytes, offset,nb, 0, nb.Length);
 			byte[] cmp = HexStrToByteArr(hex);
 
 			return nb.SequenceEqual(cmp);

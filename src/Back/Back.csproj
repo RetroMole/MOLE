@@ -144,7 +144,6 @@
     <Compile Include="UndoRedo.cs" />
     <Compile Include="Utils.Hex.cs" />
     <Compile Include="Libs.Update.cs" />
-    <Compile Include="Utils.Misc.cs" />
     <Compile Include="Utils.Web.cs" />
   </ItemGroup>
   <ItemGroup>

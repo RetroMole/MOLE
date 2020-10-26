@@ -17,6 +17,16 @@ namespace MOLE_Back.Libs
 
 		public static int[] Sa1Banks = new int[8] { 0 << 20, 1 << 20, -1, -1, 2 << 20, 3 << 20, -1, -1 };
 
+        public static string ver2str(int ver)
+        {
+            //major*10000+minor*100+bugfix*1.
+            //123456 = 12.3456
+            int maj = ver/10000;
+            int min = (ver-(maj*10000))/100; 
+            int fx  = (ver-((maj*10000)+(min*100)))/1;
+            return String.Format("{0}.{1}{2}",maj,min,fx);
+        }
+
 		public static int SnesToPc(int addr)
 		{
 			MapperType mapper = GetMapper();

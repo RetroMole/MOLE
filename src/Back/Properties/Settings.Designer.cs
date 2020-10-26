@@ -25,49 +25,37 @@ namespace MOLE_Back.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool UPDATE_main {
+        [global::System.Configuration.DefaultSettingValueAttribute("release")]
+        public string UPDATE_Asar {
             get {
-                return ((bool)(this["UPDATE_main"]));
+                return ((string)(this["UPDATE_Asar"]));
             }
             set {
-                this["UPDATE_main"] = value;
+                this["UPDATE_Asar"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("release")]
-        public string UPDATE_main_mode {
+        public string UPDATE_MOLE {
             get {
-                return ((string)(this["UPDATE_main_mode"]));
+                return ((string)(this["UPDATE_MOLE"]));
             }
             set {
-                this["UPDATE_main_mode"] = value;
+                this["UPDATE_MOLE"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool UPDATE_asar {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UPDATE_LunarCompress {
             get {
-                return ((bool)(this["UPDATE_asar"]));
+                return ((bool)(this["UPDATE_LunarCompress"]));
             }
             set {
-                this["UPDATE_asar"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("release")]
-        public string UPDATE_asar_mode {
-            get {
-                return ((string)(this["UPDATE_asar_mode"]));
-            }
-            set {
-                this["UPDATE_asar_mode"] = value;
+                this["UPDATE_LunarCompress"] = value;
             }
         }
     }

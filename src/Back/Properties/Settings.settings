@@ -2,17 +2,14 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MOLE_Back.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="UPDATE_main" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="UPDATE_main_mode" Type="System.String" Scope="User">
+    <Setting Name="UPDATE_Asar" Type="System.String" Scope="User">
       <Value Profile="(Default)">release</Value>
     </Setting>
-    <Setting Name="UPDATE_asar" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="UPDATE_asar_mode" Type="System.String" Scope="User">
+    <Setting Name="UPDATE_MOLE" Type="System.String" Scope="User">
       <Value Profile="(Default)">release</Value>
+    </Setting>
+    <Setting Name="UPDATE_LunarCompress" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>
