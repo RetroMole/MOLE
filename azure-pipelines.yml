@@ -29,14 +29,20 @@ steps:
     clean: true
     createLogFile: true
 
-#Tests
+# Prepare for Tests
 - task: DownloadSecureFile@1
   inputs:
     secureFile: 'SMW_U.sfc'
-- task: PowerShell@2
+    retryCount: 5
+- task: DownloadBuildArtifacts@0
   inputs:
-    targetType: 'inline'
-    script: |
-        & Back.exe SMW_U.sfc
-    workingDirectory: 'src\Back\bin\Release'
-    errorActionPreference: 'continue'
+    buildType: 'current'
+    downloadType: 'specific'
+    itemPattern: '**.exe'
+    downloadPath: '$(Agent.TempDirectory)'
+# Run Backend Tests on clean unheadered ROM
+- task: CmdLine@2
+  inputs:
+    script: 'Back.exe SMW_u.sfc'
+    workingDirectory: '$(Agent.TempDirectory)'
+    failOnStderr: true
