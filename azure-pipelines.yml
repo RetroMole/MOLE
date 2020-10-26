@@ -1,0 +1,60 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+jobs:
+  - job: 'Build'
+    steps: 
+      - task: NuGetToolInstaller@1
+        inputs:
+          checkLatest: true
+      - task: NuGetCommand@2
+        inputs:
+          command: 'restore'
+          restoreSolution: '**/*.sln'
+          feedsToUse: 'select'
+      - task: VSBuild@1
+        inputs:
+          solution: '**\*.sln'
+          msbuildArgs: '/p:AllowUnsafeBlocks=true'
+          platform: 'Any CPU'
+          configuration: 'Release'
+          clean: true
+          createLogFile: true
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: 'src\Back\bin'
+          artifactName: 'Backend'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathtoPublish: 'src\Win\bin'
+          artifactName: 'Frontend-WIN'
+
+
+  # Run Some Tests
+  - job: 'Test'
+    dependsOn: 'Build'
+    steps:
+    - task: DownloadSecureFile@1
+      inputs:
+        secureFile: 'SMW_U.sfc'
+        retryCount: 5
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'Backend'
+        downloadPath: '$(Agent.TempDirectory)'
+    # Run Backend Tests on clean unheadered ROM
+    - task: CmdLine@2
+      inputs:
+        script: 'Backend\Release\Back.exe SMW_u.sfc'
+        workingDirectory: '$(Agent.TempDirectory)'
+        failOnStderr: true

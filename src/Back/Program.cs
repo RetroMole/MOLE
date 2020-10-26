@@ -24,7 +24,7 @@ namespace MOLE_Back
 			Console.WriteLine("Settings: UPDATE_Asar = {0}", Settings.Default.UPDATE_Asar);
 			Update.UpdateSequence();
 
-			Console.ReadKey(true);
+			//Console.ReadKey(true);
 		}
 	}
 }
