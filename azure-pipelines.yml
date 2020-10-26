@@ -29,6 +29,15 @@ jobs:
           configuration: 'Release'
           clean: true
           createLogFile: true
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: 'src\Back\bin'
+          artifactName: 'Backend'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathtoPublish: 'src\Win\bin'
+          artifactName: 'Frontend-WIN'
+
 
   # Run Some Tests
   - job: 'Test'
@@ -37,15 +46,15 @@ jobs:
       inputs:
         secureFile: 'SMW_U.sfc'
         retryCount: 5
-    - task: CopyFiles@2
+    - task: DownloadBuildArtifacts@0
       inputs:
-        SourceFolder: '$(Agent.TempDirectory)'
-        Contents: 'SMW_U.sfc'
-        TargetFolder: 'src\Back\bin\Release'
-        OverWrite: true
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'Backend'
+        downloadPath: '$(Agent.TempDirectory)'
     # Run Backend Tests on clean unheadered ROM
     - task: CmdLine@2
       inputs:
         script: 'Back.exe SMW_u.sfc'
-        workingDirectory: 'src\Back\bin\Release'
+        workingDirectory: '$(Agent.TempDirectory)'
         failOnStderr: true
