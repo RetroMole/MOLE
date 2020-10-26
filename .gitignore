@@ -1,8 +1,9 @@
-#Test files
+# Local Test files
 test
-
-#thumbnail
+# Thumbnails
 Thumbs.db
+# Shortcuts
+*.lnk
 
 
 # User-specific files
