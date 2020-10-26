@@ -1,6 +1,5 @@
 trigger:
-- Azure 
-#- master
+- master
 
 pool:
   vmImage: 'windows-latest'
