@@ -1,5 +1,6 @@
 trigger:
-- master
+- Azure 
+#- master
 
 pool:
   vmImage: 'windows-latest'
@@ -29,15 +30,13 @@ steps:
     createLogFile: true
 
 #Tests
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: 'SMW_U.sfc'
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
     script: |
-      $url = $env:TESTROMURL
-      echo $url
-      (new-object System.Net.WebClient).DownloadFile($url, "smwu.sfc")
-      $Command = "Back.exe"
-      $Params = "smwu.sfc"
-      & "$Command" $Parms.Split(" ")
+        & Back.exe SMW_U.sfc
     workingDirectory: 'src\Back\bin\Release'
     errorActionPreference: 'continue'
