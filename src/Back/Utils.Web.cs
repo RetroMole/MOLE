@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace MOLE_Back.Utils
 {
@@ -18,18 +19,26 @@ namespace MOLE_Back.Utils
 		/// <param name="URL">URL to request from</param>
 		/// <param name="Headers">Array of strings containing headers where the header and its value are separated by a colon</param>
 		/// <returns>Http Response</returns>
-		public static HttpWebResponse MakeHttpRequest(string URL, string[] Headers)
-        {
-			HttpWebRequest req = (HttpWebRequest)WebRequest.Create(URL);
-			req.Headers = new WebHeaderCollection();
-			foreach (string h in Headers) 
-			{
-				if (h.StartsWith("Accept: "))
-					req.Accept = h.Replace("Accept: ", String.Empty);
-				else req.Headers.Add(h); 
-			}
-			return (HttpWebResponse)req.GetResponse();
-        }
+		public static HttpWebResponse MakeHttpRequest(string URL, string[] Headers) {
+    		HttpWebRequest req = (HttpWebRequest) WebRequest.Create(URL);
+    		req.Headers.Clear();
+    		foreach (string h in Headers) {
+    		    var s = h.Split(new char[] {':'}, 2);
+    		    var key = s[0];
+    		    var value = s[1];
+    		    if (WebHeaderCollection.IsRestricted(key)) {
+    		        // remove "-" because some header names contain it, but .NET properties do not
+    		        key = key.Replace("-", "");
+    		        // get property with header name
+    		        var prop = typeof(HttpWebRequest).GetProperty(key, BindingFlags.Instance | BindingFlags.Public);
+    		        // set, changing type if necessary (some properties are long, or date, and your values are always strings)
+    		        prop.SetValue(req, Convert.ChangeType(value, prop.PropertyType, System.Globalization.CultureInfo.InvariantCulture));
+    		    }
+    		    else req.Headers.Set(s[0], s[1]);
+
+    		}
+    		return (HttpWebResponse) req.GetResponse();
+    	}
 
 		/// <summary>
 		/// Github API Request Wrapper
@@ -40,28 +49,18 @@ namespace MOLE_Back.Utils
 		/// <returns>JSON Response</returns>
 		public static JToken MakeGithubAPIRequest(string Endpoint, string[] Headers = null, string OAuth2Token = null) 
 		{
-			if (Headers == null)
-			{
-				Headers = (new string[] {
-					"UserAgent: Vawlpe/MOLE",
-					"ContentType: application/json;charset=utf-8",
-					"AllowAutoRedirect: true",
+			var defhedrs = new string[] {
+					"User-Agent: Vawlpe/MOLE",
+					"Content-Type: application/json;charset=utf-8",
+					"Allow-Auto-Redirect: true",
 					"Accept: application/vnd.github.v3+json",
-				});
-			}
-			else
-			{
-				Headers = (string[])Headers.Concat(new string[] {
-					"UserAgent: Vawlpe/MOLE",
-					"ContentType: application/json;charset=utf-8",
-					"AllowAutoRedirect: true",
-					"Accept: application/vnd.github.v3+json",
-				});
-			}
+				};
+
+			Headers = Headers == null ? defhedrs : (string[])Headers.Concat(defhedrs);
 			if (OAuth2Token != null) Headers.Append("Authorization: token " + OAuth2Token);
 			var resp = MakeHttpRequest("https://api.github.com/"+Endpoint, Headers);
             using var sr = new StreamReader(resp.GetResponseStream());
-            return sr.ReadToEnd();
+            return JToken.Parse(sr.ReadToEnd());
         }
 
 		/// <summary>

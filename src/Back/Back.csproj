@@ -22,7 +22,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>false</MapFileExtensions>
     <TargetCulture>en</TargetCulture>
-    <ProductName>Lunar Alchemy</ProductName>
+    <ProductName>MOLE</ProductName>
     <PublisherName>Vawlpe</PublisherName>
     <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
@@ -87,7 +87,7 @@
     <ManifestCertificateThumbprint>C7F75F9E5FA3B2D56B6EC52D6FE53E8EEF326826</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>Lunar Alchemy_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>MOLE_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>

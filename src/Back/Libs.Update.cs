@@ -34,7 +34,7 @@ namespace MOLE_Back.Libs
                     if (IgnoreTime || latestrel.SelectToken("tag_name").Value<string>() != "v"+Asar.ver2str(Asar.Version()));
 					{
 						string url = latestrel.SelectToken("assets")[0].SelectToken("browser_download_url").Value<string>();
-						string name = Regex.Replace(url, "https://github.com/RPGHacker/asar/releases/download/*/", String.Empty);
+						string name = Regex.Replace(url, "https://github.com/RPGHacker/asar/releases/download/.*/", String.Empty);
 						WebClient wc = new WebClient();
 						wc.DownloadFile(url, name);
 
@@ -44,10 +44,11 @@ namespace MOLE_Back.Libs
 						Directory.CreateDirectory(extractPath);
 						using (ZipArchive archive = ZipFile.OpenRead(name))
 						{
-							archive.GetEntry(@"\dll\asar.dll").ExtractToFile(Path.Combine(extractPath, @"asar.dll"), true);
+							archive.GetEntry(@"dll/asar.dll").ExtractToFile(Path.Combine(extractPath, @"asar.dll"), true);
 						}
 
 						// Cleanup
+						Asar.Close();
 						Directory.SetCurrentDirectory(extractPath);
 						File.Delete(name);
 						File.Delete(AppDomain.CurrentDomain.BaseDirectory + @"\asar.dll");
