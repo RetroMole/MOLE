@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/src/Back/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      
+    commit-message:
+      prefix: "Deps Nuget Back"
+      include: "scope"
+  - package-ecosystem: "nuget"
+    directory: "/src/Win"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      
+    commit-message:
+      prefix: "Deps Nuget Win"
+      include: "scope"
