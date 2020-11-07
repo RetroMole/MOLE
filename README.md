@@ -5,7 +5,7 @@ ___
 At the moment MOLE is still in a very early stage and therefore no public releases have been setup, however in the near future you will be able to use MOLE on their specific platform trough one of the following methods:
 - Windows Users can download and run one of our WinForms Releases
 - ...
-- MOLE Is also available [online]() as a WebApp (Read [this]() for how to run locally)
+- MOLE Is also available [online](https://smw-mole.herokuapp.com/) as a WebApp (Read [this]() for how to run locally)
 
 If you still insist on running MOLE in its current very early stages, read the following section on how to build it yourself.
 ___
