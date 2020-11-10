@@ -18,19 +18,19 @@ ___
 ### Project Structure
 ```
 •─ azure/
-	•─ Azure Pipelines
+	•─ Azure Pipelines.
 •─ res/
 	•─ Icons, Images, Text Tables, etc...
 •─ src/
 	•─ Source Files
 	•─ Back/
-		•─ .NET Framework 4.8 Backend DLL containing most of the important MOLE editing code
+		•─ .NET Framework 4.8 Backend DLL containing most of the important MOLE editing code.
 	•─ Win/
-		•─ .NET Framework 4.8 Winforms UI Frontend
-	•─ Web/
-		•─ .NET Core 3.1 ASP.NET Server for Angular UI Frontend
+		•─ .NET Framework 4.8 Winforms UI Frontend.
+	•─ WebAPI/
+		•─ .NET Core 3.1 ASP.NET Web API that exposes Back.dll members as an.
 	•─ Angular/
-		•─ Angular 10 App containining components and code for Web to Serve as a Web UI Frontend
+		•─ Angular 10 App Web UI Frontend that uses WebAPI for editor functionality.
 ```
 ___
 You can find a lot of useful information about MOLE, Lunar Magic, SMW Romhacking, and SNES development in general, in the [Useful Links](/wiki/useful-links) Section of the [MOLE Wiki](/wiki)
