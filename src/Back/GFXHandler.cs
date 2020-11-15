@@ -79,8 +79,13 @@ namespace MOLE_Back
             string tit = "5355504552204D4152494F574F524C44202020202020";
             byte cntry;
             byte ver;
+            byte[] mariogfxpntr = new byte[3];
+            uint marioGfxAddress;
 
             Array.Copy(ROMHandler.ROM, 0x7FC0, title, 0, 22);
+            Array.Copy(ROMHandler.ROM, 0x38D8, mariogfxpntr, 0, 2);
+            Array.Copy(ROMHandler.ROM, 0x3890, mariogfxpntr, 2, 1);
+            marioGfxAddress = LC.SNEStoPC(uint.Parse(Utils.Hex.ByteArrToHexStr(mariogfxpntr), System.Globalization.NumberStyles.HexNumber), 1, 0);
             if (Utils.Hex.CompareBytesAndString(title, tit))
             {
                 cntry = ROMHandler.ROM[0x7FD9];
@@ -89,7 +94,7 @@ namespace MOLE_Back
                 {
                     if (LC.OpenFile(ROMHandler.ROMPath, 2))
                     {
-                        size = LC.Decompress(buff, 0x40000, 0x10000, 1, 0, null);
+                        size = LC.Decompress(buff, marioGfxAddress, 0x10000, 1, 0, null);
                         LC.CloseFile();
                         if (size!=0)
                         {

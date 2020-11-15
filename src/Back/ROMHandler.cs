@@ -74,7 +74,7 @@ namespace MOLE_Back
 			}
 			ushort chksum = BitConverter.ToUInt16(new byte[2] { (byte)ROM[0x07FDF], (byte)ROM[0x07FDE] }, 0);
 			ushort invchksum = BitConverter.ToUInt16(new byte[2] { (byte)ROM[0x07FDD], (byte)ROM[0x07FDC] }, 0);
-			if((chksum | invchksum) == 0xFFFF) 
+			if ( (chksum | invchksum) == 0xFFFF) 
 			{
 				ROMType = LC.AddressFlags.LC_LOROM;
             }
