@@ -5,7 +5,7 @@ ___
 At the moment MOLE is still in a very early stage and therefore no public releases have been setup, however in the near future you will be able to use MOLE on their specific platform trough one of the following methods:
 - Windows Users can download and run one of our WinForms Releases
 - ...
-- MOLE Is also available [online](https://smw-mole.herokuapp.com/) as a WebApp (Read [this]() for how to run locally)
+- MOLE Is also available [online]() as a WebApp (Read [this]() for how to run locally)
 
 If you still insist on running MOLE in its current very early stages, read the following section on how to build it yourself.
 ___
@@ -27,10 +27,6 @@ ___
 		•─ .NET Framework 4.8 Backend DLL containing most of the important MOLE editing code.
 	•─ Win/
 		•─ .NET Framework 4.8 Winforms UI Frontend.
-	•─ WebAPI/
-		•─ .NET Core 3.1 ASP.NET Web API that exposes Back.dll members as an.
-	•─ Angular/
-		•─ Angular 10 App Web UI Frontend that uses WebAPI for editor functionality.
 ```
 ___
 You can find a lot of useful information about MOLE, Lunar Magic, SMW Romhacking, and SNES development in general, in the [Useful Links](/wiki/useful-links) Section of the [MOLE Wiki](/wiki)
