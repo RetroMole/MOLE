@@ -52,7 +52,7 @@ namespace MOLE_Back
 		/// <summary>
 		/// ROMType
 		/// </summary>
-		public LC.AddressFlags ROMType = LC.AddressFlags.LC_NOBANK;
+		public uint ROMType = LC.ADDR_NOBANK;
 
 		/// <summary>
 		/// Creates a ROMHandler from a ROM Path
@@ -76,7 +76,7 @@ namespace MOLE_Back
 			ushort invchksum = BitConverter.ToUInt16(new byte[2] { (byte)ROM[0x07FDD], (byte)ROM[0x07FDC] }, 0);
 			if ( (chksum | invchksum) == 0xFFFF) 
 			{
-				ROMType = LC.AddressFlags.LC_LOROM;
+				ROMType = LC.ADDR_LOROM;
             }
             else
             {
@@ -84,7 +84,7 @@ namespace MOLE_Back
 				invchksum = BitConverter.ToUInt16(new byte[2] { (byte)ROM[0x0FFDD], (byte)ROM[0x0FFDC] }, 0);
 				if ((chksum | invchksum) == 0xFFFF)
                 {
-					ROMType = LC.AddressFlags.LC_HIROM;
+					ROMType = LC.ADDR_HIROM;
                 }
 			}
 		}

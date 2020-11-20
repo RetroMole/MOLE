@@ -13,7 +13,7 @@ namespace MOLE_Back.Libs
     public static unsafe class Asar
     {
         public const string dllPath = "asar.dll";
-        const int ExpectedApiVersion = 303;
+        public const int ExpectedApiVersion = 303;
 
 		public static int[] Sa1Banks = new int[8] { 0 << 20, 1 << 20, -1, -1, 2 << 20, 3 << 20, -1, -1 };
 

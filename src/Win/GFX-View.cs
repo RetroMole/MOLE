@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using MOLE_Back;
@@ -18,21 +20,22 @@ namespace win
             InitializeComponent();
         }
 
-        Graphics g;
+        
         readonly GFXHandler gh = new GFXHandler(Program.args[0]);
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
             // Setup
-            float pxsize = 14.56f;
-            g = e.Graphics;
+            float pxsize = 8f;
+            Graphics g = e.Graphics;
             g.ScaleTransform(pxsize, pxsize);
             g.FillRectangle(Brushes.Gray, 0, 0, Size.Width, Size.Height);
 
 
             Color[] pal = BuildPal();
-            DrawSpr(gh.tempSPR(), pal, 0, 0, 8, g);
+            DrawSpr(gh.tempSPR(), pal, g);
         }
+        public Bitmap bmp = null;
 
         /// <summary>
         /// Draw a sprite
@@ -43,13 +46,42 @@ namespace win
         /// <param name="y">Y position to draw Sprite at</param>
         /// <param name="w">Width of Sprite</param>
         /// <param name="g">Graphics object of canvas to draw on</param>
-        public void DrawSpr(byte[] spr, Color[] pal, int x, int y, int w, Graphics g)
+        public void DrawSpr( byte[] data, Color[] palette, Graphics g)
         {
-            for (int i = 0; i < spr.Length; i++)
+            if (bmp == null) bmp = GenerateSpritesheetBMP(data, palette, 4, 4, 64, 64);
+            g.DrawImage(bmp, 0, 0);
+        }
+
+        public Bitmap GenerateSpritesheetBMP(byte[] data, Color[] palette, int chunk_w, int chunk_h, int bmp_w, int bmp_h)
+        {
+            // Spritesheet chunk BS loops
+            var chunk_size = chunk_w * chunk_h;
+            var chunk_count = data.Length / chunk_size;
+            Color[,] bmap = new Color[bmp_w,bmp_h];
+            foreach (var chunk_index in Enumerable.Range(0, chunk_count))
             {
-                SolidBrush brush = new SolidBrush(pal[spr[i]]);
-                g.FillRectangle(brush, x + i - ((i / w) * w), y + i / w, 1, 1);
+                var chunk_x = 0;
+                var chunk_y = 0;
+                foreach (var pixel_x in Enumerable.Range(0,chunk_w))
+                {
+                    foreach (var pixel_y in Enumerable.Range(0,chunk_h)) 
+                    {
+                        var pixel_index = pixel_x + pixel_y * 4;
+                        bmap[chunk_x + pixel_x, chunk_y + pixel_y] = palette[data[chunk_index * chunk_size + pixel_index]];
+                    }
+                }
             }
+
+            // Convert to bmp
+            Bitmap bmp = new Bitmap( bmp_w, bmp_h, PixelFormat.Format24bppRgb);
+            for(int i = 0; i < bmap.GetLength(0); i++)
+            {
+                for (int j = 0; j < bmap.GetLength(1); j++)
+                {
+                    bmp.SetPixel(i,j, bmap[i,j]);
+                }
+            }
+            return bmp;
         }
 
         /// <summary>
@@ -104,13 +136,15 @@ namespace win
 
         private void panel2_Paint(object sender, PaintEventArgs e)
         {
+            /*
             float pxsize = 14.56f;
-            g = e.Graphics;
+            Graphics g = e.Graphics;
             g.ScaleTransform(pxsize, pxsize);
             g.FillRectangle(Brushes.Gray, 0, 0, Size.Width, Size.Height);
 
             Color[] pal = BuildPal();
-            DrawSpr(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,20,21,22,23,24,25,26,27,28,29,30,31 }, pal, 0, 0, 16, g);
-        }
+            DrawSpr(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,20,21,22,23,24,25,26,27,28,29,30,31 }, pal, g);
+            */
+       }
     }
 }
