@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -26,14 +27,20 @@ namespace win
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
             // Setup
-            float pxsize = 8f;
+            float pxsize = 2f;
             Graphics g = e.Graphics;
+            g.InterpolationMode = InterpolationMode.NearestNeighbor;
+            g.SmoothingMode = SmoothingMode.None;
+            g.CompositingQuality = CompositingQuality.HighQuality;
+
             g.ScaleTransform(pxsize, pxsize);
             g.FillRectangle(Brushes.Gray, 0, 0, Size.Width, Size.Height);
 
 
             Color[] pal = BuildPal();
             DrawSpr(gh.tempSPR(), pal, g);
+
+            g.ScaleTransform(1,1);
         }
         public Bitmap bmp = null;
 
@@ -48,37 +55,36 @@ namespace win
         /// <param name="g">Graphics object of canvas to draw on</param>
         public void DrawSpr( byte[] data, Color[] palette, Graphics g)
         {
-            if (bmp == null) bmp = GenerateSpritesheetBMP(data, palette, 4, 4, 64, 64);
-            g.DrawImage(bmp, 0, 0);
+            for (int i = 0; i <= 50; i++)
+            {
+                for (int j = 0; j < 16; j++)
+                {
+                    bmp = GenerateSpritesheetBMP(data, palette, (8, 8), (i, j), 16);
+                    g.DrawImage(bmp, j*8, i*8);
+                }
+            }
         }
 
-        public Bitmap GenerateSpritesheetBMP(byte[] data, Color[] palette, int chunk_w, int chunk_h, int bmp_w, int bmp_h)
+        public Bitmap GenerateSpritesheetBMP(byte[] data, Color[] palette, (int w, int h) tileSize, (int x, int y) tileId, int tilesPerRow)
         {
-            // Spritesheet chunk BS loops
-            var chunk_size = chunk_w * chunk_h;
-            var chunk_count = data.Length / chunk_size;
-            Color[,] bmap = new Color[bmp_w,bmp_h];
-            foreach (var chunk_index in Enumerable.Range(0, chunk_count))
+            int[,] spriteData = new int[tileSize.w, tileSize.h];
+
+            for (int x = 0; x < tileSize.w; x++)
             {
-                var chunk_x = 0;
-                var chunk_y = 0;
-                foreach (var pixel_x in Enumerable.Range(0,chunk_w))
+                for (int y = 0; y < tileSize.h; y++)
                 {
-                    foreach (var pixel_y in Enumerable.Range(0,chunk_h)) 
-                    {
-                        var pixel_index = pixel_x + pixel_y * 4;
-                        bmap[chunk_x + pixel_x, chunk_y + pixel_y] = palette[data[chunk_index * chunk_size + pixel_index]];
-                    }
+                    int i = x + (tileId.x * tileSize.w * (tilesPerRow * tileSize.w)) + tileSize.w * y + (tileId.y * tileSize.h * tileSize.w);
+                    spriteData[x, y] = data[i];
                 }
             }
 
             // Convert to bmp
-            Bitmap bmp = new Bitmap( bmp_w, bmp_h, PixelFormat.Format24bppRgb);
-            for(int i = 0; i < bmap.GetLength(0); i++)
+            Bitmap bmp = new Bitmap( tileSize.w, tileSize.h, PixelFormat.Format24bppRgb);
+            for(int i = 0; i < tileSize.w; i++)
             {
-                for (int j = 0; j < bmap.GetLength(1); j++)
+                for (int j = 0; j < tileSize.h; j++)
                 {
-                    bmp.SetPixel(i,j, bmap[i,j]);
+                    bmp.SetPixel(i,j, palette[spriteData[i,j]]);
                 }
             }
             return bmp;
