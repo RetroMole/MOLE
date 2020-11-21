@@ -15,6 +15,9 @@ ___
 ### Translation
 	(SECTION WIP)
 ___
+### Contribute
+Please read [these guidlines](/CONTRIBUTING.md) if you want to contribute to MOLE.
+___
 ### Project Structure
 ```
 •─ azure/
@@ -29,6 +32,8 @@ ___
 		•─ .NET Framework 4.8 Winforms UI Frontend.
 ```
 ___
+### More information on SMW ROMHacking and MOLE
 You can find a lot of useful information about MOLE, Lunar Magic, SMW Romhacking, and SNES development in general, in the [Useful Links](/wiki/useful-links) Section of the [MOLE Wiki](/wiki)
-
+___
+### License
 This software is licensed under the [GNU General Public License v3.0](/LICENSE.md)
