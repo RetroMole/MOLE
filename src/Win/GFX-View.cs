@@ -55,17 +55,19 @@ namespace win
         /// <param name="g">Graphics object of canvas to draw on</param>
         public void DrawSpr( byte[] data, Color[] palette, Graphics g)
         {
-            for (int i = 0; i <= 50; i++)
+            for (int i = 0; i < 47; i++)
             {
                 for (int j = 0; j < 16; j++)
                 {
-                    bmp = GenerateSpritesheetBMP(data, palette, (8, 8), (i, j), 16);
-                    g.DrawImage(bmp, j*8, i*8);
+                    bmp = SpriteToBMP(
+                        GetSpriteTileFromData(data, (8, 8), (i, j), 16),
+                        palette);
+                    g.DrawImage(bmp, j*8,i*8);
                 }
             }
         }
 
-        public Bitmap GenerateSpritesheetBMP(byte[] data, Color[] palette, (int w, int h) tileSize, (int x, int y) tileId, int tilesPerRow)
+        public int[,] GetSpriteTileFromData(byte[] data, (int w, int h) tileSize, (int x, int y) tileId, int tilesPerRow)
         {
             int[,] spriteData = new int[tileSize.w, tileSize.h];
 
@@ -77,14 +79,18 @@ namespace win
                     spriteData[x, y] = data[i];
                 }
             }
+            return spriteData;
+        }
 
+        public Bitmap SpriteToBMP(int[,] spriteData, Color[] palette)
+        {
             // Convert to bmp
-            Bitmap bmp = new Bitmap( tileSize.w, tileSize.h, PixelFormat.Format24bppRgb);
-            for(int i = 0; i < tileSize.w; i++)
+            Bitmap bmp = new Bitmap(spriteData.GetLength(0), spriteData.GetLength(1), PixelFormat.Format24bppRgb);
+            for (int i = 0; i < spriteData.GetLength(0); i++)
             {
-                for (int j = 0; j < tileSize.h; j++)
+                for (int j = 0; j < spriteData.GetLength(1); j++)
                 {
-                    bmp.SetPixel(i,j, palette[spriteData[i,j]]);
+                    bmp.SetPixel(i, j, palette[spriteData[i, j]]);
                 }
             }
             return bmp;

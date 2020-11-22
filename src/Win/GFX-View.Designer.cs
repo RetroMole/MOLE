@@ -48,7 +48,7 @@
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(896, 724);
+            this.panel1.Size = new System.Drawing.Size(896, 781);
             this.panel1.TabIndex = 0;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
@@ -126,16 +126,16 @@
             // panel2
             // 
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel2.Location = new System.Drawing.Point(56, 742);
+            this.panel2.Location = new System.Drawing.Point(56, 799);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(852, 92);
+            this.panel2.Size = new System.Drawing.Size(852, 35);
             this.panel2.TabIndex = 1;
             this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 742);
+            this.label2.Location = new System.Drawing.Point(6, 799);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(43, 13);
             this.label2.TabIndex = 9;
