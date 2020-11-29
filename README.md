@@ -1,4 +1,6 @@
-
+# **ABSENCE NOTICE**
+Deu to personal computer issues Vawlpe will be unavailable for a while starting 29/Nov/2020 until this notice is removed and will therefore be unable to maintain the repo, discuss or accept issues and PRs and anything else. Sorry for the inconvenience. 
+___
 **MOLE** is being designed as an **OpenSource**  editor for **Super Mario World** with the intent to bring many of the features from existing SMW ROMHacking tools/patches such as **Lunar Magic**, **Asar**, **Pixi**, **YYCHR**, **GPS**, **UberASM**,  **SA-1**, and many others into a single easy-to-use [**multi-platform**](#how-to-run) tool localized/translated by volunteers to [some common languages](#localizationtranslation)
 ___
 ### How to Run
