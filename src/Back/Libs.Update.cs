@@ -1,14 +1,11 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using MOLE_Back.Properties;
 using System.IO.Compression;
-using System.Runtime.Remoting.Messaging;
 
 namespace MOLE_Back.Libs
 {
@@ -18,13 +15,12 @@ namespace MOLE_Back.Libs
 	public static class Update
 	{
 		/// <summary>
-		/// Make sure all libraries are found, up to date, and compatible
+		/// Make sure Asar is up to date
 		/// </summary>
 		public static void UpdateSequence()
         {
 			Console.WriteLine("Dependency Update Sequence");
 			Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-			//if (!File.Exists("lunarcompress.dll")) Console.WriteLine("LunarCompress Not Found"); // do this later
 			if (Settings.Default.UPDATE_Asar != "disabled") // autoupdate on
 			{
 				bool IgnoreTime = !File.Exists("asar.dll");
@@ -63,9 +59,20 @@ namespace MOLE_Back.Libs
 						};
 						if (!IgnoreTime) headers.Append("If-Modified-Since: " + File.GetLastWriteTime("Asar.dll"));
 
+						// DLL
                         HttpWebResponse resp = Utils.Web.MakeHttpRequest("https://random.muncher.se/ftp/asar/windows/win32/build/asar/MinSizeRel/asar.dll", headers);
 						new StreamWriter("asar.dll").Write(new StreamReader(resp.GetResponseStream()).ReadToEnd());
-                        Console.WriteLine("Asar Updated to build last modified at {0}", resp.LastModified);
+
+						// DYLIB
+						resp = Utils.Web.MakeHttpRequest("https://random.muncher.se/ftp/asar/osx/clang/libasar.dylib", headers);
+						new StreamWriter("asar.dylib").Write(new StreamReader(resp.GetResponseStream()).ReadToEnd());
+
+
+						// SO
+						resp = Utils.Web.MakeHttpRequest("https://random.muncher.se/ftp/asar/linux/clang/libasar.so", headers);
+						new StreamWriter("asar.so").Write(new StreamReader(resp.GetResponseStream()).ReadToEnd());
+
+						Console.WriteLine("Asar Updated to build last modified at {0}", resp.LastModified);
                     }
 					catch (WebException e)
 					{
