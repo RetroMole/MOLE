@@ -80,7 +80,7 @@ namespace MOLE_Back
             byte cntry;
             byte ver;
 
-            uint gfxaddr = LC.SNEStoPC(0x088000,LC.ADDR_LOROM,LC.NOHEADER);
+            uint gfxaddr = ROMHandler.SnesToPc(0x088000) == -1 ? 0 : (uint)ROMHandler.SnesToPc(0x088000);
 
             Array.Copy(ROMHandler.ROM, 0x7FC0, title, 0, 22);
 

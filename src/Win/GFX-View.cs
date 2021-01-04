@@ -45,14 +45,11 @@ namespace win
         public Bitmap bmp = null;
 
         /// <summary>
-        /// Draw a sprite
+        /// Draw a sprite to a Graphics object canvas
         /// </summary>
-        /// <param name="spr">Sprite Data</param>
-        /// <param name="pal">Palette Data</param>
-        /// <param name="x">X position to draw Sprite at</param>
-        /// <param name="y">Y position to draw Sprite at</param>
-        /// <param name="w">Width of Sprite</param>
-        /// <param name="g">Graphics object of canvas to draw on</param>
+        /// <param name="data">Pixelmap data</param>
+        /// <param name="palette">Palette data</param>
+        /// <param name="g">Graphics object</param>
         public void DrawSpr( byte[] data, Color[] palette, Graphics g)
         {
             for (int i = 0; i <= 50; i++)
@@ -65,6 +62,15 @@ namespace win
             }
         }
 
+        /// <summary>
+        /// Weird function to generate get a sprite from an imaginary spritesheet generated on the fly, this'll have to be moved around and separated eventually
+        /// </summary>
+        /// <param name="data">Pixelmap data</param>
+        /// <param name="palette">Palette data</param>
+        /// <param name="tileSize">Width and Height of each tile</param>
+        /// <param name="tileId">Which tile is bein returned</param>
+        /// <param name="tilesPerRow">How many tiles go per row</param>
+        /// <returns></returns>
         public Bitmap GenerateSpritesheetBMP(byte[] data, Color[] palette, (int w, int h) tileSize, (int x, int y) tileId, int tilesPerRow)
         {
             int[,] spriteData = new int[tileSize.w, tileSize.h];
