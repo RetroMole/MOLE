@@ -78,19 +78,10 @@
     <Compile Include="GFX-View.Designer.cs">
       <DependentUpon>GFX-View.cs</DependentUpon>
     </Compile>
-    <Compile Include="ROM-Xplore.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ROM-Xplore.Designer.cs">
-      <DependentUpon>ROM-Xplore.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="GFX-View.resx">
       <DependentUpon>GFX-View.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ROM-Xplore.resx">
-      <DependentUpon>ROM-Xplore.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
