@@ -10,7 +10,6 @@ We love your input! We want to make contributing to this project as easy and tra
 ## Platforms we use
 We use github to host code, to track issues and feature requests, track our project roadmaps, as well as accept pull requests, but there are other platforms in use aswell:
 - Azure Pipelines for automatically building, testing and releasing.
-- Heroku to host APIs and WebApps.
 
 ## Any contributions you make will be under the GNU General Public License v3.0
 In short, when you submit code changes, your submissions are understood to be under the same [GNU v3.0 License](/LICENSE.md) that covers the project. Feel free to contact the maintainers if that's a concern.
