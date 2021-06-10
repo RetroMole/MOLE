@@ -26,11 +26,7 @@ ___
 •─ res/
 	•─ Icons, Images, Text KeyTables (for localization/translation), etc...
 •─ src/
-	•─ Source Files
-	•─ Back/
-		•─ .NET Framework 4.8 Backend DLL containing most of the important MOLE editing code.
-	•─ Win/
-		•─ .NET Framework 4.8 Winforms UI Frontend.
+	To be replaced...
 ```
 ___
 ### More information on SMW ROMHacking and MOLE
