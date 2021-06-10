@@ -1,6 +1,6 @@
 # ***[!]EVERYTHING IN THIS REPOSITORY IS CURRENTLY DEPRECATED AND OUT OF DATE, THE ENTIRE REPO WILL SOON BE NUKED AND REPLACED WITH A MUCH BETTER STRUCTURED PROJECT[!]***
 ___
-**MOLE** is being designed as an **OpenSource**  editor for **Super Mario World** with the intent to bring many of the features from existing SMW ROMHacking tools/patches such as **Lunar Magic**, **Asar**, **Pixi**, **YYCHR**, **GPS**, **UberASM**,  **SA-1**, and many others into a single easy-to-use [**multi-platform**](#how-to-run) tool localized/translated by volunteers to [some common languages](#localizationtranslation)
+**MOLE** is being designed as an **OpenSource**  editor for **Super Mario World** with the intent to bring many of the features from existing SMW ROMHacking tools/patches such as **Lunar Magic**, **Asar**, **Pixi**, **YYCHR**, **GPS**, **UberASM**,  **SA-1**, and many others into a single easy-to-use [**multi-platform**](#how-to-run) [tool localized/translated](#localizationtranslation) project.
 ___
 ### How to Run
 At the moment MOLE is still in a very early stage and therefore no public releases have been setup, however in the near future you will be able to use MOLE on their specific platform trough one of the following methods:
