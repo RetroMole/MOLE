@@ -16,6 +16,10 @@ namespace MOLE
         static bool show_mousepos = true;
         static bool show_demo = false;
         static bool debug_open;
+        private static ROM rom;
+        static Exception e = new("");
+        static string path = "";
+        static bool filediag;
 
         public static void Draw()
         {
@@ -31,7 +35,10 @@ namespace MOLE
                 {
                     if (ImGui.BeginMenu("File"))
                     {
-                        if (ImGui.MenuItem("Open ROM", "Ctrl+O")) {}
+                        if (ImGui.MenuItem("Open ROM", "Ctrl+O"))
+                        {
+                            filediag = true;
+                        }
 
                         ImGui.EndMenu();
                     }
@@ -45,6 +52,8 @@ namespace MOLE
                         ImGui.EndMenu();
                     }
 
+                    WFileDialog();
+
                     ImGui.EndMainMenuBar();
                 }
             }
@@ -52,10 +61,18 @@ namespace MOLE
             // Test
             {
                 ImGui.SetNextWindowSize(new Num.Vector2(420, 69), ImGuiCond.FirstUseEver);
-                ImGui.Begin("OwO");
+                ImGui.Begin("UwU");
 
-                ImGui.Text("Test window lol");
+                ImGui.Text("Test Window says HenlOwO, try opening a ROM");
                 ImGui.Separator();
+
+                if (rom != null)
+                {
+                    ImGui.Text(String.Format("ROM Name: {0}", rom.ROMName));
+                    ImGui.Text(String.Format("ROM Path: {0}", rom.ROMPath));
+                    ImGui.Text(String.Format("ROM Type: {0}", rom.Mapper.ToString()));
+                    ImGui.Text(String.Format("ROM Header: 0x{0:x}", rom.header != null ? rom.header.Length : "None"));
+                }
 
                 ImGui.End();
             }
@@ -102,6 +119,83 @@ namespace MOLE
             foreach (var w in windows)
             {
                 w.DynamicInvoke();
+            }
+        }
+
+        public static void WFileDialog()
+        {
+            if (filediag)
+            {
+                if (!ImGui.IsPopupOpen("FileDialog"))
+                {
+                    ImGui.OpenPopup("FileDialog");
+                }
+                if (ImGui.IsPopupOpen("FileDialog"))
+                {
+                    ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new Num.Vector2(0.5f, 0.5f));
+                    if (ImGui.BeginPopupModal("FileDialog"))
+                    {
+                        if (ImGui.InputTextWithHint("Path", @"C:\", ref path, 500, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
+                        {
+                            try
+                            {
+                                rom = new(path);
+                                e = new();
+                                ImGui.CloseCurrentPopup();
+                                filediag = false;
+                            }
+                            catch (Exception ee)
+                            {
+                                e = ee;
+                                ImGui.OpenPopup("err");
+                            }
+                        }
+
+                        if (ImGui.Button("Open"))
+                        {
+                            try
+                            {
+                                rom = new(path);
+                                ImGui.CloseCurrentPopup();
+                                filediag = false;
+                            }
+                            catch (Exception ee)
+                            {
+                                e = ee;
+                                ImGui.OpenPopup("err");
+                            }
+
+                        }
+                        ImGui.SetItemDefaultFocus();
+                        ImGui.SameLine();
+                        if (ImGui.Button("Cancel"))
+                        {
+                            ImGui.CloseCurrentPopup();
+                            filediag = false;
+                        }
+
+                        Werr();
+
+                        ImGui.EndPopup();
+                    }
+                }
+            }
+        }
+
+        public static void Werr()
+        {
+            if (ImGui.IsPopupOpen("err"))
+            {
+                if (ImGui.BeginPopupModal("err"))
+                {
+                    ImGui.Text(e.Message);
+                    ImGui.Separator();
+                    if (ImGui.Button("OK"))
+                    {
+                        ImGui.CloseCurrentPopup();
+                    }
+                    ImGui.EndPopup();
+                }
             }
         }
     }
