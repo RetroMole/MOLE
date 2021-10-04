@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31410.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImGui.NET", "ImGui.NET\src\ImGui.NET\ImGui.NET.csproj", "{4F6A7578-9BF9-469D-B47D-CB86AEB8C8A0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VeldridController", "VeldridController\VeldridController.csproj", "{3C6FBE37-B5DA-4939-A37E-4F92DEE93AE3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XNAController", "XNAController\XNAController.csproj", "{44BD06DE-93BD-4D78-8CF3-2699B20C8F5F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI", "UI\UI.csproj", "{C12839DA-2781-4112-8969-11AC8C6F5F39}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F6A7578-9BF9-469D-B47D-CB86AEB8C8A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F6A7578-9BF9-469D-B47D-CB86AEB8C8A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F6A7578-9BF9-469D-B47D-CB86AEB8C8A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F6A7578-9BF9-469D-B47D-CB86AEB8C8A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C6FBE37-B5DA-4939-A37E-4F92DEE93AE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C6FBE37-B5DA-4939-A37E-4F92DEE93AE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C6FBE37-B5DA-4939-A37E-4F92DEE93AE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C6FBE37-B5DA-4939-A37E-4F92DEE93AE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44BD06DE-93BD-4D78-8CF3-2699B20C8F5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44BD06DE-93BD-4D78-8CF3-2699B20C8F5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44BD06DE-93BD-4D78-8CF3-2699B20C8F5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44BD06DE-93BD-4D78-8CF3-2699B20C8F5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C12839DA-2781-4112-8969-11AC8C6F5F39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C12839DA-2781-4112-8969-11AC8C6F5F39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C12839DA-2781-4112-8969-11AC8C6F5F39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C12839DA-2781-4112-8969-11AC8C6F5F39}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C619B1DC-CA30-4540-A552-D3F352018C47}
+	EndGlobalSection
+EndGlobal
