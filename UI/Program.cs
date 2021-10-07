@@ -4,7 +4,26 @@
     {
         public static void Main(string[] args)
         {
+            // Logging config
+            var config = new NLog.Config.LoggingConfiguration();
+            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = "MOLE.log" };
+            config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logfile);        
+            NLog.LogManager.Configuration = config;
+
+            var Logger = NLog.LogManager.GetCurrentClassLogger();
+            Logger.Info("LAUNCHING MOLE");
+
+            // Graphics Backend for ImGui.Net
             string g = args.Length >= 1 ? args[0] : "";
+
+            Logger.Info("UI Rendering backend: {0}", g switch
+            {
+                "d" => "DirectX3D 11",
+                "v" => "Vulkan",
+                "m" => "Metal",
+                "g" or _ => "OpenGL"
+            });
+
             UI UI = new();
 
             switch (g)
