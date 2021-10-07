@@ -17,7 +17,7 @@ namespace MOLE
         static bool show_demo = false;
         static bool debug_open;
         private static ROM rom;
-        static Exception e = new("");
+        private static GFX gfx;
         static string path = "";
         static bool filediag;
 
@@ -68,10 +68,46 @@ namespace MOLE
 
                 if (rom != null)
                 {
-                    ImGui.Text(String.Format("ROM Name: {0}", rom.ROMName));
-                    ImGui.Text(String.Format("ROM Path: {0}", rom.ROMPath));
-                    ImGui.Text(String.Format("ROM Type: {0}", rom.Mapper.ToString()));
-                    ImGui.Text(String.Format("ROM Header: 0x{0:x}", rom.header != null ? rom.header.Length : "None"));
+                    ImGui.Text(String.Format("ROM FileName: {0}", rom.FileName));
+                    ImGui.Text(String.Format("ROM Path: {0}", rom.FilePath));
+                    ImGui.Text(String.Format("Copier Header: 0x{0}", rom.Header != null ? rom.Header.Length.ToString("X2") : "None"));
+
+                    ImGui.Separator();
+                    ImGui.Text("Internal ROM Header:");
+                    ImGui.Text(string.Format("  ROM Title: \"{0}\"", rom.Title));
+                    ImGui.Text(string.Format("  Mapping Mode: {0}, {1}", rom.FastROM ? "FastROM" : "SlowROM", rom.Mapping));
+                    ImGui.Text(string.Format("  ROM Size: {0}kb", rom.ROMSize));
+                    ImGui.Text(string.Format("  SRAM Size: {0}kb", rom.SRAMSize));
+                    ImGui.Text(string.Format("  Region: {0}", rom.Region));
+                    ImGui.Text(string.Format("  Developer ID: {0}", rom.DevID.ToString("X2")));
+                    ImGui.Text(string.Format("  Version: {0}", rom.Version));
+                    ImGui.Text(string.Format("  Checksum: {0}", rom.Checksum.ToString("X4")));
+                    ImGui.Text(string.Format("  Checksum Complement: {0}", rom.ChecksumComplement.ToString("X4")));
+
+                    ImGui.Separator();
+
+                    if (ImGui.CollapsingHeader("GFX Pointers:"))
+                    {
+                        for (int i = 0; i < 0x34; i++)
+                        {
+                            ImGui.Text(string.Format("  GFX{0} @ ${1}", i.ToString("X2"), gfx.GFXPointers[i].ToString("X6")));
+                        }
+                    }
+
+                    if (ImGui.CollapsingHeader("ExGFX Pointers:"))
+                    {
+                        for (int i = 0; i < 0x80; i++)
+                        {
+                            ImGui.Text(String.Format("  ExGFX{0} @ {1}", (i + 0x80).ToString("X2"), (gfx.ExGFXPointers[i] is 0xFFFFFF or 0) ? "NOT INSERTED" : "$" + gfx.ExGFXPointers[i].ToString("X6")));
+                        }
+                    }
+                    if (ImGui.CollapsingHeader("SuperExGFX Pointers:"))
+                    {
+                        for (int i = 0; i < 0xF00; i++)
+                        {
+                            ImGui.Text(String.Format("  ExGFX{0} @ {1}", (i + 0x100).ToString("X2"), (gfx.SuperExGFXPointers[i] is 0xFFFFFF or 0) ? "NOT INSERTED" : "$" + gfx.SuperExGFXPointers[i].ToString("X6")));
+                        }
+                    }
                 }
 
                 ImGui.End();
@@ -122,6 +158,10 @@ namespace MOLE
             }
         }
 
+
+        /// <summary>
+        /// Makeshift FileDialog, will improve later
+        /// </summary>
         public static void WFileDialog()
         {
             if (filediag)
@@ -137,33 +177,18 @@ namespace MOLE
                     {
                         if (ImGui.InputTextWithHint("Path", @"C:\", ref path, 500, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
                         {
-                            try
-                            {
-                                rom = new(path);
-                                e = new();
-                                ImGui.CloseCurrentPopup();
-                                filediag = false;
-                            }
-                            catch (Exception ee)
-                            {
-                                e = ee;
-                                ImGui.OpenPopup("err");
-                            }
+                            rom = new(path);
+                            gfx = new(rom);
+                            ImGui.CloseCurrentPopup();
+                            filediag = false;
                         }
 
                         if (ImGui.Button("Open"))
                         {
-                            try
-                            {
-                                rom = new(path);
-                                ImGui.CloseCurrentPopup();
-                                filediag = false;
-                            }
-                            catch (Exception ee)
-                            {
-                                e = ee;
-                                ImGui.OpenPopup("err");
-                            }
+                            rom = new(path);
+                            gfx = new(rom);
+                            ImGui.CloseCurrentPopup();
+                            filediag = false;
 
                         }
                         ImGui.SetItemDefaultFocus();
@@ -174,27 +199,8 @@ namespace MOLE
                             filediag = false;
                         }
 
-                        Werr();
-
                         ImGui.EndPopup();
                     }
-                }
-            }
-        }
-
-        public static void Werr()
-        {
-            if (ImGui.IsPopupOpen("err"))
-            {
-                if (ImGui.BeginPopupModal("err"))
-                {
-                    ImGui.Text(e.Message);
-                    ImGui.Separator();
-                    if (ImGui.Button("OK"))
-                    {
-                        ImGui.CloseCurrentPopup();
-                    }
-                    ImGui.EndPopup();
                 }
             }
         }
