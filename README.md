@@ -1,5 +1,3 @@
-# ***OLD CODE MOST OF THIS WON'T BE USED, CHECK THE master BRANCH FOR CURRENT CODE***
-___
 **MOLE** is being designed as an **OpenSource**  editor for **Super Mario World** with the intent to bring many of the features from existing SMW ROMHacking tools/patches such as **Lunar Magic**, **Asar**, **Pixi**, **YYCHR**, **GPS**, **UberASM**,  **SA-1**, and many others into a single easy-to-use [**multi-platform**](#how-to-run) and [localized](#localizationtranslation) tool.
 ___
 ### How to Run
