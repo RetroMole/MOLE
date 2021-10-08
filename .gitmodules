@@ -2,3 +2,6 @@
 	path = src/ImGui.NET
 	url = https://github.com/mellinoe/ImGui.NET.git
 	branch = docking
+[submodule "src/src/MOLE/Util/TerraCompress"]
+	path = src/MOLE/Util/TerraCompress
+	url = https://github.com/Smallhacker/TerraCompress.git
