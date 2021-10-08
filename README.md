@@ -48,7 +48,7 @@ MOLE intends to be compatible with both clean ROMs, aswell as most modern SMW RO
 | Asar | ✅Full✅ | ⚠️Partial⚠️<br>Asar will refuse to work .sfc files with a copier header, and .smc files without one, for consistency | ROM (.smc, .sfc), Patch (.asm) |
 | YY-CHR (And other SNES tile editors) | WIP<br>✅Full✅ | WIP<br>✅Full✅ | Graphics (.bin), Palette (.pal) |
 | AddMusicK | WIP<br>✅Full✅, planned for future release, currently ❓unimplemented❓ | WIP<br>⚠️Partial⚠️<br>Most tools expect the ROM to have a copier header and a .smc file extension | ROM (.smc, .sfc), Music (.txt), Sample (.brr), Config info (Addmusic_sample groups.txt, Addmusic_list.txt)|
-| PIXI | WIP<br>✅Full✅, planned for future release, currently ❓unimplemented❓ | WIP<br>⚠️Partial⚠️<br>Most tools expect the ROM to have a copier header and a .smc file extension | Sprite code (.asm), Config info (.cfg, .json) |
+| PIXI | WIP<br>✅Full✅, planned for future release, currently ❓unimplemented❓ | WIP<br>⚠️Partial⚠️<br>Most tools expect the ROM to have a copier header and a .smc file extension | ROM (.smc, .sfc), Sprite code (.asm), Config info (.cfg, .json) |
 | GPS | WIP<br>✅Full✅, planned for future release, currently ❓unimplemented❓ | WIP<br>⚠️Partial⚠️<br>Most tools expect the ROM to have a copier header and a .smc file extension | ROM (.smc, .sfc), Block code (.asm, routines/.asm), Config info (list.txt) |
 | UberASM | WIP<br>✅Full✅, planned for future release, currently ❓unimplemented❓ | WIP<br>⚠️Partial⚠️<br>Most tools expect the ROM to have a copier header and a .smc file extension | ROM (.smc, .sfc), Patch (.asm), Config info (list.txt) |
 ___
