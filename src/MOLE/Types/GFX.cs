@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MOLE
 {
@@ -11,7 +8,7 @@ namespace MOLE
         /// <summary>
         /// Logger
         /// </summary>
-        private static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public uint[] GFXPointers = new uint[0x34];
         public uint[] ExGFXPointers = new uint[0x80];
