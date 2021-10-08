@@ -46,9 +46,6 @@ namespace MOLE
                     SuperExGFXPointers[i] = BitConverter.ToUInt32(supex.Skip(i * 3).Take(3).Append((byte)0).ToArray());
                 }
             }
-
-
-            
         }
     }
 }

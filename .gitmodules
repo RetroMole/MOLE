@@ -1,4 +1,4 @@
 [submodule "ImGui.NET"]
-	path = ImGui.NET
+	path = src/ImGui.NET
 	url = https://github.com/mellinoe/ImGui.NET.git
 	branch = docking
