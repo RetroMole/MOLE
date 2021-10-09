@@ -2,6 +2,10 @@
 {
     class Program
     {
+
+        public static string MOLEVer = "0.0.0";
+        public static string LibMoleVer = "0.0.0";
+        public static string MOLEUIVer = "0.0.0";
         public static void Main(string[] args)
         {
             // Logging config

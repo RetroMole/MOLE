@@ -14,12 +14,19 @@ namespace MOLE
         };
         static bool show_fps = true;
         static bool show_mousepos = true;
+        static bool show_about = false;
         static bool show_demo = false;
         static bool debug_open;
         private static ROM rom;
         private static GFX gfx;
         static string path = "";
         static bool filediag;
+
+        public UI()
+        {
+            Asar.Init();
+        }
+
 
         public static void Draw()
         {
@@ -48,6 +55,13 @@ namespace MOLE
                         ImGui.MenuItem("FPS", null, ref show_fps);
                         ImGui.MenuItem("Mouse Pos", null, ref show_mousepos);
                         ImGui.MenuItem("Demo Window", null, ref show_demo);
+
+                        ImGui.EndMenu();
+                    }
+
+                    if (ImGui.BeginMenu("Help"))
+                    {
+                        ImGui.MenuItem("About", null, ref show_about);
 
                         ImGui.EndMenu();
                     }
@@ -139,7 +153,6 @@ namespace MOLE
                             ImGui.Text("Mouse Position: <invalid>");
                     }
 
-
                     if (ImGui.BeginPopupContextWindow())
                     {
                         if (debug_open && ImGui.MenuItem("Close")) { show_fps = false; show_mousepos = false; }
@@ -149,9 +162,47 @@ namespace MOLE
                     ImGui.End();
                 }
             }
+
+            ImGui.SetNextWindowSize(new Num.Vector2(900, 400), ImGuiCond.FirstUseEver);
+            if (show_about)
+            {
+                if (ImGui.Begin("About", ref show_about))
+                {
+                    ImGui.Text(
+                        "MOLE is an open source Super Mario world ROM editor and is in no way affiliated with Nintendo.\n\n" +
+
+                        "Copyright(C) 2021 Vawlpe\n" +
+                        "This program is free software: you can redistribute it and / or modify it under the terms of\n" +
+                        "the GNU General Public License as published by the Free Software Foundation,\n" +
+                        "either version 3 of the License, or(at your option) any later version.\n" +
+                        "This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;\n" +
+                        "without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n" +
+                        "See the GNU General Public License for more details.\n" +
+                        "You should have received a copy of the GNU General Public License along with this program.\n" +
+                        "If not, see https://www.gnu.org/licenses/ \n\n" +
+
+                        "https://github.com/Vawlpe/MOLE"
+                    );
+                    ImGui.Separator();
+                    ImGui.Text(string.Format("MOLE Version: {0}", Program.MOLEVer));
+                    ImGui.Text(string.Format("    LibMOLE Version: {0}", Program.LibMoleVer));
+                    ImGui.Text(string.Format("    MOLE UI Version {0}", Program.MOLEUIVer));
+                    ImGui.Separator();
+                    ImGui.Text("Libraries:");
+                    ImGui.Text("All of the following libraries are licensed under their respective Open Source Software licenses:");
+                    ImGui.Text(string.Format("  ImGui.Net v{0}       | https://github.com/mellinoe/ImGui.NET        | The MIT License (MIT)", ImGui.GetVersion()));
+                    ImGui.Text(string.Format("  Asar v{0}            | https://github.com/RPGHacker/asar            | GNU Lesser General Public License (LGPL)", Asar.Ver2Str(Asar.Version())));
+                    ImGui.Text(              "  TerraCompress v1.0    | https://github.com/Smallhacker/TerraCompress | Zlib/libpng License (zlib)");
+                    ImGui.Text(              "  Veldrid v4.8.0        | https://github.com/mellinoe/veldrid          | The MIT License (MIT)");
+                    ImGui.Text(              "  Monogame v3.8.0.1641  | https://github.com/MonoGame/MonoGame         | Microsoft Public License (Ms-PL)");
+                    ImGui.Text(              "  NLog v5.0.0-preview.2 | https://github.com/NLog/NLog                 | BSD 3-Clause \"New\" or \"Revised\" License (BSD-3-Clause)");
+
+                }
+            }
+
             if (show_demo) ImGui.ShowDemoWindow(ref show_demo);
 
-            // Draw any and all other windows
+            // Draw all other registered windows
             foreach (var w in windows)
             {
                 w.DynamicInvoke();

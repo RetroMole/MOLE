@@ -85,10 +85,9 @@ namespace MOLE
                 _ROM = _ROM.Skip(h).ToArray();
             }
 
-            // Initialize asar and patch the ROM with an empty patch so it is opened in asar
+            // Patch the ROM with an empty patch so it is opened in asar
             // (workaround for not exposing OpenROM and CloseROM in lib asar)
             // This also fixes broken checksums
-            Asar.Init();
             Asar.Patch(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "empty.asm"), ref _ROM);
 
             // Rely on asar mapping mode guess untill we can access the internal header
