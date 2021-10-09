@@ -169,7 +169,7 @@ namespace MOLE
                 if (ImGui.Begin("About", ref show_about))
                 {
                     ImGui.Text(
-                        "MOLE is an open source Super Mario world ROM editor and is in no way affiliated with Nintendo.\n\n" +
+                        "MOLE is an open source Super Mario World ROM editor and is in no way affiliated with Nintendo.\n\n" +
 
                         "Copyright(C) 2021 Vawlpe\n" +
                         "This program is free software: you can redistribute it and / or modify it under the terms of\n" +

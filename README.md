@@ -58,7 +58,7 @@ ___
 ### License
 [GNU General Public License v3.0](/LICENSE.md)
 
-MOLE is an open source Super Mario world ROM editor and is in no way affiliated with Nintendo.
+MOLE is an open source Super Mario World ROM editor and is in no way affiliated with Nintendo.
 Copyright (C) 2021 Vawlpe
 
 This program is free software: you can redistribute it and/or modify
