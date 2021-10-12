@@ -24,6 +24,7 @@ jobs:
 
       # CMake Asar project
       - name: Cmake asar
+        shell: bash
         run: |
           mkdir ./bin
           cmake -S ./src/Asar/src -B ./src/Asar/out
