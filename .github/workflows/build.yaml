@@ -21,13 +21,6 @@ jobs:
       # Get CMake
       - name: Get CMake
         uses: lukka/get-cmake@v3.21.2
-          
-      # Download src artifact
-      - name: Download src artifact
-        uses: actions/download-artifact@v2.0.10
-        with:
-          name: "src"
-          path: ./src  
 
       # CMake Asar project
       - name: Cmake asar
