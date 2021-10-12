@@ -1,0 +1,19 @@
+version: 2
+updates:
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    commit-message:
+      prefix: "[GH-Actions]"
+      include: "scope"
+    schedule:
+      interval: "daily"
+
+  # Maintain NuGet dependencies
+  - package-ecosystem: "nuget"
+    directory: "/"
+    commit-message:
+      prefix: "[NuGet]"
+      include: "scope"
+    schedule:
+      interval: "daily"

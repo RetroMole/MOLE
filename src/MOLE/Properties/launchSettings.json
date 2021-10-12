@@ -2,8 +2,7 @@
   "profiles": {
     "Back": {
       "commandName": "Project",
-      "commandLineArgs": "cleanU.smc",
-      "workingDirectory": "C:\\Users\\high\\Downloads\\Documents\\SMW"
+      "nativeDebugging": true
     }
   }
 }

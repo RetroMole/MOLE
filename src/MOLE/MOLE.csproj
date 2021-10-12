@@ -20,24 +20,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="asar.dll" />
-    <None Remove="libasar.dylib" />
-    <None Remove="libasar.so" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="asar.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="libasar.dylib">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="libasar.so">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="NLog" Version="5.0.0-preview.2" />
   </ItemGroup>
 

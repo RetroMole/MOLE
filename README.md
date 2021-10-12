@@ -22,8 +22,8 @@ ___
 ___
 ### Project Structure
 ```
-•─ .github/workflows/
-	•─ Automated builduing, testing, and other workflows
+•─ .github
+	•─ Automated building, testing, and other workflows
 •─ res/
 	•─ Icons, Images,  Text KeyTables (for localization), etc...
 •─ src/

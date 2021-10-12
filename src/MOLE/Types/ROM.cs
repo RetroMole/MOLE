@@ -20,7 +20,7 @@ namespace MOLE
         /// <summary>
         /// UndoRedo system required for ROM operations
         /// </summary>
-        public Utils.UndoRedo UR { get; } = new();
+        public UndoRedo UR { get; } = new();
 
         /// <summary>
         /// Indexer and internal ROM representation

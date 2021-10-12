@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Smallhacker.TerraCompress;
 
-namespace MOLE.Util
+namespace MOLE
 {
     public class Lz1 : ICompressor, IDecompressor
     {
