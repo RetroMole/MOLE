@@ -1,5 +1,7 @@
 name: .NET 5 CI
-on: [push]
+on:
+  push:
+    paths: ./src/**
 
 jobs:
   Build:
