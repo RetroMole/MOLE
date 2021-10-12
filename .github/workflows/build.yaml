@@ -3,7 +3,7 @@ on: [push, workflow_dispatch]
 
 jobs:        
   Linux:
-    runs-on: ubunut-latest
+    runs-on: ubuntu-latest
     steps: 
       # Download repo
       - uses: actions/checkout@v2
