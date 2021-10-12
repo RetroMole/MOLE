@@ -84,7 +84,7 @@ namespace MOLE
                 {
                     ImGui.Text(String.Format("ROM FileName: {0}", rom.FileName));
                     ImGui.Text(String.Format("ROM Path: {0}", rom.FilePath));
-                    ImGui.Text(String.Format("Copier Header: 0x{0}", rom.Header != null ? rom.Header.Length.ToString("X2") : "None"));
+                    ImGui.Text(String.Format("Copier Header: 0x{0:X2}", rom.Header != null ? rom.Header.Length : "None"));
 
                     ImGui.Separator();
                     ImGui.Text("Internal ROM Header:");
@@ -93,10 +93,10 @@ namespace MOLE
                     ImGui.Text(string.Format("  ROM Size: {0}kb", rom.ROMSize));
                     ImGui.Text(string.Format("  SRAM Size: {0}kb", rom.SRAMSize));
                     ImGui.Text(string.Format("  Region: {0}", rom.Region));
-                    ImGui.Text(string.Format("  Developer ID: {0}", rom.DevID.ToString("X2")));
+                    ImGui.Text(string.Format("  Developer ID: {0:X2}", rom.DevID));
                     ImGui.Text(string.Format("  Version: {0}", rom.Version));
-                    ImGui.Text(string.Format("  Checksum: {0}", rom.Checksum.ToString("X4")));
-                    ImGui.Text(string.Format("  Checksum Complement: {0}", rom.ChecksumComplement.ToString("X4")));
+                    ImGui.Text(string.Format("  Checksum: {0:X4}", rom.Checksum));
+                    ImGui.Text(string.Format("  Checksum Complement: {0:X4}", rom.ChecksumComplement));
 
                     ImGui.Separator();
 
@@ -104,7 +104,7 @@ namespace MOLE
                     {
                         for (int i = 0; i < 0x34; i++)
                         {
-                            ImGui.Text(string.Format("  GFX{0} @ ${1}", i.ToString("X2"), gfx.GFXPointers[i].ToString("X6")));
+                            ImGui.Text(string.Format("  GFX{0:X2} @ ${1:X6}", i, gfx.GFXPointers[i]));
                         }
                     }
 
@@ -112,14 +112,14 @@ namespace MOLE
                     {
                         for (int i = 0; i < 0x80; i++)
                         {
-                            ImGui.Text(String.Format("  ExGFX{0} @ {1}", (i + 0x80).ToString("X2"), (gfx.ExGFXPointers[i] is 0xFFFFFF or 0) ? "NOT INSERTED" : "$" + gfx.ExGFXPointers[i].ToString("X6")));
+                            ImGui.Text(String.Format("  ExGFX{0:X2} @ ${1:X6}", (i + 0x80), gfx.ExGFXPointers[i]));
                         }
                     }
                     if (ImGui.CollapsingHeader("SuperExGFX Pointers:"))
                     {
                         for (int i = 0; i < 0xF00; i++)
                         {
-                            ImGui.Text(String.Format("  ExGFX{0} @ {1}", (i + 0x100).ToString("X2"), (gfx.SuperExGFXPointers[i] is 0xFFFFFF or 0) ? "NOT INSERTED" : "$" + gfx.SuperExGFXPointers[i].ToString("X6")));
+                            ImGui.Text(String.Format("  ExGFX{0:X2} @ ${1:X6}", i + 0x100, gfx.SuperExGFXPointers[i]));
                         }
                     }
                 }
@@ -168,35 +168,24 @@ namespace MOLE
             {
                 if (ImGui.Begin("About", ref show_about))
                 {
-                    ImGui.Text(
-                        "MOLE is an open source Super Mario World ROM editor and is in no way affiliated with Nintendo.\n\n" +
-
-                        "Copyright(C) 2021 Vawlpe\n" +
-                        "This program is free software: you can redistribute it and / or modify it under the terms of\n" +
-                        "the GNU General Public License as published by the Free Software Foundation,\n" +
-                        "either version 3 of the License, or(at your option) any later version.\n" +
-                        "This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;\n" +
-                        "without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n" +
-                        "See the GNU General Public License for more details.\n" +
-                        "You should have received a copy of the GNU General Public License along with this program.\n" +
-                        "If not, see https://www.gnu.org/licenses/ \n\n" +
-
-                        "https://github.com/Vawlpe/MOLE"
-                    );
+                    ImGui.Text(Program.copyright);
                     ImGui.Separator();
                     ImGui.Text(string.Format("MOLE Version: {0}", Program.MOLEVer));
                     ImGui.Text(string.Format("    LibMOLE Version: {0}", Program.LibMoleVer));
                     ImGui.Text(string.Format("    MOLE UI Version {0}", Program.MOLEUIVer));
                     ImGui.Separator();
-                    ImGui.Text("Libraries:");
-                    ImGui.Text("All of the following libraries are licensed under their respective Open Source Software licenses:");
-                    ImGui.Text(string.Format("  ImGui.Net v{0}       | https://github.com/mellinoe/ImGui.NET        | The MIT License (MIT)", ImGui.GetVersion()));
-                    ImGui.Text(string.Format("  Asar v{0}            | https://github.com/RPGHacker/asar            | GNU Lesser General Public License (LGPL)", Asar.Ver2Str(Asar.Version())));
-                    ImGui.Text(              "  TerraCompress v1.0    | https://github.com/Smallhacker/TerraCompress | Zlib/libpng License (zlib)");
-                    ImGui.Text(              "  Veldrid v4.8.0        | https://github.com/mellinoe/veldrid          | The MIT License (MIT)");
-                    ImGui.Text(              "  Monogame v3.8.0.1641  | https://github.com/MonoGame/MonoGame         | Microsoft Public License (Ms-PL)");
-                    ImGui.Text(              "  NLog v5.0.0-preview.2 | https://github.com/NLog/NLog                 | BSD 3-Clause \"New\" or \"Revised\" License (BSD-3-Clause)");
-
+                    string libs = 
+                        "Libraries:\n" +
+                        "All of the following libraries are licensed under their respective Open Source Software licenses:\n";
+                    foreach (var lib in Program.libs)
+                    {
+                        libs += string.Format("  {0,-25}{1,-50}{2}\n",
+                            lib.name + " v" + lib.ver,
+                            "| " + lib.repo,
+                            "| " + lib.license
+                        );
+                    }
+                    ImGui.Text(libs);
                 }
             }
 
