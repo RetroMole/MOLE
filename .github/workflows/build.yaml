@@ -23,8 +23,8 @@ jobs:
         uses: lukka/get-cmake@v3.21.2
         
       # Setup MSBuild
-      - name: Setup MSBuild
-        if: ${{ runner.os }} == "Windows"
+      - if: ${{ runner.os }} == "Windows"
+        name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.0.3
           
       # Download src artifact
