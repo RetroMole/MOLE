@@ -25,6 +25,7 @@ jobs:
       # CMake Asar project
       - name: Cmake asar
         run: |
+          mkdir ./bin
           cmake -S ./src/Asar/src -B ./src/Asar/out
           cd ./src/Asar/out/asar
           if [ "$RUNNER_OS" == "Windows" ]; then
