@@ -1,0 +1,56 @@
+name: .NET 5 CI
+on: [push]
+
+jobs:
+  Build:
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.401'
+          
+      - name: Build solution
+        run: dotnet build ./src -o ./bin
+        
+      - name: Post build
+        shell: bash
+        run:   |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            cp "./src/ImGui.NET/deps/cimgui/win-x64/cimgui.dll" "./bin/cimgui.dll"
+            rm "./bin/libasar.so" "./bin/libasar.dylib"
+          elif [ "$RUNNER_OS" == "Linux" ]; then
+            cp "./src/ImGui.NET/deps/cimgui/linux-x64/cimgui.so" "./bin/cimgui.so"
+            rm "./bin/asar.dll" "./bin/libasar.dylib"
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            cp "./src/ImGui.NET/deps/cimgui/osx-x64/cimgui.dylib" "./bin/cimgui.dylib"
+            rm "./bin/asar.dll" "./bin/libasar.so"
+          fi
+        
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2.2.4
+        with:
+        # Artifact name
+          name: $RUNNER_OS
+          path: ./bin
+        
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        
+  Test:
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.401'
+          
+      - name: Run unit tests
+        run: dotnet test ./src
+        
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
