@@ -1,41 +1,65 @@
 name: .NET 5 CI
 on:
   push:
-    paths: ./src/**
+    paths: src/**
 
 jobs:
-  Build:
-    runs-on: ${{ matrix.os }}
+  PreBuild:
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
+      
+      # Setup dotnet
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '5.0.401'
-          
-      - name: Build solution
-        run: |
-          git submodule update --init
-          dotnet build ./src -o ./bin
+      
+      # Get CMake
+      - name: Get CMake
+        uses: lukka/get-cmake@v3.21.2
+      
+      # Update submodules
+      - name: Update submodules
+        run: git submodule update --init
         
-      - name: Post build
+      # CMake Asar project
+      - name: run-cmake
+        uses: lukka/run-cmake@v3.4
+        with:
+          cmakeListsTxtPath: ./src/Asar/src/CMakeLists.txt
+          buildDirectory: ./src/Asar/
+          cmakeGenerator: "Visual Studio 16 2019"
+          cmakeAppendedArgs: "-A x64"
+      
+      # Cache stuff
+      - name: Cache
+        uses: actions/cache@v2.1.6
+        with:
+          path: ./src/Asar/asar
+          key: prebuild
+          
+  Build:
+    needs: PreBuild
+    runs-on: ${{ matrix.os }}
+    steps: 
+      - name: Build solution
+        run: dotnet build ./src -o ./bin
+        
+      - name: Copy cimgui
         shell: bash
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
             cp "./src/ImGui.NET/deps/cimgui/win-x64/cimgui.dll" "./bin/cimgui.dll"
-            rm "./bin/libasar.so" "./bin/libasar.dylib"
           elif [ "$RUNNER_OS" == "Linux" ]; then
             cp "./src/ImGui.NET/deps/cimgui/linux-x64/cimgui.so" "./bin/cimgui.so"
-            rm "./bin/asar.dll" "./bin/libasar.dylib"
           elif [ "$RUNNER_OS" == "macOS" ]; then
             cp "./src/ImGui.NET/deps/cimgui/osx-x64/cimgui.dylib" "./bin/cimgui.dylib"
-            rm "./bin/asar.dll" "./bin/libasar.so"
           fi
         
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2.2.4
         with:
-        # Artifact name
           name: ${{ runner.os }}
           path: ./bin
         
@@ -44,18 +68,11 @@ jobs:
         os: [ubuntu-latest, windows-latest, macOS-latest]
         
   Test:
+    needs: PreBuild
     runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '5.0.401'
-          
+    steps:  
       - name: Run unit tests
-        run: |
-          git submodule update --init
-          dotnet test ./src
+        run: dotnet test ./src
         
     strategy:
       matrix:
