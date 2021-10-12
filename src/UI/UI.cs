@@ -11,6 +11,7 @@ namespace MOLE
         private static ImGuiIOPtr io;
         private static readonly List<Delegate> windows = new()
         {
+            new Action(wGFX)
         };
         static bool show_fps = true;
         static bool show_mousepos = true;
