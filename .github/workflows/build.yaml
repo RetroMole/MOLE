@@ -2,8 +2,56 @@ name: .NET 5 CI
 on: [push, workflow_dispatch]
 
 jobs:        
-  Build:
-    runs-on: ${{ matrix.os }}
+  Linux:
+    runs-on: ubunut-latest
+    steps: 
+      # Download repo
+      - uses: actions/checkout@v2
+      
+      # Update submodules
+      - name: Update submodules
+        run: git submodule update --init
+        
+      # Setup dotnet
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.401'    
+              
+      # Get CMake
+      - name: Get CMake
+        uses: lukka/get-cmake@v3.21.2
+
+      # CMake Asar project
+      - name: Cmake asar
+        shell: bash
+        run: |
+          mkdir ./bin
+          cmake -S ./src/Asar/src -B ./src/Asar/out
+          cd ./src/Asar/out/asar
+          make
+          cd ../../../../
+          cp ./src/Asar/out/asar/libasar.so ./bin/libasar.so
+      
+      # Build solution
+      - name: Build solution
+        run: dotnet build ./src/MOLE.sln -o ./bin
+        
+      # Copy cimgui to output
+      - name: Copy cimgui
+        shell: bash
+        run: cp "./src/ImGui.NET/deps/cimgui/linux-x64/cimgui.so" "./bin/cimgui.so"
+
+      
+      # Upload build artifacts to github
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: Linux
+          path: ./bin
+          
+  Windows:
+    runs-on: windows-latest
     steps: 
       # Download repo
       - uses: actions/checkout@v2
@@ -24,34 +72,63 @@ jobs:
         
       # Setup MSBuild
       - name: Setup MSBuild
-        if: ${{ runner.os }} == "Windows"
         uses: microsoft/setup-msbuild@v1.0.3
-          
-      # Download src artifact
-      - name: Download src artifact
-        uses: actions/download-artifact@v2.0.10
-        with:
-          name: "src"
-          path: ./src  
 
       # CMake Asar project
       - name: Cmake asar
         run: |
+          mkdir ./bin
           cmake -S ./src/Asar/src -B ./src/Asar/out
           cd ./src/Asar/out/asar
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            msbuild asar.vcxproj
-            cd ../../../../
-            cp ./src/Asar/out/asar/Debug/asar.dll ./bin/asar.dll
-          else
-            make
-            cd ../../../../
-            if [ "$RUNNER_OS" == "Linux" ]; then
-              cp ./src/Asar/out/asar/libasar.so ./bin/libasar.so
-            elif [ "$RUNNER_OS" == "macOS" ]; then
-              cp ./src/Asar/out/asar/libasar.dylib ./bin/libasar.dylib
-            fi
-          fi
+          msbuild asar.vcxproj
+          cd ../../../../
+          copy ./src/Asar/out/asar/Debug/asar.dll ./bin/asar.dll
+      
+      # Build solution
+      - name: Build solution
+        run: dotnet build ./src/MOLE.sln -o ./bin
+        
+      # Copy cimgui to output
+      - name: Copy cimgui
+        run: copy "./src/ImGui.NET/deps/cimgui/win-x64/cimgui.dll" "./bin/cimgui.dll"
+      
+      # Upload build artifacts to github
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: Wwindows
+          path: ./bin
+          
+  MacOS:
+    runs-on: macos-latest
+    steps: 
+      # Download repo
+      - uses: actions/checkout@v2
+      
+      # Update submodules
+      - name: Update submodules
+        run: git submodule update --init
+        
+      # Setup dotnet
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.401'    
+              
+      # Get CMake
+      - name: Get CMake
+        uses: lukka/get-cmake@v3.21.2
+
+      # CMake Asar project
+      - name: Cmake asar
+        shell: bash
+        run: |
+          mkdir ./bin
+          cmake -S ./src/Asar/src -B ./src/Asar/out
+          cd ./src/Asar/out/asar
+          make
+          cd ../../../../
+          cp ./src/Asar/out/asar/libasar.dylib ./bin/libasar.dylib
       
       # Build solution
       - name: Build solution
@@ -60,22 +137,11 @@ jobs:
       # Copy cimgui to output
       - name: Copy cimgui
         shell: bash
-        run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            cp "./src/ImGui.NET/deps/cimgui/win-x64/cimgui.dll" "./bin/cimgui.dll"
-          elif [ "$RUNNER_OS" == "Linux" ]; then
-            cp "./src/ImGui.NET/deps/cimgui/linux-x64/cimgui.so" "./bin/cimgui.so"
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-            cp "./src/ImGui.NET/deps/cimgui/osx-x64/cimgui.dylib" "./bin/cimgui.dylib"
-          fi
+        run: cp "./src/ImGui.NET/deps/cimgui/osx-x64/cimgui.dylib" "./bin/cimgui.dylib"
       
       # Upload build artifacts to github
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: ${{ runner.os }}
+          name: MacOS
           path: ./bin
-        
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
