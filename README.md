@@ -16,8 +16,8 @@ ___
 ___
 ### Project Structure
 ```
-•─ buildSystem/
-	•─ Automatic build pipelines
+•─ .github/workflows/
+	•─ Automatic build pipelines and other automated workflows
 •─ res/
 	•─ Icons, Images,  Text KeyTables (for localization), etc...
 •─ src/
