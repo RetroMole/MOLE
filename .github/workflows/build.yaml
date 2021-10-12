@@ -12,11 +12,13 @@ jobs:
           dotnet-version: '5.0.401'
           
       - name: Build solution
-        run: dotnet build ./src -o ./bin
+        run: |
+          git submodule update --init
+          dotnet build ./src -o ./bin
         
       - name: Post build
         shell: bash
-        run:   |
+        run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
             cp "./src/ImGui.NET/deps/cimgui/win-x64/cimgui.dll" "./bin/cimgui.dll"
             rm "./bin/libasar.so" "./bin/libasar.dylib"
@@ -49,7 +51,9 @@ jobs:
           dotnet-version: '5.0.401'
           
       - name: Run unit tests
-        run: dotnet test ./src
+        run: |
+          git submodule update --init
+          dotnet test ./src
         
     strategy:
       matrix:
