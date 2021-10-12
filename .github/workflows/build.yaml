@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
         # Artifact name
-          name: ${{ env.RUNNER_OS }} 
+          name: ${{ runner.os }}
           path: ./bin
         
     strategy:
