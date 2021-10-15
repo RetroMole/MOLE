@@ -14,16 +14,21 @@ namespace MOLE
 
             if (gfx != null)
             {
-                for (int i = 0; i < gfx.gfx0.Length / 32; i++)
+                for (int gi = 0; gi < gfx.dGFX.Length; gi++)
                 {
-                    string s = "\n";
-                    for (int j = 0; j < 32; j++)
+                    var g = gfx.dGFX[gi];
+                    ImGui.Text("GFX" + gi);
+                    for (int i = 0; i < g.Length / 32; i++)
                     {
-                        s += string.Format("  {0:X2}", gfx.gfx0[(j * (gfx.gfx0.Length / 32)) + i]);
+                        string s = "\n";
+                        for (int j = 0; j < 32; j++)
+                        {
+                            s += string.Format("  {0:X2}", g[(j * (g.Length / 32)) + i]);
+                        }
+                        ImGui.Text(s);
                     }
-                    ImGui.Text(s);
+                    ImGui.Separator();
                 }
-                
             }
         }
     }
