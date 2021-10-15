@@ -23,11 +23,6 @@ namespace MOLE
         static string path = "";
         static bool filediag;
 
-        public UI()
-        {
-            Asar.Init();
-        }
-
 
         public static void Draw()
         {

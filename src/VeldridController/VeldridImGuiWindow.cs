@@ -44,7 +44,7 @@ namespace VeldridController
             }
 
             _window = new Sdl2Window(
-                "No Title Yet",
+                "MOLE",
                 (int)vp.Pos.X, (int)vp.Pos.Y,
                 (int)vp.Size.X, (int)vp.Size.Y,
                 flags,

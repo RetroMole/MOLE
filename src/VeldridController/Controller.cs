@@ -39,9 +39,13 @@ namespace VeldridController
 
             var draw = (DrawSignature)UI.GetType().GetMethod("Draw").CreateDelegate(typeof(DrawSignature));
 
+            IntPtr IconSurface = (IntPtr)Sdl2Native.LoadFunction<Action>("SDL_LoadBMP").DynamicInvoke("Icon.bmp");
+            var SetWindowIcon = Sdl2Native.LoadFunction<Action>("SDL_SetWindowIcon");
+
             // Main application loop
             while (_window.Exists)
             {
+                SetWindowIcon.DynamicInvoke(_window.Handle, IconSurface);
                 InputSnapshot snapshot = _window.PumpEvents();
                 if (!_window.Exists) { break; }
                 _controller.Update(1f / 60f, snapshot); // Feed the input events to our ImGui controller, which passes them through to ImGui.
