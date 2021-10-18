@@ -54,14 +54,68 @@ namespace MOLE
             return res;
         }
 
+        public static byte[,] FlipPlaneH(byte[,] plane)
+        {
+            int rows = plane.GetLength(0);
+            int cols = plane.GetLength(1);
+
+            for (int i = 0; i <= rows - 1; i++)
+            {
+                int j = 0;
+                int k = cols - 1;
+                while (j < k)
+                {
+                    byte temp = plane[i, j];
+                    plane[i, j] = plane[i, k];
+                    plane[i, k] = temp;
+                    j++;
+                    k--;
+                }
+            }
+            return plane;
+        }
+
+        public static byte[,] FlipPlaneV(byte[,] plane)
+        {
+            int rows = plane.GetLength(0);
+            int cols = plane.GetLength(1);
+
+            for (int i = 0; i <= cols - 1; i++)
+            {
+                int j = 0;
+                int k = rows - 1;
+                while (j < k)
+                {
+                    byte temp = plane[j, i];
+                    plane[j, i] = plane[k, i];
+                    plane[k, i] = temp;
+                    j++;
+                    k--;
+                }
+            }
+            return plane;
+        }
+
         public static byte[,] Test1bpp(byte[] data)
         {
             return ToPlane(data);
         }
 
-        public static byte[,] Test2bppPlanar(byte[] data)
+        public static byte[,] Test2bppPlanar(byte[] data, bool FlipH = true, bool FlipV = false, bool SwapPlanePairs = true)
         {
-            return CombinePlanes(GetPlaneIntertwined(data,0), GetPlaneIntertwined(data,1));
+            var d1 = GetPlaneIntertwined(data, 1);
+            var d0 = GetPlaneIntertwined(data, 0);
+            if (FlipH)
+            {
+                d1 = FlipPlaneH(d1);
+                d0 = FlipPlaneH(d0);
+            }
+            if (FlipV)
+            {
+                d1 = FlipPlaneV(d1);
+                d0 = FlipPlaneV(d0);
+            }
+            return SwapPlanePairs ? CombinePlanes(d1, d0) : CombinePlanes(d0,d1);
         }
     }
 }
