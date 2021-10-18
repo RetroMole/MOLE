@@ -30,7 +30,6 @@ namespace MOLE
                 0xFF3B568F,
                 0XFF9AC3EE
             };
-            // TODO: cursor screen pos vs cursor pos are kinda wack so this might all render completely wrong lol 
             var draw_list = ImGui.GetWindowDrawList();
             var p = ImGui.GetCursorScreenPos();
             var sz = 16;
@@ -44,7 +43,7 @@ namespace MOLE
                     pal[test[i % 8, i / 8]]
                 );
             }
-            ImGui.SetCursorScreenPos(new Num.Vector2(ImGui.GetCursorPos().X, sz * ((test.GetLength(0) * 1.5f) +1)));
+            ImGui.Dummy(new Num.Vector2(sz * 8, sz * 8));
             ImGui.Separator();
 
             if (gfx != null)
