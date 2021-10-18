@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Num = System.Numerics;
 
 namespace MOLE
@@ -10,59 +11,69 @@ namespace MOLE
         public static void wGFX()
         {
             ImGui.SetNextWindowSize(new Num.Vector2(600, 900), ImGuiCond.FirstUseEver);
-            ImGui.Begin("GFX");
-            ImGui.Text("2BPP Rendering test");
 
-            byte[,] test = BPP.Test2bppPlanar(new byte[] { // link head sprite
-                0x00, 0x7E,
-                0x00, 0xFF,
-                0x7E, 0x81,
-                0xFF, 0x00,
-                0xDB, 0x7E,
-                0xFF, 0x5A,
-                0xFF, 0xFF,
-                0x7E, 0x66
-            });
-            var pal = new uint[] // test palette
+            if (ImGui.Begin("GFX"))
             {
-                0x00000000,
-                0xFF30BE6A,
-                0xFF3B568F,
-                0XFF9AC3EE
-            };
-            var draw_list = ImGui.GetWindowDrawList();
-            var p = ImGui.GetCursorScreenPos();
-            var sz = 16;
-            for (int i = 0; i < test.Length; i++)
-            {
-                var x = (i / 8) * sz;
-                var y = (i % 8) * sz;
-                draw_list.AddRectFilled(
-                    new Num.Vector2(p.X + x, p.Y + y),
-                    new Num.Vector2(p.X + x + sz, p.Y + y + sz),
-                    pal[test[i % 8, i / 8]]
-                );
-            }
-            ImGui.Dummy(new Num.Vector2(sz * 8, sz * 8));
-            ImGui.Separator();
-
-            if (gfx != null)
-            {
-                ImGui.Text("Raw GFX data from open ROM:");
-                for (int gi = 0; gi < gfx.dGFX.Length; gi++)
+                if (gfx != null)
                 {
-                    var g = gfx.dGFX[gi];
-                    ImGui.Text("GFX" + gi);
-                    for (int i = 0; i < g.Length / 32; i++)
+                    ImGui.Text("2BPP Rendering test");
+                    var pal = new uint[] // test palette
                     {
-                        string s = "\n";
-                        for (int j = 0; j < 32; j++)
+                        0xFF733900,
+                        0xFF942994,
+                        0xFFFF5AA5,
+                        0XFF9CC6DE
+                    };
+                    var sz = 6;
+                    var sp = sz/4;
+                    var draw_list = ImGui.GetWindowDrawList();
+                    ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Num.Vector2(0, sp)); // Vertical spacing
+                    for (int i = 0; i < 8; i++)
+                    {
+                        ImGui.Dummy(new Num.Vector2(0,0)); // Break from SameLine
+                        for (int j = 0; j < 16; j++)
                         {
-                            s += string.Format("  {0:X2}", g[(j * (g.Length / 32)) + i]);
+                            ImGui.SameLine(0f,sp); // Draw 16 items on the same line and handle horizontal spacing
+
+                            byte[,] chr = BPP.Test2bppPlanar(gfx.dGFX[0x2A].Skip((j*16)+(i*256)).Take(16).ToArray());
+                            var p = ImGui.GetCursorScreenPos();
+
+                            for (int k = 0; k < chr.Length; k++)
+                            {
+                                var x = (k / 8) * sz;
+                                var y = (k % 8) * sz;
+                                draw_list.AddRectFilled(
+                                    new Num.Vector2(p.X + x, p.Y + y),
+                                    new Num.Vector2(p.X + x + sz, p.Y + y + sz),
+                                    pal[chr[k % 8, k / 8]]
+                                );
+                            }
+
+                            ImGui.Dummy(new Num.Vector2(sz * 8, sz * 8));
                         }
-                        ImGui.Text(s);
                     }
+                    ImGui.PopStyleVar();
                     ImGui.Separator();
+
+
+                    ImGui.Text("Raw GFX data from open ROM:");
+                    for (int gi = 0; gi < gfx.dGFX.Length; gi++)
+                    {
+                        if (ImGui.CollapsingHeader(String.Format("GFX{0:X2}", gi)))
+                        {
+                            var g = gfx.dGFX[gi];
+                            string s = "";
+                            for (int i = 0; i < g.Length / 32; i++)
+                            {
+                                s += "\n";
+                                for (int j = 0; j < 32; j++)
+                                {
+                                    s += string.Format("  {0:X2}", g[(j * (g.Length / 32)) + i]);
+                                }
+                            }
+                            ImGui.Text(s);
+                        }
+                    }
                 }
             }
         }
