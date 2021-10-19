@@ -58,7 +58,8 @@ jobs:
           cmake -S ./src/Asar/src -B ./src/Asar/out
           cd ./src/Asar/out/asar
           msbuild asar.vcxproj
-          
+          ls -a
+
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:

@@ -138,7 +138,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v2.15.0
         with:
           workflow: 'asar.yaml'
-          name: 'AsarMac'
+          name: 'AsarMacOS'
           path: './bin'
       
       # Upload build artifacts to github
