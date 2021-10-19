@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       validateall:
-        description: 'Validate all files or just changes'
+        description: 'Lint all files if true, otherwise just lint changes'
         required: true
         default: 'false'
 
@@ -24,7 +24,7 @@ jobs:
         uses: github/super-linter@v4
         env:
           VALIDATE_ALL_CODEBASE: ${{ contains(github.event.inputs.validateall, 'true') }}
-          DEFAULT_BRANCH: master
+          DEFAULT_BRANCH: ${GITHUB_REF##*/}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILTER_REGEX_INCLUDE: src/.*
           FILTER_REGEX_EXCLUDE: src/Asar/.*|src/ImGui.NET/.*
