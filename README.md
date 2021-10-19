@@ -7,7 +7,9 @@
 **MOLE** is being designed as an **OpenSource**  editor for **Super Mario World** with the intent to bring many of the features from existing SMW ROMHacking tools/patches such as **Lunar Magic**, **Asar**, **YYCHR**, and [many others](#compatibility) into a single easy-to-use [**multi-platform**](#how-to-run) and [localized](#localizationtranslation) tool.
 
 **MOLE is Work In Progress (WIP), so it is not guaranteed to work**
+
 **This is a fork. For support, visit the original repo.**
+
 **I am trying to fix all the shit like not using NuGet and some coding stuff**
 ___
 ### Platforms
