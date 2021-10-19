@@ -58,13 +58,12 @@ jobs:
           cmake -S ./src/Asar/src -B ./src/Asar/out
           cd ./src/Asar/out/asar
           msbuild asar.vcxproj
-          cd ../../../../
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
           name: AsarWindows
-          path: ./src/Asar/out/asar/asar.dll
+          path: ./src/Asar/out/asar/Debug/asar.dll
           retention-days: 30
           
   BuildAsarMacOS:
