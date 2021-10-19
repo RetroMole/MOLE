@@ -1,0 +1,153 @@
+name: Run unit tests
+on:
+  workflow_run:
+    workflows: ["Build MOLE"]
+    types:
+      - completed
+
+jobs:
+  LinuxTest:
+    if: 
+      ${{!(
+        contains(github.event.head_commit.message, '[windows-only]') ||
+        contains(github.event.head_commit.message, '[macos-only]' ||
+        contains(github.event.head_commit.message, '[linux-skip]') ||
+        contains(github.event.head_commit.message, '[ci-skip]')
+      )}}
+    runs-on: ubuntu-latest
+    steps: 
+      # Download repo
+      - uses: actions/checkout@v2
+
+      # Update submodules
+      - name: Update submodules
+        run: git submodule update --init
+
+      # Setup dotnet
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.401'    
+
+      # Get CMake
+      - name: Get CMake
+        uses: lukka/get-cmake@v3.21.2
+
+      # CMake Asar project
+      - name: Cmake asar
+        shell: bash
+        run: |
+          mkdir ./bin
+          cmake -S ./src/Asar/src -B ./src/Asar/out
+          cd ./src/Asar/out/asar
+          make
+          cd ../../../../
+          cp ./src/Asar/out/asar/libasar.so ./bin/libasar.so
+
+      # Copy cimgui to output
+      - name: Copy cimgui
+        shell: bash
+        run: cp "./src/ImGui.NET/deps/cimgui/linux-x64/cimgui.so" "./bin/cimgui.so"
+
+      # Run unit tests
+      - name: Run unit tests
+        run: dotnet test ./src/MOLE.sln -o ./bin
+
+
+  Windows:
+    if: 
+      ${{!(
+        contains(github.event.head_commit.message, '[linux-only]') ||
+        contains(github.event.head_commit.message, '[macos-only]' ||
+        contains(github.event.head_commit.message, '[windows-skip]') ||
+        contains(github.event.head_commit.message, '[ci-skip]')
+      )}}
+    runs-on: windows-latest
+    steps: 
+      # Download repo
+      - uses: actions/checkout@v2
+
+      # Update submodules
+      - name: Update submodules
+        run: git submodule update --init
+
+      # Setup dotnet
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.401'    
+
+      # Get CMake
+      - name: Get CMake
+        uses: lukka/get-cmake@v3.21.2
+
+      # Setup MSBuild
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.0.3
+
+      # CMake Asar project
+      - name: Cmake asar
+        run: |
+          mkdir ./bin
+          cmake -S ./src/Asar/src -B ./src/Asar/out
+          cd ./src/Asar/out/asar
+          msbuild asar.vcxproj
+          cd ../../../../
+          copy ./src/Asar/out/asar/Debug/asar.dll ./bin/asar.dll
+
+      # Copy cimgui to output
+      - name: Copy cimgui
+        shell: bash
+        run: cp "./src/ImGui.NET/deps/cimgui/win-x64/cimgui.dll" "./bin/cimgui.dll"
+
+      # Run unit tests
+      - name: Run unit tests
+        run: dotnet test ./src/MOLE.sln -o ./bin
+
+
+  MacOS:
+    if: 
+      ${{!(
+        contains(github.event.head_commit.message, '[windows-only]') ||
+        contains(github.event.head_commit.message, '[linux-only]' ||
+        contains(github.event.head_commit.message, '[macos-skip]') ||
+        contains(github.event.head_commit.message, '[ci-skip]')
+      )}}
+    runs-on: macos-latest
+    steps: 
+      # Download repo
+      - uses: actions/checkout@v2
+
+      # Update submodules
+      - name: Update submodules
+        run: git submodule update --init
+
+      # Setup dotnet
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.401'    
+
+      # Get CMake
+      - name: Get CMake
+        uses: lukka/get-cmake@v3.21.2
+
+      # CMake Asar project
+      - name: Cmake asar
+        shell: bash
+        run: |
+          mkdir ./bin
+          cmake -S ./src/Asar/src -B ./src/Asar/out
+          cd ./src/Asar/out/asar
+          make
+          cd ../../../../
+          cp ./src/Asar/out/asar/libasar.dylib ./bin/libasar.dylib
+
+      # Copy cimgui to output
+      - name: Copy cimgui
+        shell: bash
+        run: cp "./src/ImGui.NET/deps/cimgui/osx-x64/cimgui.dylin" "./bin/cimgui.dylin"
+
+      # Run unit tests
+      - name: Run unit tests
+        run: dotnet test ./src/MOLE.sln -o ./bin
