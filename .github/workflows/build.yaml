@@ -1,4 +1,4 @@
-name: .NET 5 CI
+name: Build CI
 on: [push, pull_request, workflow_dispatch]
 
 jobs:        
