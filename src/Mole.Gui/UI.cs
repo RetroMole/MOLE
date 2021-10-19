@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Num = System.Numerics;
 
-namespace MOLE
+namespace Mole.Gui
 {
     public partial class UI
     {
@@ -23,15 +23,8 @@ namespace MOLE
         static string path = "";
         static bool filediag;
 
-        public UI()
-        {
-            Asar.Init();
-        }
-
-
         public static void Draw()
         {
-
             io = ImGui.GetIO();
             viewport = ImGui.GetMainViewport();
 
@@ -44,10 +37,7 @@ namespace MOLE
                     if (ImGui.BeginMenu("File"))
                     {
                         if (ImGui.MenuItem("Open ROM", "Ctrl+O"))
-                        {
                             filediag = true;
-                        }
-
                         ImGui.EndMenu();
                     }
 
@@ -56,19 +46,16 @@ namespace MOLE
                         ImGui.MenuItem("FPS", null, ref show_fps);
                         ImGui.MenuItem("Mouse Pos", null, ref show_mousepos);
                         ImGui.MenuItem("Demo Window", null, ref show_demo);
-
                         ImGui.EndMenu();
                     }
 
                     if (ImGui.BeginMenu("Help"))
                     {
                         ImGui.MenuItem("About", null, ref show_about);
-
                         ImGui.EndMenu();
                     }
 
                     WFileDialog();
-
                     ImGui.EndMainMenuBar();
                 }
             }
@@ -78,6 +65,7 @@ namespace MOLE
                 ImGui.SetNextWindowSize(new Num.Vector2(420, 69), ImGuiCond.FirstUseEver);
                 ImGui.Begin("UwU");
 
+                // TheAirBlow note: fuck you
                 ImGui.Text("Test Window says HenlOwO, try opening a ROM");
                 ImGui.Separator();
 
@@ -169,21 +157,20 @@ namespace MOLE
             {
                 if (ImGui.Begin("About", ref show_about))
                 {
-                    ImGui.Text(Program.copyright);
+                    ImGui.Text(Strings.Copyright);
                     ImGui.Separator();
-                    ImGui.Text(string.Format("MOLE Version: {0}", Program.MOLEVer));
-                    ImGui.Text(string.Format("    LibMOLE Version: {0}", Program.LibMoleVer));
-                    ImGui.Text(string.Format("    MOLE UI Version {0}", Program.MOLEUIVer));
+                    ImGui.Text(string.Format("Mole Shared Version: {0}", Strings.MoleSharedVersion));
+                    ImGui.Text(string.Format("    MOLE GUI Version {0}", Strings.MoleSharedVersion));
                     ImGui.Separator();
                     string libs = 
                         "Libraries:\n" +
                         "All of the following libraries are licensed under their respective Open Source Software licenses:\n";
-                    foreach (var lib in Program.libs)
+                    foreach (var lib in Strings.Libraries)
                     {
                         libs += string.Format("  {0,-25}{1,-50}{2}\n",
-                            lib.name + " v" + lib.ver,
-                            "| " + lib.repo,
-                            "| " + lib.license
+                            lib.Name + " v" + lib.Version,
+                            "| " + lib.Repo,
+                            "| " + lib.License
                         );
                     }
                     ImGui.Text(libs);
@@ -192,11 +179,8 @@ namespace MOLE
 
             if (show_demo) ImGui.ShowDemoWindow(ref show_demo);
 
-            // Draw all other registered windows
             foreach (var w in windows)
-            {
                 w.DynamicInvoke();
-            }
         }
 
 
@@ -207,10 +191,7 @@ namespace MOLE
         {
             if (filediag)
             {
-                if (!ImGui.IsPopupOpen("FileDialog"))
-                {
-                    ImGui.OpenPopup("FileDialog");
-                }
+                if (!ImGui.IsPopupOpen("FileDialog")) ImGui.OpenPopup("FileDialog");
                 if (ImGui.IsPopupOpen("FileDialog"))
                 {
                     ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new Num.Vector2(0.5f, 0.5f));
@@ -230,8 +211,8 @@ namespace MOLE
                             gfx = new(rom);
                             ImGui.CloseCurrentPopup();
                             filediag = false;
-
                         }
+
                         ImGui.SetItemDefaultFocus();
                         ImGui.SameLine();
                         if (ImGui.Button("Cancel"))

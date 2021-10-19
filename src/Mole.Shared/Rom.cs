@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using Mole.Shared.Util;
 
-namespace Mole.Shared.Types
+namespace Mole.Shared
 {
     /// <summary>
     /// ROM info and direct operations
@@ -104,7 +104,8 @@ namespace Mole.Shared.Types
                 5 => MapperType.ExHiRom,
                 _ => MapperType.InvalidMapper
             };
-            if (Mapping != Asar.GetMapper()) Logger.Warn("Mapping mode mismatch between asar and internal rom header: Asar: {0} | Header: {1}. This may cause issues with asar-based operations.", Asar.GetMapper(), Mapping);
+            if (Mapping != Asar.GetMapper())
+                Logger.Warn("Mapping mode mismatch between asar and internal rom header: Asar: {0} | Header: {1}. This may cause issues with asar-based operations.", Asar.GetMapper(), Mapping);
 
             // Load ROM info from internal header
             Title = new String(new Jisx0201Encoding().GetChars(InternalHeader.Take(21).ToArray()));

@@ -6,12 +6,13 @@ using Num = System.Numerics;
 
 #pragma warning disable IDE0052 // Remove unread private members
 #pragma warning disable IDE0044 // Add readonly modifier
+
 namespace XNAController
 {
     /// <summary>
     /// Simple FNA + ImGui example
     /// </summary>
-    public class Controller : Game
+    public class MonoGameController : Game
     {
         private GraphicsDeviceManager _graphics;
         private ImGuiRenderer _imGuiRenderer;
@@ -23,7 +24,7 @@ namespace XNAController
         delegate void DrawSignature();
         private DrawSignature draw;
 
-        public Controller(object UI)
+        public MonoGameController(object UI)
         {
             _graphics = new GraphicsDeviceManager(this)
             {
@@ -33,6 +34,7 @@ namespace XNAController
             };
 
             this.UI = UI;
+            // For anyone confused here, we prevent circular dependencies by using Reflection
             draw = (DrawSignature)UI.GetType().GetMethod("Draw").CreateDelegate(typeof(DrawSignature));
 
             IsMouseVisible = true;
@@ -52,7 +54,6 @@ namespace XNAController
         protected override void LoadContent()
         {
             // Texture loading example
-
             // First, load the texture as a Texture2D (can also be done using the XNA/FNA content pipeline)
             _xnaTexture = CreateTexture(GraphicsDevice, 300, 150, pixel =>
             {
@@ -105,5 +106,3 @@ namespace XNAController
         }
     }
 }
-#pragma warning restore IDE0052 // Remove unread private members
-#pragma warning restore IDE0044 // Add readonly modifier

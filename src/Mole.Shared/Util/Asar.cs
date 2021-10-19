@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -13,8 +14,14 @@ namespace Mole.Shared.Util
     /// </summary>
     public static unsafe class Asar
     {
-        public const string dllPath = "asar";
+        public const string DllPath = "asar";
         public const int ExpectedApiVersion = 303;
+
+        /// <summary>
+        /// Converts Asar version to string
+        /// </summary>
+        /// <param name="ver">Version</param>
+        /// <returns>String</returns>
         public static string Ver2Str(int ver)
         {
             //major*10000+minor*100+bugfix*1.
@@ -25,13 +32,18 @@ namespace Mole.Shared.Util
             return String.Format("{0}.{1}{2}", maj, min, fx);
         }
 
+        /// <summary>
+        /// Initializes Asar, should be done before doing anything.
+        /// </summary>
+        /// <returns>True if success</returns>
         [DllImport(dllPath, EntryPoint = "asar_init", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
-        private static extern bool _Init();
+        private static extern bool AsarInit();
 
         /// <summary>
-        /// Closes Asar DLL. Call this when you're done using Asar functions.
+        /// Closes Asar, should be done after finishing.
         /// </summary>
+        /// <returns>True if success</returns>
         [DllImport(dllPath, EntryPoint = "asar_close", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool Close();
@@ -108,17 +120,12 @@ namespace Mole.Shared.Util
         [DllImport(dllPath, EntryPoint = "asar_getalldefines", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern RawAsarDefine* _GetAllDefines(out int Length);
 
-        /// <summary>
-        /// </summary>
-        /// <param name="Data"></param>
-        /// <param name="LearnNew"></param>
-        /// <returns></returns>
         [DllImport(dllPath, EntryPoint = "asar_resolvedefines", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.AnsiBStr)]
         public static extern string ResolveDefines(string Data, bool LearnNew);
 
         [DllImport(dllPath, EntryPoint = "asar_math", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        private static extern double _Math(string Math, out IntPtr Error);
+        private static extern double AsarMath(string Math, out IntPtr Error);
 
         [DllImport(dllPath, EntryPoint = "asar_getwrittenblocks", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern RawAsarWrittenBlock* _GetWrittenBlocks(out int length);
@@ -145,24 +152,12 @@ namespace Mole.Shared.Util
         /// <returns>True if success</returns>
         public static bool Init()
         {
-            try
-            {
-                if (ApiVersion() < ExpectedApiVersion || (ApiVersion() / 100) > (ExpectedApiVersion / 100))
-                {
-                    return false;
-                }
-
-                if (!_Init())
-                {
-                    return false;
-                }
-
-                return true;
+            if (!File.Exists(DllPath)) return false;
+            try {
+                return ApiVersion() < ExpectedApiVersion || (ApiVersion() / 100) > (ExpectedApiVersion / 100)
+                    || !AsarInit();
             }
-            catch
-            {
-                return false;
-            }
+            catch { return false; }
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -418,7 +413,7 @@ namespace Mole.Shared.Util
         /// <returns>Product.</returns>
         public static double Math(string Math, out string Error)
         {
-            double value = _Math(Math, out IntPtr err);
+            double value = AsarMath(Math, out IntPtr err);
 
             Error = Marshal.PtrToStringAnsi(err);
             return value;
