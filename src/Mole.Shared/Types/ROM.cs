@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Mole.Shared.Util;
 
-namespace MOLE
+namespace Mole.Shared.Types
 {
     /// <summary>
     /// ROM info and direct operations
@@ -106,7 +107,7 @@ namespace MOLE
             if (Mapping != Asar.GetMapper()) Logger.Warn("Mapping mode mismatch between asar and internal rom header: Asar: {0} | Header: {1}. This may cause issues with asar-based operations.", Asar.GetMapper(), Mapping);
 
             // Load ROM info from internal header
-            Title = new String(new JISX0201Encoding().GetChars(InternalHeader.Take(21).ToArray()));
+            Title = new String(new Jisx0201Encoding().GetChars(InternalHeader.Take(21).ToArray()));
             ROMSize = Math.Pow(2,InternalHeader[0x17]);
             SRAMSize = Math.Pow(2,InternalHeader[0x18]);
             Region = (InternalHeader[0x19] & 0b00000111) switch

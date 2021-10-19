@@ -19,7 +19,7 @@ namespace MOLE
         static bool show_demo = false;
         static bool debug_open;
         private static ROM rom;
-        private static GFX gfx;
+        private static Gfx gfx;
         static string path = "";
         static bool filediag;
 
@@ -105,7 +105,7 @@ namespace MOLE
                     {
                         for (int i = 0; i < 0x34; i++)
                         {
-                            ImGui.Text(string.Format("  GFX{0:X2} @ ${1:X6}", i, gfx.GFXPointers[i]));
+                            ImGui.Text(string.Format("  GFX{0:X2} @ ${1:X6}", i, gfx.GfxPointers[i]));
                         }
                     }
 
@@ -113,14 +113,14 @@ namespace MOLE
                     {
                         for (int i = 0; i < 0x80; i++)
                         {
-                            ImGui.Text(String.Format("  ExGFX{0:X2} @ ${1:X6}", (i + 0x80), gfx.ExGFXPointers[i]));
+                            ImGui.Text(String.Format("  ExGFX{0:X2} @ ${1:X6}", (i + 0x80), gfx.ExGfxPointers[i]));
                         }
                     }
                     if (ImGui.CollapsingHeader("SuperExGFX Pointers:"))
                     {
                         for (int i = 0; i < 0xF00; i++)
                         {
-                            ImGui.Text(String.Format("  ExGFX{0:X2} @ ${1:X6}", i + 0x100, gfx.SuperExGFXPointers[i]));
+                            ImGui.Text(String.Format("  ExGFX{0:X2} @ ${1:X6}", i + 0x100, gfx.SuperExGfxPointers[i]));
                         }
                     }
                 }

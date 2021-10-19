@@ -6,11 +6,7 @@
 
 **MOLE** is being designed as an **OpenSource**  editor for **Super Mario World** with the intent to bring many of the features from existing SMW ROMHacking tools/patches such as **Lunar Magic**, **Asar**, **YYCHR**, and [many others](#compatibility) into a single easy-to-use [**multi-platform**](#how-to-run) and [localized](#localizationtranslation) tool.
 
-**MOLE is Work In Progress (WIP), so it is not guaranteed to work**
-
 **This is a fork. For support, visit the original repo.**
-
-**I am trying to fix all the shit like not using NuGet and some coding stuff**
 ___
 ### Platforms
 Thanks to OpenGL Monogame
@@ -18,10 +14,11 @@ Thanks to OpenGL Monogame
 - Linux
 - MacOS
 
-Or you could build it yourself:
+### Run it
+Releases are not available yet, but you can compile it yourself.
 ___
 ### How to Build
-Use any IDE (JetBrains Rider or Visual Studio) and compile Mole.Monogame
+First I should get what everything does, ok?
 ___
 ### Localization/Translation
 First I should get what everything does, ok?
@@ -35,9 +32,11 @@ src
 ├── Mole.Shared
 │   └── Shared MOLE library, backend
 ├── Mole.Monogame/
-│   └── GUI relying on Crossplaform MonoGame Engine (OpenGL), user ImGui
+│   └── GUI relying on Crossplaform MonoGame Engine (OpenGL)
+├── Mole.Veldrid/
+│   └── GUI relying on Veldrid
 └── Mole.Gui/
-    └── GUI relying on ImGui
+    └── GUI relying on ImGui, entry point of app
 ```
 ___
 ### Compatibility

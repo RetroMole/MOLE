@@ -14,12 +14,12 @@ namespace MOLE
 
             if (gfx != null)
             {
-                for (int i = 0; i < gfx.gfx0.Length / 32; i++)
+                for (int i = 0; i < gfx.Gfx0.Length / 32; i++)
                 {
                     string s = "\n";
                     for (int j = 0; j < 32; j++)
                     {
-                        s += string.Format("  {0:X2}", gfx.gfx0[(j * (gfx.gfx0.Length / 32)) + i]);
+                        s += string.Format("  {0:X2}", gfx.Gfx0[(j * (gfx.Gfx0.Length / 32)) + i]);
                     }
                     ImGui.Text(s);
                 }

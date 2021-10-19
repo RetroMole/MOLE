@@ -1,4 +1,4 @@
-﻿namespace MOLE
+﻿namespace Mole.Shared.Types
 {
     /// <summary>
     /// Palette class, holds information about a SNES Palette and allows for conversion to and from 8-bit RGB

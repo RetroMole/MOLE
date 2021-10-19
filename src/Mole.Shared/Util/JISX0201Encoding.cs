@@ -2,7 +2,7 @@
 
 namespace System.Text
 {
-    class JISX0201Encoding : Encoding
+    class Jisx0201Encoding : Encoding
     {
         public override int GetByteCount(char[] chars, int index, int count) => chars.Length;
         public override int GetCharCount(byte[] bytes, int index, int count) => bytes.Length;

@@ -1,17 +1,17 @@
 ﻿using System;
 
-namespace MOLE
+namespace Mole.Shared.Util
 {
-    public static class Util
+    public static class Bytes
     {
-        public static uint b2uL(params byte[] bytes)
+        public static uint B2Ul(params byte[] bytes)
         {
             var b = new byte[4];
             Array.Copy(bytes, b, bytes.Length);
             return (uint)((b[3] << 24) | (b[2] << 16) | (b[1] << 8) | b[0]);
         }
 
-        public static uint b2uB(params  byte[] bytes)
+        public static uint B2Ub(params  byte[] bytes)
         {
             var b = new byte[4];
             Array.Copy(bytes, b, bytes.Length);

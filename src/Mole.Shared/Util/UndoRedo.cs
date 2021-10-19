@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-namespace MOLE
+namespace Mole.Shared.Util
 {
     /// <summary>
     /// Custom Undo-Redo System
