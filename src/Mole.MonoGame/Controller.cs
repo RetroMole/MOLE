@@ -1,13 +1,13 @@
-﻿using ImGuiNET;
+﻿using System;
+using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Num = System.Numerics;
 
 #pragma warning disable IDE0052 // Remove unread private members
 #pragma warning disable IDE0044 // Add readonly modifier
 
-namespace XNAController
+namespace Mole.MonoGame
 {
     /// <summary>
     /// Simple FNA + ImGui example
@@ -20,11 +20,11 @@ namespace XNAController
         private Texture2D _xnaTexture;
         private IntPtr _imGuiTexture;
 
-        private object UI;
+        private object _ui;
         delegate void DrawSignature();
-        private DrawSignature draw;
+        private DrawSignature _draw;
 
-        public MonoGameController(object UI)
+        public MonoGameController(object ui)
         {
             _graphics = new GraphicsDeviceManager(this)
             {
@@ -33,9 +33,9 @@ namespace XNAController
                 PreferMultiSampling = true
             };
 
-            this.UI = UI;
+            this._ui = ui;
             // For anyone confused here, we prevent circular dependencies by using Reflection
-            draw = (DrawSignature)UI.GetType().GetMethod("Draw").CreateDelegate(typeof(DrawSignature));
+            _draw = (DrawSignature)ui.GetType().GetMethod("Draw")?.CreateDelegate(typeof(DrawSignature));
 
             IsMouseVisible = true;
         }
@@ -69,14 +69,14 @@ namespace XNAController
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(new Color(clear_color.X, clear_color.Y, clear_color.Z));
+            GraphicsDevice.Clear(new Color(_clearColor.X, _clearColor.Y, _clearColor.Z));
 
             // Call BeforeLayout first to set things up
             _imGuiRenderer.BeforeLayout(gameTime);
 
             // Draw our UI
             ImGui.DockSpaceOverViewport(ImGui.GetMainViewport());
-            draw();
+            _draw();
 
             // Call AfterLayout now to finish up and draw all the things
             _imGuiRenderer.AfterLayout();
@@ -84,7 +84,7 @@ namespace XNAController
             base.Draw(gameTime);
         }
 
-        private Num.Vector3 clear_color = new(114f / 255f, 144f / 255f, 154f / 255f);
+        private Num.Vector3 _clearColor = new(114f / 255f, 144f / 255f, 154f / 255f);
 
         public static Texture2D CreateTexture(GraphicsDevice device, int width, int height, Func<int, Color> paint)
         {

@@ -1,18 +1,19 @@
-﻿using ImGuiNET;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using ImGuiNET;
 using Veldrid;
 using Veldrid.Sdl2;
 
 #pragma warning disable IDE0044 // Add readonly modifier
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
 #pragma warning disable IDE0060 // Remove unused parameter
-namespace VeldridController
+
+namespace Mole.Veldrid
 {
     /// <summary>
     /// A modified version of Veldrid.ImGui's ImGuiRenderer.
@@ -83,9 +84,7 @@ namespace VeldridController
 
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
             if (_gd.BackendType != GraphicsBackend.OpenGL || _gd.BackendType != GraphicsBackend.OpenGLES) { io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable; }
-
-
-
+            
             ImGuiPlatformIOPtr platformIO = ImGui.GetPlatformIO();
             ImGuiViewportPtr mainViewport = platformIO.Viewports[0];
             mainViewport.PlatformHandle = window.Handle;

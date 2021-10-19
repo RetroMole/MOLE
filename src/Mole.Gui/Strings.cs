@@ -1,7 +1,5 @@
-using System;
-using System.Reflection;
 using Mole.Shared;
-using ImGuiNET;
+using Mole.Shared.Util;
 
 namespace Mole.Gui
 {
@@ -28,10 +26,10 @@ namespace Mole.Gui
             "If not, see https://www.gnu.org/licenses/ \n\n" +
             "https://github.com/Vawlpe/MOLE";
 
-        public static string MoleGuiVersion = typeof(Strings).Assembly.Version.ToString();
-        public static string MoleSharedVersion = typeof(Rom).Assembly.Version.ToString();
+        public static readonly string MoleGuiVersion = typeof(Strings).Assembly.GetName().Version?.ToString();
+        public static readonly string MoleSharedVersion = typeof(Rom).Assembly.GetName().Version?.ToString();
 
-        public static LibInfo[] Libraries = new LibInfo[] {
+        public static readonly LibInfo[] Libraries = new LibInfo[] {
             new LibInfo { Name = "ImGui.Net", Version = ImGuiNET.ImGui.GetVersion(), Repo = "https://github.com/mellinoe/ImGui.NET", License = "The MIT License (MIT)" },
             new LibInfo { Name = "Asar", Version = Asar.Ver2Str(Asar.Version()), Repo = "https://github.com/RPGHacker/asar", License = "GNU Lesser General Public License (LGPL)" },
             new LibInfo { Name = "TerraCompress", Version = "1.0", Repo = "https://github.com/Smallhacker/TerraCompress", License = "Zlib/libpng License (zlib)"},

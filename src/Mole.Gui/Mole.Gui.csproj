@@ -3,10 +3,9 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>MOLE</RootNamespace>
-    <ApplicationIcon />
-    <StartupObject>MOLE.Program</StartupObject>
-    <AssemblyName>MOLE</AssemblyName>
+    <RootNamespace>Mole.Gui</RootNamespace>
+    <StartupObject>Mole.Gui.Program</StartupObject>
+    <AssemblyName>Mole.Gui</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -15,9 +14,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Mole.MonoGame\Mole.MonoGame.csproj" />
     <ProjectReference Include="..\Mole.Shared\Mole.Shared.csproj" />
     <ProjectReference Include="..\Mole.Veldrid\Mole.Veldrid.csproj" />
-    <ProjectReference Include="..\Mole.MonoGame\Mole.MonoGame.csproj" />
   </ItemGroup>
 
 </Project>

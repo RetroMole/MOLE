@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,54 +12,57 @@ namespace Mole.Shared
     /// <summary>
     /// ROM info and direct operations
     /// </summary>
-    public class ROM : IEnumerator<byte>, IEnumerable<byte>
+    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
+    [SuppressMessage("ReSharper", "PositionalPropertyUsedProblem")]
+    [SuppressMessage("ReSharper", "MemberInitializerValueIgnored")]
+    public class Rom : IEnumerator<byte>, IEnumerable<byte>
     {
         /// <summary>
         /// Logger
         /// </summary>
-        private static NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// UndoRedo system required for ROM operations
         /// </summary>
-        public UndoRedo UR { get; } = new();
+        private UndoRedo Ur { get; } = new();
 
         /// <summary>
         /// Indexer and internal ROM representation
         /// </summary>
         public byte this[int index]
         {
-            get => _ROM[index];
-            set => _ROM[index] = value;
+            get => _rom[index];
+            set => _rom[index] = value;
         }
-        private byte[] _ROM;
+        private byte[] _rom;
 
         /// <summary>
         /// Full Path to currently loaded ROM
         /// </summary>
         public string FilePath
         {
-            get => _FilePath;
+            get => _filePath;
             set
             {
-                _FilePath = value;
-                FileName = Path.GetFileName(_FilePath);
+                _filePath = value;
+                FileName = Path.GetFileName(_filePath);
             }
 
         }
-        private string _FilePath;
+        private string _filePath;
         public string FileName;
 
         public byte[] Header;
 
         public byte[] InternalHeader;
         public string Title;
-        public bool FastROM = false; 
+        public bool FastRom; 
         public MapperType Mapping = MapperType.NoRom;
-        public double ROMSize;
-        public double SRAMSize;
+        public double RomSize;
+        public double SramSize;
         public string Region;
-        public byte DevID;
+        public byte DevId;
         public byte Version;
         public ushort Checksum;
         public ushort ChecksumComplement;
@@ -68,7 +72,7 @@ namespace Mole.Shared
         /// Constructs a ROM from file at path
         /// </summary>
         /// <param name="path">ROM Path</param>
-        public ROM(string path)
+        public Rom(string path)
         {
             Logger.Info("Loading ROM from {0}", path);
             // Load ROM into internal _ROM byte array
@@ -78,23 +82,23 @@ namespace Mole.Shared
             BinaryReader r = new(fs);
             FileInfo f = new(FilePath);
 
-            _ROM = r.ReadBytes((int)f.Length);
-            int h = _ROM.Length % 0x8000;
+            _rom = r.ReadBytes((int)f.Length);
+            int h = _rom.Length % 0x8000;
             if (h != 0)
             {
-                Header = _ROM.Take(h).ToArray();
-                _ROM = _ROM.Skip(h).ToArray();
+                Header = _rom.Take(h).ToArray();
+                _rom = _rom.Skip(h).ToArray();
             }
 
             // Patch the ROM with an empty patch so it is opened in asar
             // (workaround for not exposing OpenROM and CloseROM in lib asar)
             // This also fixes broken checksums
-            Asar.Patch(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "empty.asm"), ref _ROM);
+            Asar.Patch(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "empty.asm"), ref _rom);
 
-            // Rely on asar mapping mode guess untill we can access the internal header
+            // Rely on asar mapping mode guess until we can access the internal header
             Mapping = Asar.GetMapper();
-            InternalHeader = _ROM.Skip(SnesToPc(0x00FFC0)).Take(32).ToArray();
-            FastROM = (InternalHeader[0x15] & 0b00010000) != 0;
+            InternalHeader = _rom.Skip(SnesToPc(0x00FFC0)).Take(32).ToArray();
+            FastRom = (InternalHeader[0x15] & 0b00010000) != 0;
             Mapping = (InternalHeader[0x15] & 0b00000111) switch
             {
                 0 => MapperType.LoRom,
@@ -105,12 +109,12 @@ namespace Mole.Shared
                 _ => MapperType.InvalidMapper
             };
             if (Mapping != Asar.GetMapper())
-                Logger.Warn("Mapping mode mismatch between asar and internal rom header: Asar: {0} | Header: {1}. This may cause issues with asar-based operations.", Asar.GetMapper(), Mapping);
+                Logger.Warn("Mapping mode mismatch: Asar: {0}, Header: {1}", Asar.GetMapper(), Mapping);
 
             // Load ROM info from internal header
             Title = new String(new Jisx0201Encoding().GetChars(InternalHeader.Take(21).ToArray()));
-            ROMSize = Math.Pow(2,InternalHeader[0x17]);
-            SRAMSize = Math.Pow(2,InternalHeader[0x18]);
+            RomSize = Math.Pow(2,InternalHeader[0x17]);
+            SramSize = Math.Pow(2,InternalHeader[0x18]);
             Region = (InternalHeader[0x19] & 0b00000111) switch
             {
                 0x00 => "Japan",
@@ -132,7 +136,7 @@ namespace Mole.Shared
                 0x11 => "Australia",
                 _ => "Unknown"
             };
-            DevID = InternalHeader[0x1A];
+            DevId = InternalHeader[0x1A];
             Version = InternalHeader[0x1B];
             Checksum = BitConverter.ToUInt16(new byte[] { InternalHeader[0x1C], InternalHeader[0x1D] });
             ChecksumComplement = BitConverter.ToUInt16(new byte[] { InternalHeader[0x1E], InternalHeader[0x1F] });
@@ -142,23 +146,23 @@ namespace Mole.Shared
         /// Undoable write operation
         /// </summary>
         /// <param name="bytes">Data to be written</param>
-        /// <param name="PcAddr">PC Address to write to</param>
-        /// <param name="UndoEntry">Determines wether this should add an Undo entry</param>
-        public void HexWrite(byte[] bytes, uint PcAddr, bool UndoEntry)
+        /// <param name="pcAddr">PC Address to write to</param>
+        /// <param name="undoEntry">Determines wether this should add an Undo entry</param>
+        public void HexWrite(byte[] bytes, uint pcAddr, bool undoEntry)
         {
             byte[] undo = Array.Empty<byte>();
-            UR.Do
+            Ur.Do
             (
                 () =>
                 {
-                    undo = _ROM.Skip((int)PcAddr).Take(bytes.Length).ToArray();
-                    bytes.CopyTo(_ROM, PcAddr);
+                    undo = _rom.Skip((int)pcAddr).Take(bytes.Length).ToArray();
+                    bytes.CopyTo(_rom, pcAddr);
                 },
                 () =>
                 {
-                    HexWrite(undo, PcAddr, false);
+                    HexWrite(undo, pcAddr, false);
                 },
-                UndoEntry
+                undoEntry
             );
         }
 
@@ -166,22 +170,22 @@ namespace Mole.Shared
         /// Insert Asar patch from path
         /// </summary>
         /// <param name="patch">Path to patch</param>
-        /// <param name="UndoEntry">Determines wether this should add an Undo entry</param>
-        public void Patch(string patch, bool UndoEntry)
+        /// <param name="undoEntry">Determines wether this should add an Undo entry</param>
+        public void Patch(string patch, bool undoEntry)
         {
             Asarwrittenblock[] diff;
-            UR.Do
+            Ur.Do
             (
                 () =>
                 {
-                    Asar.Patch(patch, ref _ROM);
+                    Asar.Patch(patch, ref _rom);
                     diff = Asar.GetWrittenBlocks();
                 },
                 () =>
                 {
                     // TODO: Undo Asar patch
                 },
-                UndoEntry
+                undoEntry
             );
         }
 
@@ -190,9 +194,9 @@ namespace Mole.Shared
         /// </summary>
         public void Save(bool keepHeader = false)
         {
-            UR.RedoStack.Clear();
-            UR.BackupStack.Clear();
-            File.WriteAllBytes(String.Format("TEST_{0}-{1:yyyy-MM-dd-HH-mm}.{2}", FileName, DateTime.UtcNow, keepHeader ? ".smc" : ".sfc"), keepHeader ? Header.Concat(_ROM).ToArray() : _ROM);
+            Ur.RedoStack.Clear();
+            Ur.BackupStack.Clear();
+            File.WriteAllBytes(String.Format("TEST_{0}-{1:yyyy-MM-dd-HH-mm}.{2}", FileName, DateTime.UtcNow, keepHeader ? ".smc" : ".sfc"), keepHeader ? Header.Concat(_rom).ToArray() : _rom);
 
         }
 
@@ -358,17 +362,17 @@ namespace Mole.Shared
 
 
         //Enumerable/Enumerator implementation
-        int position = -1;
+        int _position = -1;
         public bool MoveNext()
         {
-            position++;
-            return (position < _ROM.Length);
+            _position++;
+            return (_position < _rom.Length);
         }
-        public void Reset() => position = 0;
-        public object Current { get => _ROM[position]; }
-        byte IEnumerator<byte>.Current { get => _ROM[position]; }
-        public IEnumerator<byte> GetEnumerator() => _ROM.OfType<byte>().GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => (IEnumerator<byte>)_ROM.GetEnumerator();
+        public void Reset() => _position = 0;
+        public object Current { get => _rom[_position]; }
+        byte IEnumerator<byte>.Current { get => _rom[_position]; }
+        public IEnumerator<byte> GetEnumerator() => _rom.OfType<byte>().GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => (IEnumerator<byte>)_rom.GetEnumerator();
         public void Dispose() {
             Asar.Close();
             GC.SuppressFinalize(this);

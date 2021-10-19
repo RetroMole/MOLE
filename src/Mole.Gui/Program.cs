@@ -1,6 +1,9 @@
-﻿using Mole.Veldrid;
+﻿using System.IO;
+using System.Linq;
+using Mole.Veldrid;
 using Mole.MonoGame;
-using Mole.Shared;
+using Mole.Shared.Util;
+using Veldrid;
 
 namespace Mole.Gui
 {
@@ -31,7 +34,7 @@ namespace Mole.Gui
 
             string g = args.Length >= 1 ? args[0] : "";
 
-            Logger.Info("UI Rendering backend: {0}", g switch
+            logger.Info("UI Rendering backend: {0}", g switch
             {
                 "d" => "DirectX3D 11",
                 "v" => "Vulkan",
@@ -39,22 +42,21 @@ namespace Mole.Gui
                 "g" or _ => "OpenGL"
             });
 
-            var UI = new UI();
+            var ui = new Ui();
             switch (g)
             {
                 case "d":
-                    new VeldridController.Controller(Veldrid.GraphicsBackend.Direct3D11, UI);
+                    _ = new VeldridController(GraphicsBackend.Direct3D11, ui);
                     break;
                 case "v":
-                    new VeldridController.Controller(Veldrid.GraphicsBackend.Vulkan, UI);
+                    _ = new VeldridController(GraphicsBackend.Vulkan, ui);
                     break;
                 case "m":
-                    new VeldridController.Controller(Veldrid.GraphicsBackend.Metal, UI);
+                    _ = new VeldridController(GraphicsBackend.Metal, ui);
                     break;
-                case "g":
                 default:
-                    using (var game = new MonoGameController(UI))
-                    game.Run();
+                    using (var game = new MonoGameController(ui))
+                        game.Run();
                     break;
             }
 

@@ -1,34 +1,36 @@
 ﻿using ImGuiNET;
 using System;
 using System.Collections.Generic;
+using Mole.Shared;
 using Num = System.Numerics;
 
 namespace Mole.Gui
 {
-    public partial class UI
+    public class Ui
     {
-        private static ImGuiViewportPtr viewport;
-        private static ImGuiIOPtr io;
-        private static readonly List<Delegate> windows = new()
+        private static ImGuiViewportPtr _viewport;
+        private static ImGuiIOPtr _io;
+        private static readonly List<Delegate> Windows = new()
         {
-            new Action(wGFX)
+            new Action(() => WGfx.Main(_gfx))
         };
-        static bool show_fps = true;
-        static bool show_mousepos = true;
-        static bool show_about = false;
-        static bool show_demo = false;
-        static bool debug_open;
-        private static ROM rom;
-        private static Gfx gfx;
-        static string path = "";
-        static bool filediag;
+
+        private static bool _showFps = true;
+        private static bool _showMousePos = true;
+        private static bool _showAbout = false;
+        private static bool _showDemo = false;
+        private static bool _debugOpen;
+        private static Rom _rom;
+        private static Gfx _gfx;
+        private static string _path = "";
+        private static bool _filediag;
 
         public static void Draw()
         {
-            io = ImGui.GetIO();
-            viewport = ImGui.GetMainViewport();
+            _io = ImGui.GetIO();
+            _viewport = ImGui.GetMainViewport();
 
-            debug_open = show_fps || show_mousepos;
+            _debugOpen = _showFps || _showMousePos;
 
             // Main Menu Bar
             {
@@ -37,21 +39,21 @@ namespace Mole.Gui
                     if (ImGui.BeginMenu("File"))
                     {
                         if (ImGui.MenuItem("Open ROM", "Ctrl+O"))
-                            filediag = true;
+                            _filediag = true;
                         ImGui.EndMenu();
                     }
 
                     if (ImGui.BeginMenu("Debug"))
                     {
-                        ImGui.MenuItem("FPS", null, ref show_fps);
-                        ImGui.MenuItem("Mouse Pos", null, ref show_mousepos);
-                        ImGui.MenuItem("Demo Window", null, ref show_demo);
+                        ImGui.MenuItem("FPS", null, ref _showFps);
+                        ImGui.MenuItem("Mouse Pos", null, ref _showMousePos);
+                        ImGui.MenuItem("Demo Window", null, ref _showDemo);
                         ImGui.EndMenu();
                     }
 
                     if (ImGui.BeginMenu("Help"))
                     {
-                        ImGui.MenuItem("About", null, ref show_about);
+                        ImGui.MenuItem("About", null, ref _showAbout);
                         ImGui.EndMenu();
                     }
 
@@ -69,23 +71,23 @@ namespace Mole.Gui
                 ImGui.Text("Test Window says HenlOwO, try opening a ROM");
                 ImGui.Separator();
 
-                if (rom != null)
+                if (_rom != null)
                 {
-                    ImGui.Text(String.Format("ROM FileName: {0}", rom.FileName));
-                    ImGui.Text(String.Format("ROM Path: {0}", rom.FilePath));
-                    ImGui.Text(String.Format("Copier Header: 0x{0:X2}", rom.Header != null ? rom.Header.Length : "None"));
+                    ImGui.Text($"ROM FileName: {_rom.FileName}");
+                    ImGui.Text($"ROM Path: {_rom.FilePath}");
+                    ImGui.Text($"Copier Header: 0x{(_rom.Header != null ? _rom.Header.Length : "None"):X2}");
 
                     ImGui.Separator();
                     ImGui.Text("Internal ROM Header:");
-                    ImGui.Text(string.Format("  ROM Title: \"{0}\"", rom.Title));
-                    ImGui.Text(string.Format("  Mapping Mode: {0}, {1}", rom.FastROM ? "FastROM" : "SlowROM", rom.Mapping));
-                    ImGui.Text(string.Format("  ROM Size: {0}kb", rom.ROMSize));
-                    ImGui.Text(string.Format("  SRAM Size: {0}kb", rom.SRAMSize));
-                    ImGui.Text(string.Format("  Region: {0}", rom.Region));
-                    ImGui.Text(string.Format("  Developer ID: {0:X2}", rom.DevID));
-                    ImGui.Text(string.Format("  Version: {0}", rom.Version));
-                    ImGui.Text(string.Format("  Checksum: {0:X4}", rom.Checksum));
-                    ImGui.Text(string.Format("  Checksum Complement: {0:X4}", rom.ChecksumComplement));
+                    ImGui.Text($"  ROM Title: \"{_rom.Title}\"");
+                    ImGui.Text($"  Mapping Mode: {(_rom.FastRom ? "FastROM" : "SlowROM")}, {_rom.Mapping}");
+                    ImGui.Text($"  ROM Size: {_rom.RomSize}kb");
+                    ImGui.Text($"  SRAM Size: {_rom.SramSize}kb");
+                    ImGui.Text($"  Region: {_rom.Region}");
+                    ImGui.Text($"  Developer ID: {_rom.DevId:X2}");
+                    ImGui.Text($"  Version: {_rom.Version}");
+                    ImGui.Text($"  Checksum: {_rom.Checksum:X4}");
+                    ImGui.Text($"  Checksum Complement: {_rom.ChecksumComplement:X4}");
 
                     ImGui.Separator();
 
@@ -93,7 +95,7 @@ namespace Mole.Gui
                     {
                         for (int i = 0; i < 0x34; i++)
                         {
-                            ImGui.Text(string.Format("  GFX{0:X2} @ ${1:X6}", i, gfx.GfxPointers[i]));
+                            ImGui.Text($"  GFX{i:X2} @ ${_gfx.GfxPointers[i]:X6}");
                         }
                     }
 
@@ -101,14 +103,14 @@ namespace Mole.Gui
                     {
                         for (int i = 0; i < 0x80; i++)
                         {
-                            ImGui.Text(String.Format("  ExGFX{0:X2} @ ${1:X6}", (i + 0x80), gfx.ExGfxPointers[i]));
+                            ImGui.Text($"  ExGFX{(i + 0x80):X2} @ ${_gfx.ExGfxPointers[i]:X6}");
                         }
                     }
                     if (ImGui.CollapsingHeader("SuperExGFX Pointers:"))
                     {
                         for (int i = 0; i < 0xF00; i++)
                         {
-                            ImGui.Text(String.Format("  ExGFX{0:X2} @ ${1:X6}", i + 0x100, gfx.SuperExGfxPointers[i]));
+                            ImGui.Text($"  ExGFX{i + 0x100:X2} @ ${_gfx.SuperExGfxPointers[i]:X6}");
                         }
                     }
                 }
@@ -116,35 +118,35 @@ namespace Mole.Gui
                 ImGui.End();
             }
 
-            if (debug_open) // Debug
+            if (_debugOpen) // Debug
             {
-                ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNav;
-                const float PAD = 10f;
+                ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNav;
+                const float pad = 10f;
 
-                Num.Vector2 work_pos = viewport.WorkPos;
-                Num.Vector2 work_size = viewport.WorkSize;
-                Num.Vector2 window_pos = new(work_pos.X + work_size.X - PAD, work_pos.Y + work_size.Y - PAD);
+                Num.Vector2 workPos = _viewport.Pos;
+                Num.Vector2 workSize = _viewport.Pos;
+                Num.Vector2 windowPos = new(workPos.X + workSize.X - pad, workPos.Y + workSize.Y - pad);
 
-                ImGui.SetNextWindowPos(window_pos, ImGuiCond.Always, new Num.Vector2(1, 1));
-                window_flags |= ImGuiWindowFlags.NoMove;
+                ImGui.SetNextWindowPos(windowPos, ImGuiCond.Always, new Num.Vector2(1, 1));
+                windowFlags |= ImGuiWindowFlags.NoMove;
 
                 ImGui.SetNextWindowBgAlpha(0.35f);
 
-                if (ImGui.Begin("Debug", ref debug_open, window_flags))
+                if (ImGui.Begin("Debug", ref _debugOpen, windowFlags))
                 {
-                    if (show_fps) { ImGui.Text(string.Format("{0:F3} ms/frame ({1:F1} FPS)", 1000f / io.Framerate, io.Framerate)); }
+                    if (_showFps) { ImGui.Text($"{1000f / _io.Framerate:F3} ms/frame ({_io.Framerate:F1} FPS)"); }
 
-                    if (show_mousepos)
+                    if (_showMousePos)
                     {
                         if (ImGui.IsMousePosValid())
-                            ImGui.Text(String.Format("Mouse Position: ({0},{1})", io.MousePos.X, io.MousePos.Y));
+                            ImGui.Text($"Mouse Position: ({_io.MousePos.X},{_io.MousePos.Y})");
                         else
                             ImGui.Text("Mouse Position: <invalid>");
                     }
 
                     if (ImGui.BeginPopupContextWindow())
                     {
-                        if (debug_open && ImGui.MenuItem("Close")) { show_fps = false; show_mousepos = false; }
+                        if (_debugOpen && ImGui.MenuItem("Close")) { _showFps = false; _showMousePos = false; }
                         ImGui.EndPopup();
                     }
 
@@ -153,33 +155,29 @@ namespace Mole.Gui
             }
 
             ImGui.SetNextWindowSize(new Num.Vector2(900, 400), ImGuiCond.FirstUseEver);
-            if (show_about)
+            if (_showAbout)
             {
-                if (ImGui.Begin("About", ref show_about))
+                if (ImGui.Begin("About", ref _showAbout))
                 {
                     ImGui.Text(Strings.Copyright);
                     ImGui.Separator();
-                    ImGui.Text(string.Format("Mole Shared Version: {0}", Strings.MoleSharedVersion));
-                    ImGui.Text(string.Format("    MOLE GUI Version {0}", Strings.MoleSharedVersion));
+                    ImGui.Text($"Mole Shared Version: {Strings.MoleSharedVersion}");
+                    ImGui.Text($"    MOLE GUI Version {Strings.MoleSharedVersion}");
                     ImGui.Separator();
                     string libs = 
                         "Libraries:\n" +
                         "All of the following libraries are licensed under their respective Open Source Software licenses:\n";
                     foreach (var lib in Strings.Libraries)
                     {
-                        libs += string.Format("  {0,-25}{1,-50}{2}\n",
-                            lib.Name + " v" + lib.Version,
-                            "| " + lib.Repo,
-                            "| " + lib.License
-                        );
+                        libs += $"  {lib.Name + " v" + lib.Version,-25}{"| " + lib.Repo,-50}{"| " + lib.License}\n";
                     }
                     ImGui.Text(libs);
                 }
             }
 
-            if (show_demo) ImGui.ShowDemoWindow(ref show_demo);
+            if (_showDemo) ImGui.ShowDemoWindow(ref _showDemo);
 
-            foreach (var w in windows)
+            foreach (var w in Windows)
                 w.DynamicInvoke();
         }
 
@@ -187,9 +185,9 @@ namespace Mole.Gui
         /// <summary>
         /// Makeshift FileDialog, will improve later
         /// </summary>
-        public static void WFileDialog()
+        private static void WFileDialog()
         {
-            if (filediag)
+            if (_filediag)
             {
                 if (!ImGui.IsPopupOpen("FileDialog")) ImGui.OpenPopup("FileDialog");
                 if (ImGui.IsPopupOpen("FileDialog"))
@@ -197,20 +195,21 @@ namespace Mole.Gui
                     ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new Num.Vector2(0.5f, 0.5f));
                     if (ImGui.BeginPopupModal("FileDialog"))
                     {
-                        if (ImGui.InputTextWithHint("Path", @"C:\", ref path, 500, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
+                        if (ImGui.InputTextWithHint("Path", @"C:\", _path, 
+                            500, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
                         {
-                            rom = new(path);
-                            gfx = new(rom);
+                            _rom = new(_path);
+                            _gfx = new(_rom);
                             ImGui.CloseCurrentPopup();
-                            filediag = false;
+                            _filediag = false;
                         }
 
                         if (ImGui.Button("Open"))
                         {
-                            rom = new(path);
-                            gfx = new(rom);
+                            _rom = new Rom(_path);
+                            _gfx = new Gfx(_rom);
                             ImGui.CloseCurrentPopup();
-                            filediag = false;
+                            _filediag = false;
                         }
 
                         ImGui.SetItemDefaultFocus();
@@ -218,7 +217,7 @@ namespace Mole.Gui
                         if (ImGui.Button("Cancel"))
                         {
                             ImGui.CloseCurrentPopup();
-                            filediag = false;
+                            _filediag = false;
                         }
 
                         ImGui.EndPopup();

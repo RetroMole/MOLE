@@ -3,12 +3,10 @@
     <PropertyGroup>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <AssemblyName>XNAController</AssemblyName>
-        <RootNamespace>XNAController</RootNamespace>
+        <AssemblyName>Mole.MonoGame</AssemblyName>
+        <RootNamespace>Mole.MonoGame</RootNamespace>
         <TargetFramework>net5.0</TargetFramework>
         <OutputType>Library</OutputType>
-        <ApplicationIcon />
-        <StartupObject></StartupObject>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -16,6 +14,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="ImGui.NET" Version="1.78.0" />
       <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
     </ItemGroup>
 </Project>

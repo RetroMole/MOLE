@@ -1,13 +1,13 @@
-﻿using ImGuiNET;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 #pragma warning disable IDE0044 // Add readonly modifier
-namespace XNAController
+namespace Mole.MonoGame
 {
     /// <summary>
     /// ImGui renderer for use with XNA-likes (FNA & MonoGame)

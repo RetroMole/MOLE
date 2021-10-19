@@ -1,11 +1,11 @@
-﻿using ImGuiNET;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
+using ImGuiNET;
 using Veldrid;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
 
-namespace VeldridController
+namespace Mole.Veldrid
 {
     public class VeldridImGuiWindow : IDisposable
     {

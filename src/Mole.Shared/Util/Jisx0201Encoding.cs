@@ -9,7 +9,7 @@ namespace System.Text
         public override int GetMaxByteCount(int charCount) => charCount;
         public override int GetMaxCharCount(int byteCount) => byteCount;
 
-        private char[] conversionArray =
+        private char[] _conversionArray =
             new char[32].Concat(new char[] {
                 ' ', '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/',
                 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?',
@@ -39,7 +39,7 @@ namespace System.Text
         {
             for (var i = 0; i < byteCount; i++)
             {
-                chars[charIndex + i] = conversionArray[bytes[byteIndex + i]];
+                chars[charIndex + i] = _conversionArray[bytes[byteIndex + i]];
             }
 
             return byteCount;
@@ -47,15 +47,15 @@ namespace System.Text
 
         private byte GetByte(char c)
         {
-            for (var i = 0; i < conversionArray.Length; i++)
+            for (var i = 0; i < _conversionArray.Length; i++)
             {
-                if (conversionArray[i] == c)
+                if (_conversionArray[i] == c)
                     return (byte)i;
             }
 
             throw new Exception("Invalid character");
         }
 
-        private char GetChar(byte b) => conversionArray[b];
+        private char GetChar(byte b) => _conversionArray[b];
     }
 }

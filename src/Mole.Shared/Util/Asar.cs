@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -12,6 +13,7 @@ namespace Mole.Shared.Util
     /// <summary>
     /// Contains various functions to apply patches.
     /// </summary>
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static unsafe class Asar
     {
         public const string DllPath = "asar";
@@ -29,14 +31,14 @@ namespace Mole.Shared.Util
             int maj = ver / 10000;
             int min = (ver - (maj * 10000)) / 100;
             int fx = (ver - ((maj * 10000) + (min * 100))) / 1;
-            return String.Format("{0}.{1}{2}", maj, min, fx);
+            return $"{maj}.{min}{fx}";
         }
 
         /// <summary>
         /// Initializes Asar, should be done before doing anything.
         /// </summary>
         /// <returns>True if success</returns>
-        [DllImport(dllPath, EntryPoint = "asar_init", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, EntryPoint = "asar_init", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
         private static extern bool AsarInit();
 
@@ -44,7 +46,7 @@ namespace Mole.Shared.Util
         /// Closes Asar, should be done after finishing.
         /// </summary>
         /// <returns>True if success</returns>
-        [DllImport(dllPath, EntryPoint = "asar_close", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, EntryPoint = "asar_close", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool Close();
 
@@ -53,7 +55,7 @@ namespace Mole.Shared.Util
         /// This means that 1.2.34 would be returned as 10234.
         /// </summary>
         /// <returns>Asar version</returns>
-        [DllImport(dllPath, EntryPoint = "asar_version", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, EntryPoint = "asar_version", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Version();
 
         /// <summary>
@@ -63,7 +65,7 @@ namespace Mole.Shared.Util
         /// It's not very useful directly, since Asar.init() verifies this automatically.
         /// </summary>
         /// <returns>Asar API version</returns>
-        [DllImport(dllPath, EntryPoint = "asar_apiversion", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, EntryPoint = "asar_apiversion", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ApiVersion();
 
         /// <summary>
@@ -71,15 +73,15 @@ namespace Mole.Shared.Util
         /// Not useful for much, since patch() already does this.
         /// </summary>
         /// <returns>True if success</returns>
-        [DllImport(dllPath, EntryPoint = "asar_reset", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, EntryPoint = "asar_reset", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool Reset();
 
-        [DllImport(dllPath, EntryPoint = "asar_patch", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, EntryPoint = "asar_patch", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
         private static extern bool _Patch(string patchLocation, byte* romData, int bufLen, int* romLength);
 
-        [DllImport(dllPath, EntryPoint = "asar_patch_ex", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, EntryPoint = "asar_patch_ex", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
         private static extern bool _Patch_ex(ref RawPatchParams parameters);
 
@@ -90,51 +92,51 @@ namespace Mole.Shared.Util
         /// than 4MB or something. It's not very useful directly, since Asar.patch() uses this automatically.
         /// </summary>
         /// <returns>Maximum output size of the ROM.</returns>
-        [DllImport(dllPath, EntryPoint = "asar_maxromsize", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, EntryPoint = "asar_maxromsize", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern int MaxROMSize();
 
-        [DllImport(dllPath, EntryPoint = "asar_geterrors", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern RawAsarError* _GetErrors(out int Length);
+        [DllImport(DllPath, EntryPoint = "asar_geterrors", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern RawAsarError* _GetErrors(out int length);
 
-        [DllImport(dllPath, EntryPoint = "asar_getwarnings", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern RawAsarError* _GetWarnings(out int Length);
+        [DllImport(DllPath, EntryPoint = "asar_getwarnings", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern RawAsarError* _GetWarnings(out int length);
 
-        [DllImport(dllPath, EntryPoint = "asar_getprints", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void** _GetPrints(out int Length);
+        [DllImport(DllPath, EntryPoint = "asar_getprints", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void** _GetPrints(out int length);
 
-        [DllImport(dllPath, EntryPoint = "asar_getalllabels", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern RawAsarLabel* _GetAllLabels(out int Length);
+        [DllImport(DllPath, EntryPoint = "asar_getalllabels", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern RawAsarLabel* _GetAllLabels(out int length);
 
-        [DllImport(dllPath, EntryPoint = "asar_getlabelval", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int GetLabelVal(string LabelName);
+        [DllImport(DllPath, EntryPoint = "asar_getlabelval", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int GetLabelVal(string labelName);
 
         /// <summary>
         /// Gets contents of a define. If define doesn't exists, a null string will be generated.
         /// </summary>
-        /// <param name="DefineName">The define name.</param>
+        /// <param name="defineName">The define name.</param>
         /// <returns>The define content. If define has not found, this will be null.</returns>
-        [DllImport(dllPath, EntryPoint = "asar_getdefine", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, EntryPoint = "asar_getdefine", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.AnsiBStr)]
-        public static extern string GetDefine(string DefineName);
+        public static extern string GetDefine(string defineName);
 
-        [DllImport(dllPath, EntryPoint = "asar_getalldefines", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern RawAsarDefine* _GetAllDefines(out int Length);
+        [DllImport(DllPath, EntryPoint = "asar_getalldefines", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern RawAsarDefine* _GetAllDefines(out int length);
 
-        [DllImport(dllPath, EntryPoint = "asar_resolvedefines", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, EntryPoint = "asar_resolvedefines", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.AnsiBStr)]
-        public static extern string ResolveDefines(string Data, bool LearnNew);
+        public static extern string ResolveDefines(string data, bool learnNew);
 
-        [DllImport(dllPath, EntryPoint = "asar_math", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        private static extern double AsarMath(string Math, out IntPtr Error);
+        [DllImport(DllPath, EntryPoint = "asar_math", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        private static extern double AsarMath(string math, out IntPtr error);
 
-        [DllImport(dllPath, EntryPoint = "asar_getwrittenblocks", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, EntryPoint = "asar_getwrittenblocks", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern RawAsarWrittenBlock* _GetWrittenBlocks(out int length);
 
         /// <summary>
         /// Gets mapper currently used by Asar.
         /// </summary>
         /// <returns>Returns mapper currently used by Asar.</returns>
-        [DllImport(dllPath, EntryPoint = "asar_getmapper", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, EntryPoint = "asar_getmapper", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         public static extern MapperType GetMapper();
 
         /// <summary>
@@ -142,7 +144,7 @@ namespace Mole.Shared.Util
         /// </summary>
         /// <param name="format">The symbol file format to generate</param>
         /// <returns>Returns the textual contents of the symbols file.</returns>
-        [DllImport(dllPath, EntryPoint = "asar_getsymbolsfile", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DllPath, EntryPoint = "asar_getsymbolsfile", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.AnsiBStr)]
         public static extern string GetSymbolsFile(string format = "wla");
 
@@ -181,76 +183,76 @@ namespace Mole.Shared.Util
         /// <summary>
         /// Applies a patch.
         /// </summary>
-        /// <param name="PatchLocation">The patch location.</param>
-        /// <param name="ROMData">The rom data. It must not be headered.</param>
-        /// <param name="IncludePaths">lists additional include paths</param>
-        /// <param name="ShouldReset">specifies whether asar should clear out all defines, labels, etc from the last inserted file.<br/> 
+        /// <param name="patchLocation">The patch location.</param>
+        /// <param name="romData">The rom data. It must not be headered.</param>
+        /// <param name="includePaths">lists additional include paths</param>
+        /// <param name="shouldReset">specifies whether asar should clear out all defines, labels, etc from the last inserted file.<br/> 
         /// Setting it to False will make Asar act like the currently patched file was directly appended to the previous one.</param>
-        /// <param name="AdditionalDefines">specifies extra defines to give to the patch</param>
-        /// <param name="STDIncludeFile">path to a file that specifes additional include paths</param>
-        /// <param name="STDDefineFile">path to a file that specifes additional defines</param>
+        /// <param name="additionalDefines">specifies extra defines to give to the patch</param>
+        /// <param name="stdIncludeFile">path to a file that specifes additional include paths</param>
+        /// <param name="stdDefineFile">path to a file that specifes additional defines</param>
         /// <returns>True if no errors.</returns>
-        public static bool Patch(string PatchLocation, ref byte[] ROMData, string[] IncludePaths = null,
-            bool ShouldReset = true, Dictionary<string, string> AdditionalDefines = null,
-            string STDIncludeFile = null, string STDDefineFile = null)
+        public static bool Patch(string patchLocation, ref byte[] romData, string[] includePaths = null,
+            bool shouldReset = true, Dictionary<string, string> additionalDefines = null,
+            string stdIncludeFile = null, string stdDefineFile = null)
         {
-            if (IncludePaths == null)
+            if (includePaths == null)
             {
-                IncludePaths = Array.Empty<string>();
+                includePaths = Array.Empty<string>();
             }
-            if (AdditionalDefines == null)
+            if (additionalDefines == null)
             {
-                AdditionalDefines = new Dictionary<string, string>();
+                additionalDefines = new Dictionary<string, string>();
             }
 
-            var includes = new byte*[IncludePaths.Length];
-            var defines = new RawAsarDefine[AdditionalDefines.Count];
+            var includes = new byte*[includePaths.Length];
+            var defines = new RawAsarDefine[additionalDefines.Count];
 
             try
             {
-                for (int i = 0; i < IncludePaths.Length; i++)
+                for (int i = 0; i < includePaths.Length; i++)
                 {
-                    includes[i] = (byte*)Marshal.StringToCoTaskMemAnsi(IncludePaths[i]);
+                    includes[i] = (byte*)Marshal.StringToCoTaskMemAnsi(includePaths[i]);
                 }
 
-                var keys = AdditionalDefines.Keys.ToArray();
+                var keys = additionalDefines.Keys.ToArray();
 
-                for (int i = 0; i < AdditionalDefines.Count; i++)
+                for (int i = 0; i < additionalDefines.Count; i++)
                 {
                     var name = keys[i];
-                    var value = AdditionalDefines[name];
+                    var value = additionalDefines[name];
                     defines[i].name = Marshal.StringToCoTaskMemAnsi(name);
                     defines[i].contents = Marshal.StringToCoTaskMemAnsi(value);
                 }
 
                 int newsize = MaxROMSize();
-                int length = ROMData.Length;
+                int length = romData.Length;
 
                 if (length < newsize)
                 {
-                    Array.Resize(ref ROMData, newsize);
+                    Array.Resize(ref romData, newsize);
                 }
 
                 bool success;
 
-                fixed (byte* ptr = ROMData)
+                fixed (byte* ptr = romData)
                 fixed (byte** includepaths = includes)
-                fixed (RawAsarDefine* additional_defines = defines)
+                fixed (RawAsarDefine* additionalDefines2 = defines)
                 {
                     var param = new RawPatchParams
                     {
-                        patchloc = PatchLocation,
+                        patchloc = patchLocation,
                         romdata = ptr,
                         buflen = newsize,
                         romlen = &length,
 
-                        should_reset = ShouldReset,
+                        should_reset = shouldReset,
                         includepaths = includepaths,
                         numincludepaths = includes.Length,
-                        additional_defines = additional_defines,
+                        additional_defines = additionalDefines2,
                         additional_define_count = defines.Length,
-                        stddefinesfile = STDDefineFile,
-                        stdincludesfile = STDIncludeFile
+                        stddefinesfile = stdDefineFile,
+                        stdincludesfile = stdIncludeFile
                     };
                     param.structsize = Marshal.SizeOf(param);
 
@@ -259,7 +261,7 @@ namespace Mole.Shared.Util
 
                 if (length < newsize)
                 {
-                    Array.Resize(ref ROMData, length);
+                    Array.Resize(ref romData, length);
                 }
 
                 return success;
@@ -280,16 +282,16 @@ namespace Mole.Shared.Util
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct RawAsarError
+        private readonly struct RawAsarError
         {
-            public IntPtr fullerrdata;
-            public IntPtr rawerrdata;
-            public IntPtr block;
-            public IntPtr filename;
-            public int line;
-            public IntPtr callerfilename;
-            public int callerline;
-            public int errid;
+            public readonly IntPtr fullerrdata;
+            public readonly IntPtr rawerrdata;
+            public readonly IntPtr block;
+            public readonly IntPtr filename;
+            public readonly int line;
+            public readonly IntPtr callerfilename;
+            public readonly int callerline;
+            public readonly int errid;
         };
 
         private static Asarerror[] CleanErrors(RawAsarError* ptr, int length)
@@ -355,8 +357,8 @@ namespace Mole.Shared.Util
         [StructLayout(LayoutKind.Sequential)]
         private struct RawAsarLabel
         {
-            public IntPtr name;
-            public int location;
+            public readonly IntPtr name;
+            public readonly int location;
         }
 
         /// <summary>
@@ -408,14 +410,14 @@ namespace Mole.Shared.Util
         /// <summary>
         /// Parse a string of math.
         /// </summary>
-        /// <param name="Math">The math string, i.e "1+1"</param>
-        /// <param name="Error">If occurs any error, it will showed here.</param>
+        /// <param name="math">The math string, i.e "1+1"</param>
+        /// <param name="error">If occurs any error, it will showed here.</param>
         /// <returns>Product.</returns>
-        public static double Math(string Math, out string Error)
+        public static double Math(string math, out string error)
         {
-            double value = AsarMath(Math, out IntPtr err);
+            double value = AsarMath(math, out IntPtr err);
 
-            Error = Marshal.PtrToStringAnsi(err);
+            error = Marshal.PtrToStringAnsi(err);
             return value;
         }
 
@@ -423,9 +425,9 @@ namespace Mole.Shared.Util
         [StructLayout(LayoutKind.Sequential)]
         private struct RawAsarWrittenBlock
         {
-            public int pcoffset;
-            public int snesoffset;
-            public int numbytes;
+            public readonly int pcoffset;
+            public readonly int snesoffset;
+            public readonly int numbytes;
         };
 
         private static Asarwrittenblock[] CleanWrittenBlocks(RawAsarWrittenBlock* ptr, int length)

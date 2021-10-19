@@ -10,15 +10,15 @@ namespace Mole.Shared.Utils
 {
     public class Lz2
     {
-        private const byte DIRECT_COPY = 0;
-        private const byte BYTE_FILL = 1;
-        private const byte WORD_FILL = 2;
-        private const byte INCREASE_FILL = 3;
-        private const byte REPEAT = 4;
-        private const byte LONG_COMMAND = 7;
+        private const byte DirectCopy = 0;
+        private const byte ByteFill = 1;
+        private const byte WordFill = 2;
+        private const byte IncreaseFill = 3;
+        private const byte Repeat = 4;
+        private const byte LongCommand = 7;
 
         // How many bytes each command must encode to outdo Direct Copy
-        private readonly byte[] COMMAND_WEIGHT =
+        private readonly byte[] _commandWeight =
             {
                 0,  // Direct Copy
                 3,  // Byte Fill
@@ -48,10 +48,10 @@ namespace Mole.Shared.Utils
                 byte nextByte = 0;
                 ushort repeatAddress = 0;
 
-                int[] byteCount = new int[REPEAT+1];
+                int[] byteCount = new int[Repeat+1];
 
                 // Evaluate Byte Fill
-                byteCount[BYTE_FILL] = 1;
+                byteCount[ByteFill] = 1;
                 { 
                     for (int i = position; i < length; i++)
                     {
@@ -59,16 +59,16 @@ namespace Mole.Shared.Utils
                         {
                             break;
                         }
-                        byteCount[BYTE_FILL]++;
+                        byteCount[ByteFill]++;
                     }
                 }
 
                 // Evaluate Word Fill
-                byteCount[WORD_FILL] = 1;
+                byteCount[WordFill] = 1;
                 {
                     if (position < length)
                     {
-                        byteCount[WORD_FILL]++;
+                        byteCount[WordFill]++;
                         nextByte = data[position];
                         int oddEven = 0;
                         for (int i = position + 1; i < length; i++, oddEven++)
@@ -78,13 +78,13 @@ namespace Mole.Shared.Utils
                             {
                                 break;
                             }
-                            byteCount[WORD_FILL]++;
+                            byteCount[WordFill]++;
                         }
                     }
                 }
 
                 // Evaluate Increasing Fill
-                byteCount[INCREASE_FILL] = 1;
+                byteCount[IncreaseFill] = 1;
                 {
                     byte increaseByte = (byte)(currentByte + 1);
                     for (int i = position; i < length; i++)
@@ -93,12 +93,12 @@ namespace Mole.Shared.Utils
                         {
                             break;
                         }
-                        byteCount[INCREASE_FILL]++;
+                        byteCount[IncreaseFill]++;
                     }
                 }
 
                 // Evaluate Repeat
-                byteCount[REPEAT] = 0;
+                byteCount[Repeat] = 0;
                 {
                     //Slow O(n^2) brute force algorithm for now
                     int maxAddressInt = Math.Min(0xFFFF, position - 2);
@@ -117,10 +117,10 @@ namespace Mole.Shared.Utils
                                 chunkSize++;
                             }
 
-                            if (chunkSize > byteCount[REPEAT])
+                            if (chunkSize > byteCount[Repeat])
                             {
                                 repeatAddress = (ushort)start;
-                                byteCount[REPEAT] = chunkSize;
+                                byteCount[Repeat] = chunkSize;
                             }
 
                         }
@@ -129,12 +129,12 @@ namespace Mole.Shared.Utils
                 }
 
                 // Choose next command
-                byte nextCommand = DIRECT_COPY; // Default command unless anything better is found
+                byte nextCommand = DirectCopy; // Default command unless anything better is found
                 int nextCommandByteCount = 1;
                 for (byte commandSuggestion = 1; commandSuggestion < byteCount.Length; commandSuggestion++)
                 {
                     // Would this command save any space?
-                    if (byteCount[commandSuggestion] >= COMMAND_WEIGHT[commandSuggestion])
+                    if (byteCount[commandSuggestion] >= _commandWeight[commandSuggestion])
                     {
                         // Is it better than what we already have?
                         if (byteCount[commandSuggestion] > nextCommandByteCount)
@@ -147,7 +147,7 @@ namespace Mole.Shared.Utils
 
                 // Direct Copy commands are incrementally built.
                 // Output or add to as needed.
-                if (nextCommand == DIRECT_COPY)
+                if (nextCommand == DirectCopy)
                 {
                     if (directCopyBuffer == null)
                     {
@@ -158,7 +158,7 @@ namespace Mole.Shared.Utils
                     if (directCopyBuffer.Count >= 1023)
                     {
                         // Direct Copy has a maximum length of 1023 bytes
-                        OutputCommand(DIRECT_COPY, directCopyBuffer.Count, output);
+                        OutputCommand(DirectCopy, directCopyBuffer.Count, output);
                         output.AddRange(directCopyBuffer);
                         directCopyBuffer = null;
                     }
@@ -167,7 +167,7 @@ namespace Mole.Shared.Utils
                     if (directCopyBuffer != null)
                     {
                         // Direct Copy command in progress. Write it to output before proceeding
-                        OutputCommand(DIRECT_COPY, directCopyBuffer.Count, output);
+                        OutputCommand(DirectCopy, directCopyBuffer.Count, output);
                         output.AddRange(directCopyBuffer);
                         directCopyBuffer = null;
                     }
@@ -176,23 +176,23 @@ namespace Mole.Shared.Utils
                 // Output command
                 switch(nextCommand)
                 {
-                    case DIRECT_COPY:
+                    case DirectCopy:
                         // Already handled above
                         break;
-                    case BYTE_FILL:
+                    case ByteFill:
                         OutputCommand(nextCommand, nextCommandByteCount, output);
                         output.Add(currentByte);
                         break;
-                    case WORD_FILL:
+                    case WordFill:
                         OutputCommand(nextCommand, nextCommandByteCount, output);
                         output.Add(currentByte);
                         output.Add(nextByte);
                         break;
-                    case INCREASE_FILL:
+                    case IncreaseFill:
                         OutputCommand(nextCommand, nextCommandByteCount, output);
                         output.Add(currentByte);
                         break;
-                    case REPEAT:
+                    case Repeat:
                         OutputCommand(nextCommand, nextCommandByteCount, output);
                         output.Add((byte)(repeatAddress >> 8));
                         output.Add((byte)repeatAddress);
@@ -207,7 +207,7 @@ namespace Mole.Shared.Utils
             // Output Direct Copy buffer if it exists
             if (directCopyBuffer != null)
             {
-                OutputCommand(DIRECT_COPY, directCopyBuffer.Count, output);
+                OutputCommand(DirectCopy, directCopyBuffer.Count, output);
                 output.AddRange(directCopyBuffer);
             }
 
@@ -236,7 +236,7 @@ namespace Mole.Shared.Utils
 
                     byte command = (byte)(commandLength >> 5);
                     int length;
-                    if (command == LONG_COMMAND) // Long command
+                    if (command == LongCommand) // Long command
                     {
                         length = compressedData[position++];
                         length |= ((commandLength & 3) << 8);
@@ -251,20 +251,20 @@ namespace Mole.Shared.Utils
 
                     switch (command)
                     {
-                        case DIRECT_COPY: // Direct Copy
+                        case DirectCopy: // Direct Copy
                             for (int i = 0; i < length; i++)
                             {
                                 output.Add(compressedData[position++]);
                             }
                             break;
-                        case BYTE_FILL: // Byte Fill
+                        case ByteFill: // Byte Fill
                             byte fillByte = compressedData[position++];
                             for (int i = 0; i < length; i++)
                             {
                                 output.Add(fillByte);
                             }
                             break;
-                        case WORD_FILL: // Word Fill
+                        case WordFill: // Word Fill
                             byte fillByteEven = compressedData[position++];
                             byte fillByteOdd = compressedData[position++];
                             for (int i = 0; i < length; i++)
@@ -273,14 +273,14 @@ namespace Mole.Shared.Utils
                                 output.Add(thisByte);
                             }
                             break;
-                        case INCREASE_FILL: // Increasing Fill
+                        case IncreaseFill: // Increasing Fill
                             byte increaseFillByte = compressedData[position++];
                             for (int i = 0; i < length; i++)
                             {
                                 output.Add(increaseFillByte++);
                             }
                             break;
-                        case REPEAT: // Repeat
+                        case Repeat: // Repeat
                             ushort origin = (ushort)((compressedData[position++] << 8) | compressedData[position++]);
                             for (int i = 0; i < length; i++)
                             {

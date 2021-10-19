@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace VeldridController
+namespace Mole.Veldrid
 {
     public class FixedAsciiString : IDisposable
     {

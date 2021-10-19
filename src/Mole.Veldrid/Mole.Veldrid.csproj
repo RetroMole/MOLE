@@ -1,21 +1,16 @@
-﻿xs<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>Mole.Veldrid</AssemblyName>
+    <RootNamespace>Mole.Veldrid</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <ApplicationIcon />
-    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Veldrid" Version="4.8.0" />
-    <PackageReference Include="Veldrid.StartupUtilities" Version="4.8.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Shaders/GLSL/imgui-vertex.glsl" LogicalName="imgui-vertex.glsl" />
@@ -26,5 +21,14 @@
     <EmbeddedResource Include="Shaders/SPIR-V/imgui-frag.spv" LogicalName="imgui-frag.spv" />
     <EmbeddedResource Include="Shaders/Metal/imgui-vertex.metallib" LogicalName="imgui-vertex.metallib" />
     <EmbeddedResource Include="Shaders/Metal/imgui-frag.metallib" LogicalName="imgui-frag.metallib" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ImGui.NET.Docking" Version="1.75.0" />
+    <PackageReference Include="Veldrid" Version="4.8.0" />
+    <PackageReference Include="Veldrid.ImGui" Version="5.72.0" />
+    <PackageReference Include="Veldrid.SDL2" Version="4.8.0" />
+    <PackageReference Include="Veldrid.StartupUtilities" Version="4.8.0" />
+    <PackageReference Include="Veldrid.Utilities" Version="4.8.0" />
   </ItemGroup>
 </Project>

@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Mole.Shared.Util;
+using Mole.Shared.Utils;
 using NLog;
 
 namespace Mole.Shared
 {
+    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public class Gfx
     {
         public uint[] ExGfxPointers = new uint[0x80];
@@ -12,7 +16,7 @@ namespace Mole.Shared
         public uint[] GfxPointers = new uint[0x34];
         public uint[] SuperExGfxPointers = new uint[0xF00];
 
-        public Gfx(ROM rom)
+        public Gfx(Rom rom)
         {
             var logger = NLog.LogManager.GetCurrentClassLogger();
             var low = rom.Skip(rom.SnesToPc(0x00B992)).Take(0x32).ToArray();
@@ -24,9 +28,9 @@ namespace Mole.Shared
             GfxPointers[0x33] = 0x08BFC0;
 
             var ex = rom.Skip(rom.SnesToPc(0x0FF600)).Take(0x180).ToArray();
-            for (var i = 0; i < 0x80; i++) _exGfxPointers[i] = Bytes.B2Ul(ex.Skip(i * 3).Take(3).ToArray());
+            for (var i = 0; i < 0x80; i++) ExGfxPointers[i] = Bytes.B2Ul(ex.Skip(i * 3).Take(3).ToArray());
 
-            if (rom.ROMSize <= 512) {
+            if (rom.RomSize <= 512) {
                 logger.Warn("Unexpanded ROM, SuperExGFX can't be used");
                 Array.Fill<uint>(SuperExGfxPointers, 0xFFFFFF);
             } else {
@@ -35,7 +39,7 @@ namespace Mole.Shared
                 for (var i = 0; i < 0xF00; i++) SuperExGfxPointers[i] = Bytes.B2Ul(supex.Skip(i * 3).Take(3).ToArray());
             }
             
-            _gfx0 = Lz2.Decompress(rom.Skip(rom.SnesToPc((int) GfxPointers[0])).Take(2104).ToArray());
+            Gfx0 = new Lz2().Decompress(rom.Skip(rom.SnesToPc((int) GfxPointers[0])).Take(2104).ToArray(), 0);
         }
     }
 }
