@@ -1,0 +1,97 @@
+name: BuildAsar
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 0 * * 1'
+
+jobs:
+  BuildAsarLinux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      # Update submodules
+      - name: Update submodules
+        run: git submodule update --init   
+              
+      # Get CMake
+      - name: Get CMake
+        uses: lukka/get-cmake@v3.21.2
+
+      # CMake Asar project
+      - name: Cmake asar
+        shell: bash
+        run: |
+          mkdir ./bin
+          cmake -S ./src/Asar/src -B ./src/Asar/out
+          cd ./src/Asar/out/asar
+          make
+          
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: AsarLinux
+          path: ./src/Asar/out/asar/libasar.so
+          retention-days: 30
+  
+  BuildAsarWindows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      # Update submodules
+      - name: Update submodules
+        run: git submodule update --init 
+        
+      # Get CMake
+      - name: Get CMake
+        uses: lukka/get-cmake@v3.21.2
+        
+      # Setup MSBuild
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.0.3
+
+      # CMake Asar project
+      - name: Cmake asar
+        run: |
+          mkdir ./bin
+          cmake -S ./src/Asar/src -B ./src/Asar/out
+          cd ./src/Asar/out/asar
+          msbuild asar.vcxproj
+          
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: AsarWindows
+          path: ./src/Asar/out/asar/asar.dll
+          retention-days: 30
+          
+  BuildAsarMacOS:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      # Update submodules
+      - name: Update submodules
+        run: git submodule update --init 
+      
+      # Get CMake
+      - name: Get CMake
+        uses: lukka/get-cmake@v3.21.2
+
+      # CMake Asar project
+      - name: Cmake asar
+        shell: bash
+        run: |
+          mkdir ./bin
+          cmake -S ./src/Asar/src -B ./src/Asar/out
+          cd ./src/Asar/out/asar
+          make
+          
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: AsarWindows
+          path: ./src/Asar/out/asar/libasar.dylib
+          retention-days: 30
+  
