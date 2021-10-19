@@ -1,8 +1,8 @@
-name: Build MOLE
+name: Build
 on: [push, pull_request, workflow_dispatch]
 
 jobs:        
-  Linux:
+  LinuxBuild:
     if: 
       ${{ 
         !(
@@ -59,7 +59,7 @@ jobs:
           name: Linux
           path: ./bin
           
-  Windows:
+  WindowsBuild:
     if: 
       ${{ 
         !(
@@ -117,7 +117,7 @@ jobs:
           name: Windows
           path: ./bin
           
-  MacOS:
+  MacOSBuild:
     if: 
       ${{ 
         !(
