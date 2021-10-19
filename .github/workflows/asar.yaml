@@ -91,7 +91,7 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: AsarWindows
+          name: AsarMacOS
           path: ./src/Asar/out/asar/libasar.dylib
           retention-days: 30
   
