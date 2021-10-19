@@ -55,7 +55,7 @@ jobs:
         run: dotnet test ./src/MOLE.sln -o ./bin
 
 
-  Windows:
+  WindowsTest:
     if: 
       ${{ 
         !(
@@ -108,7 +108,7 @@ jobs:
         run: dotnet test ./src/MOLE.sln -o ./bin
 
 
-  MacOS:
+  MacOSTest:
     if: 
       ${{ 
         !(
