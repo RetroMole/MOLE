@@ -26,21 +26,6 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '5.0.401'    
-              
-      # Get CMake
-      - name: Get CMake
-        uses: lukka/get-cmake@v3.21.2
-
-      # CMake Asar project
-      - name: Cmake asar
-        shell: bash
-        run: |
-          mkdir ./bin
-          cmake -S ./src/Asar/src -B ./src/Asar/out
-          cd ./src/Asar/out/asar
-          make
-          cd ../../../../
-          cp ./src/Asar/out/asar/libasar.so ./bin/libasar.so
       
       # Build solution
       - name: Build solution
@@ -50,7 +35,14 @@ jobs:
       - name: Copy cimgui
         shell: bash
         run: cp "./src/ImGui.NET/deps/cimgui/linux-x64/cimgui.so" "./bin/cimgui.so"
-
+        
+      # Download asar artifact to output
+      - name: Download workflow artifact
+        uses: dawidd6/action-download-artifact@v2.15.0
+        with:
+          workflow: 'asar.yaml'
+          name: 'AsarLinux'
+          path: './bin'
       
       # Upload build artifacts to github
       - name: Upload build artifacts
@@ -83,24 +75,6 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '5.0.401'    
-              
-      # Get CMake
-      - name: Get CMake
-        uses: lukka/get-cmake@v3.21.2
-        
-      # Setup MSBuild
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.0.3
-
-      # CMake Asar project
-      - name: Cmake asar
-        run: |
-          mkdir ./bin
-          cmake -S ./src/Asar/src -B ./src/Asar/out
-          cd ./src/Asar/out/asar
-          msbuild asar.vcxproj
-          cd ../../../../
-          copy ./src/Asar/out/asar/Debug/asar.dll ./bin/asar.dll
       
       # Build solution
       - name: Build solution
@@ -109,6 +83,14 @@ jobs:
       # Copy cimgui to output
       - name: Copy cimgui
         run: copy "./src/ImGui.NET/deps/cimgui/win-x64/cimgui.dll" "./bin/cimgui.dll"
+      
+      # Download asar artifact to output
+      - name: Download workflow artifact
+        uses: dawidd6/action-download-artifact@v2.15.0
+        with:
+          workflow: 'asar.yaml'
+          name: 'AsarWindows'
+          path: './bin'
       
       # Upload build artifacts to github
       - name: Upload build artifacts
@@ -141,21 +123,6 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '5.0.401'    
-              
-      # Get CMake
-      - name: Get CMake
-        uses: lukka/get-cmake@v3.21.2
-
-      # CMake Asar project
-      - name: Cmake asar
-        shell: bash
-        run: |
-          mkdir ./bin
-          cmake -S ./src/Asar/src -B ./src/Asar/out
-          cd ./src/Asar/out/asar
-          make
-          cd ../../../../
-          cp ./src/Asar/out/asar/libasar.dylib ./bin/libasar.dylib
       
       # Build solution
       - name: Build solution
@@ -165,6 +132,14 @@ jobs:
       - name: Copy cimgui
         shell: bash
         run: cp "./src/ImGui.NET/deps/cimgui/osx-x64/cimgui.dylib" "./bin/cimgui.dylib"
+        
+      # Download asar artifact to output
+      - name: Download workflow artifact
+        uses: dawidd6/action-download-artifact@v2.15.0
+        with:
+          workflow: 'asar.yaml'
+          name: 'AsarMac'
+          path: './bin'
       
       # Upload build artifacts to github
       - name: Upload build artifacts
