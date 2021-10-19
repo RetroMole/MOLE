@@ -5,42 +5,40 @@
 [![Discord](https://img.shields.io/discord/591914197219016707.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/hAGM9UPv4q)
 
 **MOLE** is being designed as an **OpenSource**  editor for **Super Mario World** with the intent to bring many of the features from existing SMW ROMHacking tools/patches such as **Lunar Magic**, **Asar**, **YYCHR**, and [many others](#compatibility) into a single easy-to-use [**multi-platform**](#how-to-run) and [localized](#localizationtranslation) tool.
+
+**MOLE is Work In Progress (WIP), so it is not guaranteed to work**
+**This is a fork. For support, visit the original repo.**
+**I am trying to fix all the shit like not using NuGet and some coding stuff**
 ___
-### How to Run
-At the moment MOLE is still in a very early stage and therefore no public releases have been made
-- Windows `(WIP)`
-- Linux `(WIP)`
-- MacOS (OSX) `(WIP)`
+### Platforms
+Thanks to OpenGL Monogame
+- Windows
+- Linux
+- MacOS
 
 Or you could build it yourself:
 ___
 ### How to Build
-	(SECTION WIP)
+Use any IDE (JetBrains Rider or Visual Studio) and compile Mole.Monogame
 ___
 ### Localization/Translation
-	(SECTION WIP)
+First I should get what everything does, ok?
 ___
 ### Project Structure
 ```
-•─ .github
-	•─ Automated building, testing, and other workflows
-•─ res/
-	•─ Icons, Images,  Text KeyTables (for localization), etc...
-•─ src/
-	•─ MOLE/
-		•─ Backend code, most systems rely on this to edit the ROM.
-	•─ UI/
-		•─ ImGui UI window definitions and main program entry point.
-	•─ ImGUI.Net/
-		•─ ImGui.Net library submodule.
-	•─ VeldridController/
-		•─ Veldrid UI Rendering backend for DirectX 11, Vulka, and Metal (OSX) support (with more targets coming soon)
-	•─ XNAController/
-		•─ Monogame XNA based UI Rendering backend for OpenGL support (with more targets coming soon)
+res
+└── Resources
+    
+src
+├── Mole.Shared
+│   └── Shared MOLE library, backend
+├── Mole.Monogame/
+│   └── GUI relying on Crossplaform MonoGame Engine (OpenGL), user ImGui
+└── Mole.Gui/
+    └── GUI relying on ImGui
 ```
 ___
 ### Compatibility
-(WIP)
 MOLE intends to be compatible with both clean ROMs, aswell as most modern SMW ROMhacking tools, ROM variants, and patches. This includes:
 #### ROM Versions:
 - North American (NTSC U)
