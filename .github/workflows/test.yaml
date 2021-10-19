@@ -1,8 +1,11 @@
-name: Build
-on: [push, pull_request, workflow_dispatch]
+name: Test
+on:
+  workflow_run:
+    workflows: ["Build"]
+    types: [completed]
 
-jobs:        
-  LinuxBuild:
+jobs:
+  LinuxTest:
     if: 
       ${{ 
         !(
@@ -16,17 +19,17 @@ jobs:
     steps: 
       # Download repo
       - uses: actions/checkout@v2
-      
+
       # Update submodules
       - name: Update submodules
         run: git submodule update --init
-        
+
       # Setup dotnet
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '5.0.401'    
-              
+
       # Get CMake
       - name: Get CMake
         uses: lukka/get-cmake@v3.21.2
@@ -41,25 +44,18 @@ jobs:
           make
           cd ../../../../
           cp ./src/Asar/out/asar/libasar.so ./bin/libasar.so
-      
-      # Build solution
-      - name: Build solution
-        run: dotnet build ./src/MOLE.sln -o ./bin
-        
+
       # Copy cimgui to output
       - name: Copy cimgui
         shell: bash
         run: cp "./src/ImGui.NET/deps/cimgui/linux-x64/cimgui.so" "./bin/cimgui.so"
 
-      
-      # Upload build artifacts to github
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: Linux
-          path: ./bin
-          
-  WindowsBuild:
+      # Run unit tests
+      - name: Run unit tests
+        run: dotnet test ./src/MOLE.sln -o ./bin
+
+
+  WindowsTest:
     if: 
       ${{ 
         !(
@@ -73,21 +69,21 @@ jobs:
     steps: 
       # Download repo
       - uses: actions/checkout@v2
-      
+
       # Update submodules
       - name: Update submodules
         run: git submodule update --init
-        
+
       # Setup dotnet
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '5.0.401'    
-              
+
       # Get CMake
       - name: Get CMake
         uses: lukka/get-cmake@v3.21.2
-        
+
       # Setup MSBuild
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.0.3
@@ -101,23 +97,18 @@ jobs:
           msbuild asar.vcxproj
           cd ../../../../
           copy ./src/Asar/out/asar/Debug/asar.dll ./bin/asar.dll
-      
-      # Build solution
-      - name: Build solution
-        run: dotnet build ./src/MOLE.sln -o ./bin
-        
+
       # Copy cimgui to output
       - name: Copy cimgui
-        run: copy "./src/ImGui.NET/deps/cimgui/win-x64/cimgui.dll" "./bin/cimgui.dll"
-      
-      # Upload build artifacts to github
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: Windows
-          path: ./bin
-          
-  MacOSBuild:
+        shell: bash
+        run: cp "./src/ImGui.NET/deps/cimgui/win-x64/cimgui.dll" "./bin/cimgui.dll"
+
+      # Run unit tests
+      - name: Run unit tests
+        run: dotnet test ./src/MOLE.sln -o ./bin
+
+
+  MacOSTest:
     if: 
       ${{ 
         !(
@@ -131,17 +122,17 @@ jobs:
     steps: 
       # Download repo
       - uses: actions/checkout@v2
-      
+
       # Update submodules
       - name: Update submodules
         run: git submodule update --init
-        
+
       # Setup dotnet
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '5.0.401'    
-              
+
       # Get CMake
       - name: Get CMake
         uses: lukka/get-cmake@v3.21.2
@@ -156,19 +147,12 @@ jobs:
           make
           cd ../../../../
           cp ./src/Asar/out/asar/libasar.dylib ./bin/libasar.dylib
-      
-      # Build solution
-      - name: Build solution
-        run: dotnet build ./src/MOLE.sln -o ./bin
-        
+
       # Copy cimgui to output
       - name: Copy cimgui
         shell: bash
-        run: cp "./src/ImGui.NET/deps/cimgui/osx-x64/cimgui.dylib" "./bin/cimgui.dylib"
-      
-      # Upload build artifacts to github
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: MacOS
-          path: ./bin
+        run: cp "./src/ImGui.NET/deps/cimgui/osx-x64/cimgui.dylin" "./bin/cimgui.dylin"
+
+      # Run unit tests
+      - name: Run unit tests
+        run: dotnet test ./src/MOLE.sln -o ./bin
