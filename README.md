@@ -1,4 +1,8 @@
-[![Build & Test status](https://github.com/Vawlpe/MOLE/actions/workflows/build.yaml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/build.yaml)
+[![GitHub Super-Linter](https://github.com/Vawlpe/MOLE/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
+[![Build Status](https://github.com/Vawlpe/MOLE/actions/workflows/build.yaml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/build.yaml)
+[![Test](https://github.com/Vawlpe/MOLE/actions/workflows/test.yaml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/test.yaml)
+[![Asar](https://github.com/Vawlpe/MOLE/actions/workflows/asar.yaml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/asar.yaml)
+
 [![License](https://badgen.net/github/license/Vawlpe/MOLE)](./LICENSE.md)
 [![Latest commit](https://img.shields.io/github/last-commit/Vawlpe/MOLE)](https://github.com/Vawlpe/MOLE/commits/)
 [![Version](https://badge.fury.io/gh/Vawlpe%2FMOLE.svg)](https://github.com/Vawlpe/MOLE)
