@@ -1,6 +1,3 @@
-[submodule "src/Mole.Shared/Util/TerraCompress"]
-	path = src/Mole.Shared/Util/TerraCompress
-	url = https://github.com/Smallhacker/TerraCompress.git
 [submodule "deps/asar/Asar"]
 	path = deps/asar/Asar
 	url = https://github.com/RPGHacker/asar.git

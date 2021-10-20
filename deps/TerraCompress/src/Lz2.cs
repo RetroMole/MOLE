@@ -1,19 +1,24 @@
-﻿using System;
+﻿/*
+    Terra Compress Lz2
+    Version 1.0
+*/
+
+using System;
 using System.Collections.Generic;
 
-namespace Mole.Shared.Util
+namespace Smallhacker.TerraCompress
 {
-    public class Lz1
+    public class Lz2 : ICompressor, IDecompressor
     {
-        private const byte DirectCopy = 0;
-        private const byte ByteFill = 1;
-        private const byte WordFill = 2;
-        private const byte IncreaseFill = 3;
-        private const byte Repeat = 4;
-        private const byte LongCommand = 7;
+        private const byte DIRECT_COPY = 0;
+        private const byte BYTE_FILL = 1;
+        private const byte WORD_FILL = 2;
+        private const byte INCREASE_FILL = 3;
+        private const byte REPEAT = 4;
+        private const byte LONG_COMMAND = 7;
 
         // How many bytes each command must encode to outdo Direct Copy
-        private readonly byte[] _commandWeight =
+        private readonly byte[] COMMAND_WEIGHT =
             {
                 0,  // Direct Copy
                 3,  // Byte Fill
@@ -43,27 +48,27 @@ namespace Mole.Shared.Util
                 byte nextByte = 0;
                 ushort repeatAddress = 0;
 
-                int[] byteCount = new int[Repeat+1];
+                int[] byteCount = new int[REPEAT+1];
 
                 // Evaluate Byte Fill
-                byteCount[ByteFill] = 1;
-                {
+                byteCount[BYTE_FILL] = 1;
+                { 
                     for (int i = position; i < length; i++)
                     {
                         if (data[i] != currentByte)
                         {
                             break;
                         }
-                        byteCount[ByteFill]++;
+                        byteCount[BYTE_FILL]++;
                     }
                 }
 
                 // Evaluate Word Fill
-                byteCount[WordFill] = 1;
+                byteCount[WORD_FILL] = 1;
                 {
                     if (position < length)
                     {
-                        byteCount[WordFill]++;
+                        byteCount[WORD_FILL]++;
                         nextByte = data[position];
                         int oddEven = 0;
                         for (int i = position + 1; i < length; i++, oddEven++)
@@ -73,13 +78,13 @@ namespace Mole.Shared.Util
                             {
                                 break;
                             }
-                            byteCount[WordFill]++;
+                            byteCount[WORD_FILL]++;
                         }
                     }
                 }
 
                 // Evaluate Increasing Fill
-                byteCount[IncreaseFill] = 1;
+                byteCount[INCREASE_FILL] = 1;
                 {
                     byte increaseByte = (byte)(currentByte + 1);
                     for (int i = position; i < length; i++)
@@ -88,12 +93,12 @@ namespace Mole.Shared.Util
                         {
                             break;
                         }
-                        byteCount[IncreaseFill]++;
+                        byteCount[INCREASE_FILL]++;
                     }
                 }
 
                 // Evaluate Repeat
-                byteCount[Repeat] = 0;
+                byteCount[REPEAT] = 0;
                 {
                     //Slow O(n^2) brute force algorithm for now
                     int maxAddressInt = Math.Min(0xFFFF, position - 2);
@@ -112,10 +117,10 @@ namespace Mole.Shared.Util
                                 chunkSize++;
                             }
 
-                            if (chunkSize > byteCount[Repeat])
+                            if (chunkSize > byteCount[REPEAT])
                             {
                                 repeatAddress = (ushort)start;
-                                byteCount[Repeat] = chunkSize;
+                                byteCount[REPEAT] = chunkSize;
                             }
 
                         }
@@ -124,12 +129,12 @@ namespace Mole.Shared.Util
                 }
 
                 // Choose next command
-                byte nextCommand = DirectCopy; // Default command unless anything better is found
+                byte nextCommand = DIRECT_COPY; // Default command unless anything better is found
                 int nextCommandByteCount = 1;
                 for (byte commandSuggestion = 1; commandSuggestion < byteCount.Length; commandSuggestion++)
                 {
                     // Would this command save any space?
-                    if (byteCount[commandSuggestion] >= _commandWeight[commandSuggestion])
+                    if (byteCount[commandSuggestion] >= COMMAND_WEIGHT[commandSuggestion])
                     {
                         // Is it better than what we already have?
                         if (byteCount[commandSuggestion] > nextCommandByteCount)
@@ -142,7 +147,7 @@ namespace Mole.Shared.Util
 
                 // Direct Copy commands are incrementally built.
                 // Output or add to as needed.
-                if (nextCommand == DirectCopy)
+                if (nextCommand == DIRECT_COPY)
                 {
                     if (directCopyBuffer == null)
                     {
@@ -153,7 +158,7 @@ namespace Mole.Shared.Util
                     if (directCopyBuffer.Count >= 1023)
                     {
                         // Direct Copy has a maximum length of 1023 bytes
-                        OutputCommand(DirectCopy, directCopyBuffer.Count, output);
+                        OutputCommand(DIRECT_COPY, directCopyBuffer.Count, output);
                         output.AddRange(directCopyBuffer);
                         directCopyBuffer = null;
                     }
@@ -162,7 +167,7 @@ namespace Mole.Shared.Util
                     if (directCopyBuffer != null)
                     {
                         // Direct Copy command in progress. Write it to output before proceeding
-                        OutputCommand(DirectCopy, directCopyBuffer.Count, output);
+                        OutputCommand(DIRECT_COPY, directCopyBuffer.Count, output);
                         output.AddRange(directCopyBuffer);
                         directCopyBuffer = null;
                     }
@@ -171,26 +176,26 @@ namespace Mole.Shared.Util
                 // Output command
                 switch(nextCommand)
                 {
-                    case DirectCopy:
+                    case DIRECT_COPY:
                         // Already handled above
                         break;
-                    case ByteFill:
+                    case BYTE_FILL:
                         OutputCommand(nextCommand, nextCommandByteCount, output);
                         output.Add(currentByte);
                         break;
-                    case WordFill:
+                    case WORD_FILL:
                         OutputCommand(nextCommand, nextCommandByteCount, output);
                         output.Add(currentByte);
                         output.Add(nextByte);
                         break;
-                    case IncreaseFill:
+                    case INCREASE_FILL:
                         OutputCommand(nextCommand, nextCommandByteCount, output);
                         output.Add(currentByte);
                         break;
-                    case Repeat:
+                    case REPEAT:
                         OutputCommand(nextCommand, nextCommandByteCount, output);
-                        output.Add((byte)repeatAddress);
                         output.Add((byte)(repeatAddress >> 8));
+                        output.Add((byte)repeatAddress);
                         break;
                     default:
                         throw new Exception("Internal error: Unknown command chosen.");
@@ -202,7 +207,7 @@ namespace Mole.Shared.Util
             // Output Direct Copy buffer if it exists
             if (directCopyBuffer != null)
             {
-                OutputCommand(DirectCopy, directCopyBuffer.Count, output);
+                OutputCommand(DIRECT_COPY, directCopyBuffer.Count, output);
                 output.AddRange(directCopyBuffer);
             }
 
@@ -231,7 +236,7 @@ namespace Mole.Shared.Util
 
                     byte command = (byte)(commandLength >> 5);
                     int length;
-                    if (command == LongCommand) // Long command
+                    if (command == LONG_COMMAND) // Long command
                     {
                         length = compressedData[position++];
                         length |= ((commandLength & 3) << 8);
@@ -246,20 +251,20 @@ namespace Mole.Shared.Util
 
                     switch (command)
                     {
-                        case DirectCopy: // Direct Copy
+                        case DIRECT_COPY: // Direct Copy
                             for (int i = 0; i < length; i++)
                             {
                                 output.Add(compressedData[position++]);
                             }
                             break;
-                        case ByteFill: // Byte Fill
+                        case BYTE_FILL: // Byte Fill
                             byte fillByte = compressedData[position++];
                             for (int i = 0; i < length; i++)
                             {
                                 output.Add(fillByte);
                             }
                             break;
-                        case WordFill: // Word Fill
+                        case WORD_FILL: // Word Fill
                             byte fillByteEven = compressedData[position++];
                             byte fillByteOdd = compressedData[position++];
                             for (int i = 0; i < length; i++)
@@ -268,21 +273,21 @@ namespace Mole.Shared.Util
                                 output.Add(thisByte);
                             }
                             break;
-                        case IncreaseFill: // Increasing Fill
+                        case INCREASE_FILL: // Increasing Fill
                             byte increaseFillByte = compressedData[position++];
                             for (int i = 0; i < length; i++)
                             {
                                 output.Add(increaseFillByte++);
                             }
                             break;
-                        case Repeat: // Repeat
-                            ushort origin = (ushort)(compressedData[position++] | (compressedData[position++] << 8));
+                        case REPEAT: // Repeat
+                            ushort origin = (ushort)((compressedData[position++] << 8) | compressedData[position++]);
                             for (int i = 0; i < length; i++)
                             {
                                 output.Add(output[origin++]);
                             }
                             break;
-
+                            
                         default:
                             throw new Exception("Invalid Lz2 command: " + command);
                     }
@@ -298,6 +303,7 @@ namespace Mole.Shared.Util
             {
                 throw new Exception("Compressed data contains invalid Lz2 Repeat command.");
             }
+            
         }
 
         private static void OutputCommand(int command, int length, List<byte> output)
@@ -325,3 +331,4 @@ namespace Mole.Shared.Util
         }
     }
 }
+    
