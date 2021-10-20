@@ -58,12 +58,6 @@ jobs:
           msbuild asar.vcxproj
           cd ../../../../../
           mv ./deps/asar/Asar/out/asar/Debug/asar.dll ./deps/asar/Asar/out/asar/Debug/libasar.dll
-          cp ./deps/asar/Asar/out/asar/Debug/libasar.dll ./deps/asar/libasar.dll
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add .
-          git commit -m "[ci-skip][lint-skip][BuildAsar] Update deps/asar/libasar.dll"
-          git push
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
@@ -93,12 +87,6 @@ jobs:
           cd ./deps/asar/Asar/out/asar
           make
           cd ../../../../../
-          cp ./deps/asar/Asar/out/asar/libasar.dylib ./deps/asar/libasar.dylib
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add .
-          git commit -m "[ci-skip][lint-skip][BuildAsar] Update deps/asar/libasar.dylib"
-          git push
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
