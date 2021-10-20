@@ -154,10 +154,12 @@ namespace Mole.Shared.Util
         /// <returns>True if success</returns>
         public static bool Init()
         {
-            if (!File.Exists(DllPath)) return false;
             try {
-                return ApiVersion() < ExpectedApiVersion || (ApiVersion() / 100) > (ExpectedApiVersion / 100)
-                    || !AsarInit();
+                if (ApiVersion() < ExpectedApiVersion || (ApiVersion() / 100) > (ExpectedApiVersion / 100)) {
+                    LoggerEntry.Logger.Fatal("Asar expected ApiVersion is not same as the library one!");
+                    return false;
+                }
+                return AsarInit();
             }
             catch { return false; }
         }
