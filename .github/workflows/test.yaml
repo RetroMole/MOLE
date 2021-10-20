@@ -42,7 +42,7 @@ jobs:
       # Copy cimgui to output
       - name: Copy cimgui
         shell: bash
-        run: cp "./src/ImGui.NET/deps/cimgui/linux-x64/cimgui.so" "./bin/cimgui.so"
+        run: cp "./deps/cimgui/linux-x64/cimgui.so" "./bin/cimgui.so"
 
       # Run unit tests
       - name: Run unit tests
@@ -86,7 +86,7 @@ jobs:
       # Copy cimgui to output
       - name: Copy cimgui
         shell: bash
-        run: cp "./src/ImGui.NET/deps/cimgui/win-x64/cimgui.dll" "./bin/cimgui.dll"
+        run: cp "./deps/cimgui/win-x64/cimgui.dll" "./bin/cimgui.dll"
 
       # Run unit tests
       - name: Run unit tests
@@ -130,7 +130,7 @@ jobs:
       # Copy cimgui to output
       - name: Copy cimgui
         shell: bash
-        run: cp "./src/ImGui.NET/deps/cimgui/osx-x64/cimgui.dylib" "./bin/cimgui.dylib"
+        run: cp "./deps/cimgui/osx-x64/cimgui.dylib" "./bin/cimgui.dylib"
 
       # Run unit tests
       - name: Run unit tests

@@ -34,7 +34,7 @@ jobs:
       # Copy cimgui to output
       - name: Copy cimgui
         shell: bash
-        run: cp "./src/ImGui.NET/deps/cimgui/linux-x64/cimgui.so" "./bin/cimgui.so"
+        run: cp "./deps/cimgui/linux-x64/cimgui.so" "./bin/cimgui.so"
         
       # Download asar artifact to output
       - name: Download workflow artifact
@@ -82,7 +82,7 @@ jobs:
         
       # Copy cimgui to output
       - name: Copy cimgui
-        run: copy "./src/ImGui.NET/deps/cimgui/win-x64/cimgui.dll" "./bin/cimgui.dll"
+        run: copy "./deps/cimgui/win-x64/cimgui.dll" "./bin/cimgui.dll"
       
       # Download asar artifact to output
       - name: Download workflow artifact
@@ -131,7 +131,7 @@ jobs:
       # Copy cimgui to output
       - name: Copy cimgui
         shell: bash
-        run: cp "./src/ImGui.NET/deps/cimgui/osx-x64/cimgui.dylib" "./bin/cimgui.dylib"
+        run: cp "./deps/cimgui/osx-x64/cimgui.dylib" "./bin/cimgui.dylib"
         
       # Download asar artifact to output
       - name: Download workflow artifact
