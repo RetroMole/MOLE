@@ -31,7 +31,7 @@ jobs:
       
       # Run unit tests
       - name: Run unit tests
-        run: dotnet test ./src/MOLE.sln -o ./bin
+        run: dotnet test ./src/Mole.sln -o ./bin
 
 
   WindowsTest:
