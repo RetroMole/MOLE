@@ -33,7 +33,6 @@ jobs:
       - name: Run unit tests
         run: dotnet test ./src/Mole.sln -o ./bin
 
-
   WindowsTest:
     if: 
       ${{
@@ -60,7 +59,7 @@ jobs:
 
       # Run unit tests
       - name: Run unit tests
-        run: dotnet test ./src/MOLE.sln -o ./bin
+        run: dotnet test ./src/Mole.sln -o ./bin
 
 
   MacOSTest:
@@ -86,20 +85,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '5.0.401'
-          
-      # Download asar artifact to output
-      - name: Download workflow artifact
-        uses: dawidd6/action-download-artifact@v2.15.0
-        with:
-          workflow: 'asar.yaml'
-          name: 'AsarMacOS'
-          path: './bin'
-
-      # Copy cimgui to output
-      - name: Copy cimgui
-        shell: bash
-        run: cp "./deps/cimgui/osx-x64/cimgui.dylib" "./bin/cimgui.dylib"
 
       # Run unit tests
       - name: Run unit tests
-        run: dotnet test ./src/MOLE.sln -o ./bin
+        run: dotnet test ./src/Mole.sln -o ./bin
