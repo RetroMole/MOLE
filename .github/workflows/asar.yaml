@@ -112,8 +112,10 @@ jobs:
       - name: Push updates asar deps
         shell: bash
         run: |
+          mv -t ./deps/asar ./deps/asar/Asar*/* -v
+          rm -d ./deps/asar/Asar[a-zA-Z0-9_-]*
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add .
-          git commit -m "[ci-skip][lint-skip][BuildAsar] Update deps/asar/libasar.*"
+          git commit -m "[ci-skip][lint-skip] Auto-update deps/asar/libasar.*"
           git push

@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
     inputs:
       validateall:
-        description: 'Lint all files if true, otherwise just lint changes'
+        description: 'Lint all files if true, just lint latest changes if false'
         required: true
-        default: 'false'
+        default: 'true'
 
 jobs:
   Lint:
@@ -23,7 +23,11 @@ jobs:
       - name: Lint Code Base
         uses: github/super-linter@v4
         env:
-          VALIDATE_ALL_CODEBASE: ${{ contains(github.event.inputs.validateall, 'true') }}
+          VALIDATE_ALL_CODEBASE:
+            ${{ # black magic boolean stuff to default to default to true when run automatically, but check input when run manually
+              !(env.GITHUB_EVENT_NAME == 'workflow_dispatch'"') ||
+              github.event.inputs.validateall == 'true'
+            }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILTER_REGEX_INCLUDE: src/.*
           FILTER_REGEX_EXCLUDE: src/Asar/.*|src/ImGui.NET/.*
