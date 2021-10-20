@@ -28,6 +28,7 @@ jobs:
           cmake -S ./deps/asar/Asar/src -B ./deps/asar/Asar/out
           cd ./deps/asar/Asar/out/asar
           make
+          cd ../../../../../
           cp ./deps/asar/Asar/out/asar/libasar.so ./src/deps/asar/libasar.so
           git add .
           git commit -m "[ci-skip][lint-skip][BuildAsar] Update deps/asar/libasar.so"
@@ -66,6 +67,7 @@ jobs:
           cmake -S ./deps/asar/Asar/src -B ./deps/asar/Asar/out
           cd ./deps/asar/Asar/out/asar
           msbuild asar.vcxproj
+          cd ../../../../../
           mv ./deps/asar/Asar/out/asar/Debug/asar.dll ./deps/asar/Asar/out/asar/Debug/libasar.dll
           cp ./deps/asar/Asar/out/asar/Debug/libasar.dll ./src/deps/asar/libasar.dll
           git add .
@@ -102,6 +104,7 @@ jobs:
           cmake -S ./deps/asar/Asar/src -B ./deps/asar/Asar/out
           cd ./deps/asar/Asar/out/asar
           make
+          cd ../../../../../
           cp ./deps/asar/Asar/out/asar/libasar.dylib ./src/deps/asar/libasar.dylib
           git add .
           git commit -m "[ci-skip][lint-skip][BuildAsar] Update deps/asar/libasar.dylib"
