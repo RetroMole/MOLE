@@ -4,14 +4,21 @@ using System.Collections.Generic;
 using Mole.Shared;
 using Num = System.Numerics;
 
-namespace Mole.Gui
+namespace Mole.Gui.Windows
 {
+    /// <summary>
+    /// Shows wGFX
+    /// </summary>
     public static class WGfx
     {
+        /// <summary>
+        /// Main Window method
+        /// </summary>
+        /// <param name="gfx">GFX</param>
         public static void Main(Gfx gfx)
         {
             ImGui.SetNextWindowSize(new Num.Vector2(600, 900), ImGuiCond.FirstUseEver);
-            ImGui.Begin("GFX");
+            ImGui.Begin("wGFX");
 
             if (gfx != null)
             {
