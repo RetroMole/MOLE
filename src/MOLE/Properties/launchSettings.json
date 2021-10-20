@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Back": {
-      "commandName": "Project",
-      "nativeDebugging": true
-    }
-  }
-}
