@@ -16,10 +16,8 @@ jobs:
     steps: 
       # Download repo
       - uses: actions/checkout@v2
-      
-      # Update submodules
-      - name: Update submodules
-        run: git submodule update --init
+        with:
+          submodules: 'recursive'
         
       # Setup dotnet
       - name: Setup dotnet
@@ -65,10 +63,8 @@ jobs:
     steps: 
       # Download repo
       - uses: actions/checkout@v2
-      
-      # Update submodules
-      - name: Update submodules
-        run: git submodule update --init
+        with:
+          submodules: 'recursive'
         
       # Setup dotnet
       - name: Setup dotnet
@@ -113,10 +109,8 @@ jobs:
     steps: 
       # Download repo
       - uses: actions/checkout@v2
-      
-      # Update submodules
-      - name: Update submodules
-        run: git submodule update --init
+        with:
+          submodules: 'recursive'
         
       # Setup dotnet
       - name: Setup dotnet
