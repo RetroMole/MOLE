@@ -19,7 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       # Download repo
-      - uses: actions/checkout@v2
+      - name: Pull repo
+        uses: actions/checkout@v2
         with:
           submodules: 'recursive'
 
@@ -47,7 +48,8 @@ jobs:
     runs-on: windows-latest
     steps: 
       # Download repo
-      - uses: actions/checkout@v2
+      - name: Pull repo
+        uses: actions/checkout@v2
         with:
           submodules: 'recursive'
 
@@ -76,7 +78,8 @@ jobs:
     runs-on: macos-latest
     steps: 
       # Download repo
-      - uses: actions/checkout@v2
+      - name: Pull repo
+        uses: actions/checkout@v2
         with:
           submodules: 'recursive'
 

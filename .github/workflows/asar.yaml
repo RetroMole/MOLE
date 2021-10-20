@@ -8,7 +8,8 @@ jobs:
   BuildAsarLinux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Pull repo
+        uses: actions/checkout@v2
         with:
           submodules: 'recursive'
               
@@ -24,13 +25,6 @@ jobs:
           cmake -S ./deps/asar/Asar/src -B ./deps/asar/Asar/out
           cd ./deps/asar/Asar/out/asar
           make
-          cd ../../../../../
-          cp ./deps/asar/Asar/out/asar/libasar.so ./deps/asar/libasar.so
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add .
-          git commit -m "[ci-skip][lint-skip][BuildAsar] Update deps/asar/libasar.so"
-          git push
           
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
@@ -42,7 +36,8 @@ jobs:
   BuildAsarWindows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Pull repo
+        uses: actions/checkout@v2
         with:
           submodules: 'recursive'
         
@@ -80,7 +75,8 @@ jobs:
   BuildAsarMacOS:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Pull repo
+        uses: actions/checkout@v2
         with:
           submodules: 'recursive'
       
@@ -110,3 +106,26 @@ jobs:
           name: AsarMacOS
           path: ./deps/asar/Asar/out/asar/libasar.dylib
           retention-days: 30
+
+  PushUpdatedAsarDeps:
+    runs-on: ubuntu-latest
+    needs: [BuildAsarLinux, BuildAsarWindows, BuildAsarMacOS]
+    steps:
+      - name: Pull repo
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: ./deps/asar/
+
+      - name: Push updates asar deps
+        shell: bash
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .
+          git commit -m "[ci-skip][lint-skip][BuildAsar] Update deps/asar/libasar.*"
+          git push
