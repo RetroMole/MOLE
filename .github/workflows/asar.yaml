@@ -112,7 +112,7 @@ jobs:
       - name: Push updates asar deps
         shell: bash
         run: |
-          mv -t ./deps/asar ./deps/asar/Asar*/* -v
+          mv -t ./deps/asar ./deps/asar/Asar[a-zA-Z0-9_-]*/* -v
           rm -d ./deps/asar/Asar[a-zA-Z0-9_-]*
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com

@@ -24,10 +24,10 @@ jobs:
         uses: github/super-linter@v4
         env:
           VALIDATE_ALL_CODEBASE:
-            ${{ # black magic boolean stuff to default to default to true when run automatically, but check input when run manually
+            ${{
               !(env.GITHUB_EVENT_NAME == 'workflow_dispatch'"') ||
               github.event.inputs.validateall == 'true'
-            }}
+            }} # black magic boolean stuff to default to default to true when run automatically, but check input when run manually
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILTER_REGEX_INCLUDE: src/.*
           FILTER_REGEX_EXCLUDE: src/Asar/.*|src/ImGui.NET/.*
