@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Mole.Shared.Util;
-using Mole.Shared.Utils;
+using Smallhacker.TerraCompress;
 
 namespace Mole.Shared
 {

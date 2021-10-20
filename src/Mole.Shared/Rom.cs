@@ -88,7 +88,7 @@ namespace Mole.Shared
             // Patch the ROM with an empty patch so it is opened in asar
             // (workaround for not exposing OpenROM and CloseROM in lib asar)
             // This also fixes broken checksums
-            Asar.Patch(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "empty.asm"), ref _rom);
+            Asar.Patch(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ASM Patches/empty.asm"), ref _rom);
 
             // Rely on asar mapping mode guess until we can access the internal header
             Mapping = Asar.GetMapper();

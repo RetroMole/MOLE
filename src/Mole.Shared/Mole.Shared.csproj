@@ -18,8 +18,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="ASM Patches\empty.asm" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="ASM Patches\empty.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ImGui.NET" Version="1.78.0" />
-    <PackageReference Include="LZMA-SDK" Version="19.0.0" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />

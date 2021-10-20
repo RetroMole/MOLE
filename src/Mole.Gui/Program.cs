@@ -45,7 +45,7 @@ namespace Mole.Gui
                 "vv" => "Veldrid Vulkan",
                 "vm" => "Veldrid Metal",
                 "vg" => "Veldrid OpenGL",
-                "ve" => "Veldrid OpenGL ED",
+                "ve" => "Veldrid OpenGL ES",
                 "mg" or _ => "MonoGame OpenGL"
             });
 

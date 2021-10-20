@@ -1,14 +1,9 @@
-﻿/*
-    Terra Compress Lz2
-    Version 1.0
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace Mole.Shared.Utils
+namespace Mole.Shared.Util
 {
-    public class Lz2
+    public class Lz1
     {
         private const byte DirectCopy = 0;
         private const byte ByteFill = 1;
@@ -52,7 +47,7 @@ namespace Mole.Shared.Utils
 
                 // Evaluate Byte Fill
                 byteCount[ByteFill] = 1;
-                { 
+                {
                     for (int i = position; i < length; i++)
                     {
                         if (data[i] != currentByte)
@@ -194,8 +189,8 @@ namespace Mole.Shared.Utils
                         break;
                     case Repeat:
                         OutputCommand(nextCommand, nextCommandByteCount, output);
-                        output.Add((byte)(repeatAddress >> 8));
                         output.Add((byte)repeatAddress);
+                        output.Add((byte)(repeatAddress >> 8));
                         break;
                     default:
                         throw new Exception("Internal error: Unknown command chosen.");
@@ -281,13 +276,13 @@ namespace Mole.Shared.Utils
                             }
                             break;
                         case Repeat: // Repeat
-                            ushort origin = (ushort)((compressedData[position++] << 8) | compressedData[position++]);
+                            ushort origin = (ushort)(compressedData[position++] | (compressedData[position++] << 8));
                             for (int i = 0; i < length; i++)
                             {
                                 output.Add(output[origin++]);
                             }
                             break;
-                            
+
                         default:
                             throw new Exception("Invalid Lz2 command: " + command);
                     }
@@ -303,7 +298,6 @@ namespace Mole.Shared.Utils
             {
                 throw new Exception("Compressed data contains invalid Lz2 Repeat command.");
             }
-            
         }
 
         private static void OutputCommand(int command, int length, List<byte> output)
@@ -331,4 +325,3 @@ namespace Mole.Shared.Utils
         }
     }
 }
-    

@@ -1,4 +1,3 @@
-using System.Numerics;
 using ImGuiNET;
 
 namespace Mole.Gui.Windows

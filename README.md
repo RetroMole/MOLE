@@ -32,9 +32,9 @@ src
 ├── Mole.Shared
 │   └── Shared MOLE library, backend
 ├── Mole.Monogame/
-│   └── GUI relying on Crossplaform MonoGame Engine (OpenGL), uses ImGui UI
+│   └── GUI renderer relying on MonoGame Engine (OpenGL), uses ImGui UI
 ├── Mole.Veldrid/
-│   └── GUI relying on Veldrid, uses ImGui UI
+│   └── GUI renderer relying on Veldrid, uses ImGui UI
 └── Mole.Gui/
     └── ImGui UI stuff, entry point
 ```
