@@ -27,20 +27,7 @@ jobs:
       
       # Build solution
       - name: Build solution
-        run: dotnet build ./src/MOLE.sln -o ./bin
-        
-      # Copy cimgui to output
-      - name: Copy cimgui
-        shell: bash
-        run: cp "./deps/cimgui/linux-x64/cimgui.so" "./bin/cimgui.so"
-        
-      # Download asar artifact to output
-      - name: Download workflow artifact
-        uses: dawidd6/action-download-artifact@v2.15.0
-        with:
-          workflow: 'asar.yaml'
-          name: 'AsarLinux'
-          path: './bin'
+        run: dotnet build ./src/Mole.sln -o ./bin
       
       # Upload build artifacts to github
       - name: Upload build artifacts
@@ -74,19 +61,7 @@ jobs:
       
       # Build solution
       - name: Build solution
-        run: dotnet build ./src/MOLE.sln -o ./bin
-        
-      # Copy cimgui to output
-      - name: Copy cimgui
-        run: copy "./deps/cimgui/win-x64/cimgui.dll" "./bin/cimgui.dll"
-      
-      # Download asar artifact to output
-      - name: Download workflow artifact
-        uses: dawidd6/action-download-artifact@v2.15.0
-        with:
-          workflow: 'asar.yaml'
-          name: 'AsarWindows'
-          path: './bin'
+        run: dotnet build ./src/Mole.sln -o ./bin
       
       # Upload build artifacts to github
       - name: Upload build artifacts
@@ -120,20 +95,7 @@ jobs:
       
       # Build solution
       - name: Build solution
-        run: dotnet build ./src/MOLE.sln -o ./bin
-        
-      # Copy cimgui to output
-      - name: Copy cimgui
-        shell: bash
-        run: cp "./deps/cimgui/osx-x64/cimgui.dylib" "./bin/cimgui.dylib"
-        
-      # Download asar artifact to output
-      - name: Download workflow artifact
-        uses: dawidd6/action-download-artifact@v2.15.0
-        with:
-          workflow: 'asar.yaml'
-          name: 'AsarMacOS'
-          path: './bin'
+        run: dotnet build ./src/Mole.sln -o ./bin
       
       # Upload build artifacts to github
       - name: Upload build artifacts

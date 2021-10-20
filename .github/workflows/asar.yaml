@@ -26,6 +26,10 @@ jobs:
           cmake -S ./src/Asar/src -B ./src/Asar/out
           cd ./src/Asar/out/asar
           make
+          cp ./src/Asar/out/asar/libasar.so ./src/deps/asar/libasar.so
+          git add .
+          git commit -m "[ci-skip][lint-skip][BuildAsar] Update deps/asar/libasar.so"
+          git push
           
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
@@ -59,6 +63,10 @@ jobs:
           cd ./src/Asar/out/asar
           msbuild asar.vcxproj
           mv ./src/Asar/out/asar/Debug/asar.dll ./src/Asar/out/asar/Debug/libasar.dll
+          cp ./src/Asar/out/asar/Debug/libasar.dll ./src/deps/asar/libasar.dll
+          git add .
+          git commit -m "[ci-skip][lint-skip][BuildAsar] Update deps/asar/libasar.dll"
+          git push
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
@@ -88,11 +96,14 @@ jobs:
           cmake -S ./src/Asar/src -B ./src/Asar/out
           cd ./src/Asar/out/asar
           make
-          
+          cp ./src/Asar/out/asar/libasar.dylib ./src/deps/asar/libasar.dylib
+          git add .
+          git commit -m "[ci-skip][lint-skip][BuildAsar] Update deps/asar/libasar.dylib"
+          git push
+
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
           name: AsarMacOS
           path: ./src/Asar/out/asar/libasar.dylib
           retention-days: 30
-  
