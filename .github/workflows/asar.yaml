@@ -9,7 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
+        with:
+          submodules: 'recursive'
+
       # Update submodules
       - name: Update submodules
         run: git submodule update --init   
@@ -42,7 +44,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
-      
+        with:
+          submodules: 'recursive'
+
       # Update submodules
       - name: Update submodules
         run: git submodule update --init 
@@ -79,7 +83,9 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      
+        with:
+          submodules: 'recursive'
+
       # Update submodules
       - name: Update submodules
         run: git submodule update --init 
