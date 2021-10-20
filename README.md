@@ -47,7 +47,7 @@ ___
 MOLE intends to be compatible with both clean ROMs, as well as most modern SMW ROMhacking tools, ROM variants, and patches. This includes:
 #### ROM Versions:
 - North American (NTSC U)
-- SA-1 (NTSC U only, using the SA-1 Kit patch)
+- SA-1 (NTSC U only, using the SA-1 Kit patch) <sup>See [#35](../../issues/35)</sup>
 - Japanese (NTSC J)<sup>Only basic compatibility, see [#20](/../../issues/20)</sup>
 - All Stars + World<sup>Only basic compatibility, see [#21](/../../issues/20)</sup>
 #### Tools:
