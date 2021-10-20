@@ -26,13 +26,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\..\deps\cimgui\linux-x64\cimgui.so">
+    <Content Include="..\..\deps\cimgui\linux-x64\cimgui.so" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>cimgui.so</Link>
     </Content>
-    <Content Include="..\..\deps\cimgui\osx-x64\cimgui.dylib">
+    <Content Include="..\..\deps\cimgui\osx-x64\cimgui.dylib" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>cimgui.dylib</Link>
     </Content>
-    <Content Include="..\..\deps\cimgui\win-x64\cimgui.dll">
+    <Content Include="..\..\deps\cimgui\win-x64\cimgui.dll" Condition="'$(OS)' == 'Windows_NT'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>cimgui.dll</Link>
     </Content>
   </ItemGroup>

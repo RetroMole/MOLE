@@ -29,13 +29,17 @@ namespace Mole.Gui
         public static void Main(string[] args)
         {
             Logger.Information("Mole GUI is launching...");
+            LoggerEntry.Logger = Logger;
 
             if (!Directory.EnumerateFiles(Directory.GetCurrentDirectory(), $"{Asar.DllPath}*").Any()) {
                 Logger.Fatal("No Asar binaries were found, exiting...");
                 return;
             }
 
-            Asar.Init();
+            if (!Asar.Init()) {
+                Logger.Fatal("Failed to initialize Asar, exiting...");
+                return;
+            }
 
             string g = args.Length >= 1 ? args[0] : "";
 
@@ -48,8 +52,6 @@ namespace Mole.Gui
                 "ve" => "Veldrid OpenGL ES",
                 "mg" or _ => "MonoGame OpenGL"
             });
-
-            LoggerEntry.Logger = Logger;
             
             var ui = new Ui();
             switch (g)
@@ -75,7 +77,7 @@ namespace Mole.Gui
                     break;
             }
 
-            Asar.Close();
+            if (!Asar.Close()) Logger.Warning("Couldn't close Asar!");
         }
     }
 }
