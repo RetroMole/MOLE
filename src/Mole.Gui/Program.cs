@@ -1,8 +1,11 @@
 ﻿using System.IO;
 using System.Linq;
-using Mole.Veldrid;
 using Mole.MonoGame;
+using Mole.Shared;
 using Mole.Shared.Util;
+using Mole.Veldrid;
+using Serilog;
+using Serilog.Core;
 using Veldrid;
 
 namespace Mole.Gui
@@ -13,20 +16,22 @@ namespace Mole.Gui
     public static class Program
     {
         /// <summary>
+        /// Serilog Logger
+        /// </summary>
+        private static readonly Logger Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.File("mole.log")
+            .CreateLogger();
+        
+        /// <summary>
         /// Entry point of Mole.Gui
         /// </summary>
         public static void Main(string[] args)
         {
-            var config = new NLog.Config.LoggingConfiguration();
-            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = "mole.log" };
-            config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logfile);        
-            NLog.LogManager.Configuration = config;
-
-            var logger = NLog.LogManager.GetCurrentClassLogger();
-            logger.Info("Mole GUI is launching...");
+            Logger.Information("Mole GUI is launching...");
 
             if (!Directory.EnumerateFiles(Directory.GetCurrentDirectory(), $"{Asar.DllPath}*").Any()) {
-                logger.Error("No Asar binaries were found, exiting...");
+                Logger.Fatal("No Asar binaries were found, exiting...");
                 return;
             }
 
@@ -34,25 +39,35 @@ namespace Mole.Gui
 
             string g = args.Length >= 1 ? args[0] : "";
 
-            logger.Info("UI Rendering backend: {0}", g switch
+            Logger.Information("UI Rendering backend: {0}", g switch
             {
-                "d" => "DirectX3D 11",
-                "v" => "Vulkan",
-                "m" => "Metal",
-                "g" or _ => "OpenGL"
+                "vd" => "Veldrid DirectX3D 11",
+                "vv" => "Veldrid Vulkan",
+                "vm" => "Veldrid Metal",
+                "vg" => "Veldrid OpenGL",
+                "ve" => "Veldrid OpenGL ED",
+                "mg" or _ => "MonoGame OpenGL"
             });
 
+            LoggerEntry.Logger = Logger;
+            
             var ui = new Ui();
             switch (g)
             {
-                case "d":
-                    _ = new VeldridController(GraphicsBackend.Direct3D11, ui);
+                case "vd":
+                    VeldridController.Main(GraphicsBackend.Direct3D11, ui);
                     break;
-                case "v":
-                    _ = new VeldridController(GraphicsBackend.Vulkan, ui);
+                case "vv":
+                    VeldridController.Main(GraphicsBackend.Vulkan, ui);
                     break;
-                case "m":
-                    _ = new VeldridController(GraphicsBackend.Metal, ui);
+                case "vm":
+                    VeldridController.Main(GraphicsBackend.Metal, ui);
+                    break;
+                case "vg":
+                    VeldridController.Main(GraphicsBackend.OpenGL, ui);
+                    break;
+                case "ve":
+                    VeldridController.Main(GraphicsBackend.OpenGLES, ui);
                     break;
                 default:
                     using (var game = new MonoGameController(ui))

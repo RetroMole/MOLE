@@ -18,11 +18,6 @@ namespace Mole.Shared
     public class Rom : IEnumerator<byte>, IEnumerable<byte>
     {
         /// <summary>
-        /// Logger
-        /// </summary>
-        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
-        /// <summary>
         /// UndoRedo system required for ROM operations
         /// </summary>
         private UndoRedo Ur { get; } = new();
@@ -74,7 +69,7 @@ namespace Mole.Shared
         /// <param name="path">ROM Path</param>
         public Rom(string path)
         {
-            Logger.Info("Loading ROM from {0}", path);
+            LoggerEntry.Logger.Information("Loading ROM from {0}", path);
             // Load ROM into internal _ROM byte array
             FilePath = path;
 
@@ -109,7 +104,7 @@ namespace Mole.Shared
                 _ => MapperType.InvalidMapper
             };
             if (Mapping != Asar.GetMapper())
-                Logger.Warn("Mapping mode mismatch: Asar: {0}, Header: {1}", Asar.GetMapper(), Mapping);
+                LoggerEntry.Logger.Warning("Mapping mode mismatch: Asar: {0}, Header: {1}", Asar.GetMapper(), Mapping);
 
             // Load ROM info from internal header
             Title = new String(new Jisx0201Encoding().GetChars(InternalHeader.Take(21).ToArray()));

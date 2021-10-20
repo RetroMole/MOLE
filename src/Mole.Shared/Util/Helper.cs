@@ -2,7 +2,7 @@
 
 namespace Mole.Shared.Util
 {
-    public static class Bytes
+    public static class Helper
     {
         public static uint B2Ul(params byte[] bytes)
         {

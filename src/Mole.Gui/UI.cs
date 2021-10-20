@@ -1,11 +1,15 @@
 ﻿using ImGuiNET;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Runtime.InteropServices;
 using Mole.Shared;
 using Num = System.Numerics;
 
 namespace Mole.Gui
 {
+    [SuppressMessage("ReSharper", "PositionalPropertyUsedProblem")]
     public class Ui
     {
         private static ImGuiViewportPtr _viewport;
@@ -56,8 +60,7 @@ namespace Mole.Gui
                         ImGui.MenuItem("About", null, ref _showAbout);
                         ImGui.EndMenu();
                     }
-
-                    WFileDialog();
+                    
                     ImGui.EndMainMenuBar();
                 }
             }
@@ -179,41 +182,48 @@ namespace Mole.Gui
 
             foreach (var w in Windows)
                 w.DynamicInvoke();
-        }
 
-
-        /// <summary>
-        /// Makeshift FileDialog, will improve later
-        /// </summary>
-        private static void WFileDialog()
-        {
+            // File Dialog
             if (_filediag)
             {
-                if (!ImGui.IsPopupOpen("FileDialog")) ImGui.OpenPopup("FileDialog");
-                if (ImGui.IsPopupOpen("FileDialog"))
+                if (!ImGui.IsPopupOpen("RomOpen")) 
+                    ImGui.OpenPopup("RomOpen");
+
+                if (ImGui.IsPopupOpen("RomOpen"))
                 {
-                    ImGui.SetNextWindowPos(ImGui.GetMainViewport().GetCenter(), ImGuiCond.Appearing, new Num.Vector2(0.5f, 0.5f));
-                    if (ImGui.BeginPopupModal("FileDialog"))
+                    ImGui.SetNextWindowPos(ImGui.GetMainViewport().Size / 2, ImGuiCond.Appearing, new Num.Vector2(0.5f, 0.5f));
+                    if (ImGui.BeginPopupModal("RomOpen"))
                     {
-                        if (ImGui.InputTextWithHint("Path", @"C:\", _path, 
+                        if (ImGui.InputText("Path", ref _path,
                             500, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
                         {
-                            _rom = new(_path);
-                            _gfx = new(_rom);
                             ImGui.CloseCurrentPopup();
                             _filediag = false;
+                            if (!File.Exists(_path)) {
+                                LoggerEntry.Logger.Warning("Invalid path: {0}", _path);
+                                return;
+                            }
+                            _rom = new Rom(_path);
+                            _gfx = new Gfx(_rom);
                         }
 
                         if (ImGui.Button("Open"))
                         {
-                            _rom = new Rom(_path);
-                            _gfx = new Gfx(_rom);
                             ImGui.CloseCurrentPopup();
                             _filediag = false;
+                            if (!File.Exists(_path)) {
+                                LoggerEntry.Logger.Warning("Invalid path: {0}", _path);
+                                return;
+                            }
+                            _rom = new Rom(_path);
+                            _gfx = new Gfx(_rom);
                         }
 
+                        if (_filediag == false) return;
+                        
                         ImGui.SetItemDefaultFocus();
                         ImGui.SameLine();
+                        
                         if (ImGui.Button("Cancel"))
                         {
                             ImGui.CloseCurrentPopup();

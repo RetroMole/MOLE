@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using ImGuiNET;
+using System.IO;
 using Veldrid;
-using Veldrid.Sdl2;
-
-#pragma warning disable IDE0044 // Add readonly modifier
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-#pragma warning disable IDE0060 // Remove unused parameter
+using System.Runtime.CompilerServices;
+using ImGuiNET;
 
 namespace Mole.Veldrid
 {
@@ -22,7 +16,6 @@ namespace Mole.Veldrid
     public class ImGuiController : IDisposable
     {
         private GraphicsDevice _gd;
-        private readonly Sdl2Window _window;
         private bool _frameBegun;
 
         // Veldrid objects
@@ -50,187 +43,35 @@ namespace Mole.Veldrid
         private Vector2 _scaleFactor = Vector2.One;
 
         // Image trackers
-        private readonly Dictionary<TextureView, ResourceSetInfo> _setsByView = new();
-        private readonly Dictionary<Texture, TextureView> _autoViewsByTexture = new();
-        private readonly Dictionary<IntPtr, ResourceSetInfo> _viewsById = new();
-        private readonly List<IDisposable> _ownedResources = new();
-        private readonly VeldridImGuiWindow _mainViewportWindow;
-        private readonly Platform_CreateWindow _createWindow;
-        private readonly Platform_DestroyWindow _destroyWindow;
-        private readonly Platform_GetWindowPos _getWindowPos;
-        private readonly Platform_ShowWindow _showWindow;
-        private readonly Platform_SetWindowPos _setWindowPos;
-        private readonly Platform_SetWindowSize _setWindowSize;
-        private readonly Platform_GetWindowSize _getWindowSize;
-        private readonly Platform_SetWindowFocus _setWindowFocus;
-        private readonly Platform_GetWindowFocus _getWindowFocus;
-        private readonly Platform_GetWindowMinimized _getWindowMinimized;
-        private readonly Platform_SetWindowTitle _setWindowTitle;
-        private int _lastAssignedID = 100;
+        private readonly Dictionary<TextureView, ResourceSetInfo> _setsByView
+            = new Dictionary<TextureView, ResourceSetInfo>();
+        private readonly Dictionary<Texture, TextureView> _autoViewsByTexture
+            = new Dictionary<Texture, TextureView>();
+        private readonly Dictionary<IntPtr, ResourceSetInfo> _viewsById = new Dictionary<IntPtr, ResourceSetInfo>();
+        private readonly List<IDisposable> _ownedResources = new List<IDisposable>();
+        private int _lastAssignedId = 100;
 
         /// <summary>
         /// Constructs a new ImGuiController.
         /// </summary>
-        public unsafe ImGuiController(GraphicsDevice gd, Sdl2Window window, OutputDescription outputDescription, int width, int height)
+        public ImGuiController(GraphicsDevice gd, OutputDescription outputDescription, int width, int height)
         {
             _gd = gd;
-            _window = window;
             _windowWidth = width;
             _windowHeight = height;
 
             IntPtr context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
-            ImGuiIOPtr io = ImGui.GetIO();
-
-            io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
-            if (_gd.BackendType != GraphicsBackend.OpenGL || _gd.BackendType != GraphicsBackend.OpenGLES) { io.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable; }
-            
-            ImGuiPlatformIOPtr platformIO = ImGui.GetPlatformIO();
-            ImGuiViewportPtr mainViewport = platformIO.Viewports[0];
-            mainViewport.PlatformHandle = window.Handle;
-            _mainViewportWindow = new VeldridImGuiWindow(gd, mainViewport, _window);
-
-            _createWindow = CreateWindow;
-            _destroyWindow = DestroyWindow;
-            _getWindowPos = GetWindowPos;
-            _showWindow = ShowWindow;
-            _setWindowPos = SetWindowPos;
-            _setWindowSize = SetWindowSize;
-            _getWindowSize = GetWindowSize;
-            _setWindowFocus = SetWindowFocus;
-            _getWindowFocus = GetWindowFocus;
-            _getWindowMinimized = GetWindowMinimized;
-            _setWindowTitle = SetWindowTitle;
-
-            platformIO.Platform_CreateWindow = Marshal.GetFunctionPointerForDelegate(_createWindow);
-            platformIO.Platform_DestroyWindow = Marshal.GetFunctionPointerForDelegate(_destroyWindow);
-            platformIO.Platform_ShowWindow = Marshal.GetFunctionPointerForDelegate(_showWindow);
-            platformIO.Platform_SetWindowPos = Marshal.GetFunctionPointerForDelegate(_setWindowPos);
-            platformIO.Platform_SetWindowSize = Marshal.GetFunctionPointerForDelegate(_setWindowSize);
-            platformIO.Platform_SetWindowFocus = Marshal.GetFunctionPointerForDelegate(_setWindowFocus);
-            platformIO.Platform_GetWindowFocus = Marshal.GetFunctionPointerForDelegate(_getWindowFocus);
-            platformIO.Platform_GetWindowMinimized = Marshal.GetFunctionPointerForDelegate(_getWindowMinimized);
-            platformIO.Platform_SetWindowTitle = Marshal.GetFunctionPointerForDelegate(_setWindowTitle);
-
-            ImGuiNative.ImGuiPlatformIO_Set_Platform_GetWindowPos(platformIO.NativePtr, Marshal.GetFunctionPointerForDelegate(_getWindowPos));
-            ImGuiNative.ImGuiPlatformIO_Set_Platform_GetWindowSize(platformIO.NativePtr, Marshal.GetFunctionPointerForDelegate(_getWindowSize));
-
-            unsafe
-            {
-                io.NativePtr->BackendPlatformName = (byte*)new FixedAsciiString("Veldrid.SDL2 Backend").DataPtr;
-            }
-            io.BackendFlags |= ImGuiBackendFlags.HasMouseCursors;
-            io.BackendFlags |= ImGuiBackendFlags.HasSetMousePos;
-            io.BackendFlags |= ImGuiBackendFlags.PlatformHasViewports;
-            io.BackendFlags |= ImGuiBackendFlags.RendererHasViewports;
-
-            io.Fonts.AddFontDefault();
+            var fonts = ImGui.GetIO().Fonts;
+            ImGui.GetIO().Fonts.AddFontDefault();
 
             CreateDeviceResources(gd, outputDescription);
             SetKeyMappings();
 
             SetPerFrameImGuiData(1f / 60f);
-            UpdateMonitors();
 
             ImGui.NewFrame();
             _frameBegun = true;
-        }
-
-        private void CreateWindow(ImGuiViewportPtr vp)
-        {
-            VeldridImGuiWindow window = new(_gd, vp);
-        }
-
-        private void DestroyWindow(ImGuiViewportPtr vp)
-        {
-            if (vp.PlatformUserData != IntPtr.Zero)
-            {
-                VeldridImGuiWindow window = (VeldridImGuiWindow)GCHandle.FromIntPtr(vp.PlatformUserData).Target;
-                window.Dispose();
-
-                vp.PlatformUserData = IntPtr.Zero;
-            }
-        }
-
-        private void ShowWindow(ImGuiViewportPtr vp)
-        {
-            VeldridImGuiWindow window = (VeldridImGuiWindow)GCHandle.FromIntPtr(vp.PlatformUserData).Target;
-            Sdl2Native.SDL_ShowWindow(window.Window.SdlWindowHandle);
-        }
-
-        private unsafe void GetWindowPos(ImGuiViewportPtr vp, Vector2* outPos)
-        {
-            VeldridImGuiWindow window = (VeldridImGuiWindow)GCHandle.FromIntPtr(vp.PlatformUserData).Target;
-            *outPos = new Vector2(window.Window.Bounds.X, window.Window.Bounds.Y);
-        }
-
-        private void SetWindowPos(ImGuiViewportPtr vp, Vector2 pos)
-        {
-            VeldridImGuiWindow window = (VeldridImGuiWindow)GCHandle.FromIntPtr(vp.PlatformUserData).Target;
-            window.Window.X = (int)pos.X;
-            window.Window.Y = (int)pos.Y;
-        }
-
-        private void SetWindowSize(ImGuiViewportPtr vp, Vector2 size)
-        {
-            VeldridImGuiWindow window = (VeldridImGuiWindow)GCHandle.FromIntPtr(vp.PlatformUserData).Target;
-            Sdl2Native.SDL_SetWindowSize(window.Window.SdlWindowHandle, (int)size.X, (int)size.Y);
-        }
-
-        private unsafe void GetWindowSize(ImGuiViewportPtr vp, Vector2* outSize)
-        {
-            VeldridImGuiWindow window = (VeldridImGuiWindow)GCHandle.FromIntPtr(vp.PlatformUserData).Target;
-            Rectangle bounds = window.Window.Bounds;
-            *outSize = new Vector2(bounds.Width, bounds.Height);
-        }
-
-        private delegate void SDL_RaiseWindow_t(IntPtr sdl2Window);
-        private static SDL_RaiseWindow_t p_sdl_RaiseWindow;
-
-        private unsafe delegate uint SDL_GetGlobalMouseState_t(int* x, int* y);
-        private static SDL_GetGlobalMouseState_t p_sdl_GetGlobalMouseState;
-
-        private unsafe delegate int SDL_GetDisplayUsableBounds_t(int displayIndex, Rectangle* rect);
-        private static SDL_GetDisplayUsableBounds_t p_sdl_GetDisplayUsableBounds_t;
-
-        private delegate int SDL_GetNumVideoDisplays_t();
-        private static SDL_GetNumVideoDisplays_t p_sdl_GetNumVideoDisplays;
-
-        private void SetWindowFocus(ImGuiViewportPtr vp)
-        {
-            if (p_sdl_RaiseWindow == null)
-            {
-                p_sdl_RaiseWindow = Sdl2Native.LoadFunction<SDL_RaiseWindow_t>("SDL_RaiseWindow");
-            }
-
-            VeldridImGuiWindow window = (VeldridImGuiWindow)GCHandle.FromIntPtr(vp.PlatformUserData).Target;
-            p_sdl_RaiseWindow(window.Window.SdlWindowHandle);
-        }
-
-        private byte GetWindowFocus(ImGuiViewportPtr vp)
-        {
-            VeldridImGuiWindow window = (VeldridImGuiWindow)GCHandle.FromIntPtr(vp.PlatformUserData).Target;
-            SDL_WindowFlags flags = Sdl2Native.SDL_GetWindowFlags(window.Window.SdlWindowHandle);
-            return (flags & SDL_WindowFlags.InputFocus) != 0 ? (byte)1 : (byte)0;
-        }
-
-        private byte GetWindowMinimized(ImGuiViewportPtr vp)
-        {
-            VeldridImGuiWindow window = (VeldridImGuiWindow)GCHandle.FromIntPtr(vp.PlatformUserData).Target;
-            SDL_WindowFlags flags = Sdl2Native.SDL_GetWindowFlags(window.Window.SdlWindowHandle);
-            return (flags & SDL_WindowFlags.Minimized) != 0 ? (byte)1 : (byte)0;
-        }
-
-        private unsafe void SetWindowTitle(ImGuiViewportPtr vp, IntPtr title)
-        {
-            VeldridImGuiWindow window = (VeldridImGuiWindow)GCHandle.FromIntPtr(vp.PlatformUserData).Target;
-            byte* titlePtr = (byte*)title;
-            int count = 0;
-            while (titlePtr[count] != 0)
-            {
-                titlePtr += 1;
-            }
-            window.Window.Title = System.Text.Encoding.ASCII.GetString(titlePtr, count);
         }
 
         public void WindowResized(int width, int height)
@@ -276,7 +117,7 @@ namespace Mole.Veldrid
             _textureLayout = factory.CreateResourceLayout(new ResourceLayoutDescription(
                 new ResourceLayoutElementDescription("MainTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment)));
 
-            GraphicsPipelineDescription pd = new(
+            GraphicsPipelineDescription pd = new GraphicsPipelineDescription(
                 BlendStateDescription.SingleAlphaBlend,
                 new DepthStencilStateDescription(false, false, ComparisonKind.Always),
                 new RasterizerStateDescription(FaceCullMode.None, PolygonFillMode.Solid, FrontFace.Clockwise, false, true),
@@ -315,7 +156,7 @@ namespace Mole.Veldrid
 
         private IntPtr GetNextImGuiBindingID()
         {
-            int newID = _lastAssignedID++;
+            int newID = _lastAssignedId++;
             return (IntPtr)newID;
         }
 
@@ -359,55 +200,59 @@ namespace Mole.Veldrid
             _setsByView.Clear();
             _viewsById.Clear();
             _autoViewsByTexture.Clear();
-            _lastAssignedID = 100;
+            _lastAssignedId = 100;
         }
 
-        private static byte[] LoadEmbeddedShaderCode(ResourceFactory factory, string name, ShaderStages stage)
+        private byte[] LoadEmbeddedShaderCode(ResourceFactory factory, string name, ShaderStages stage)
         {
             switch (factory.BackendType)
             {
                 case GraphicsBackend.Direct3D11:
-                    {
-                        string resourceName = name + ".hlsl.bytes";
-                        return GetEmbeddedResourceBytes(resourceName);
-                    }
+                {
+                    string resourceName = name + ".hlsl.bytes";
+                    return GetEmbeddedResourceBytes(resourceName);
+                }
                 case GraphicsBackend.OpenGL:
-                    {
-                        string resourceName = name + ".glsl";
-                        return GetEmbeddedResourceBytes(resourceName);
-                    }
+                {
+                    string resourceName = name + ".glsl";
+                    return GetEmbeddedResourceBytes(resourceName);
+                }
                 case GraphicsBackend.Vulkan:
-                    {
-                        string resourceName = name + ".spv";
-                        return GetEmbeddedResourceBytes(resourceName);
-                    }
+                {
+                    string resourceName = name + ".spv";
+                    return GetEmbeddedResourceBytes(resourceName);
+                }
                 case GraphicsBackend.Metal:
-                    {
-                        string resourceName = name + ".metallib";
-                        return GetEmbeddedResourceBytes(resourceName);
-                    }
+                {
+                    string resourceName = name + ".metallib";
+                    return GetEmbeddedResourceBytes(resourceName);
+                }
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        private static byte[] GetEmbeddedResourceBytes(string resourceName)
+        private byte[] GetEmbeddedResourceBytes(string resourceName)
         {
             Assembly assembly = typeof(ImGuiController).Assembly;
-            using Stream s = assembly.GetManifestResourceStream(resourceName);
-            byte[] ret = new byte[s.Length];
-            s.Read(ret, 0, (int)s.Length);
-            return ret;
+            using (Stream s = assembly.GetManifestResourceStream(resourceName))
+            {
+                byte[] ret = new byte[s.Length];
+                s.Read(ret, 0, (int)s.Length);
+                return ret;
+            }
         }
 
         /// <summary>
         /// Recreates the device texture used to render text.
         /// </summary>
-        public unsafe void RecreateFontDeviceTexture(GraphicsDevice gd)
+        public void RecreateFontDeviceTexture(GraphicsDevice gd)
         {
             ImGuiIOPtr io = ImGui.GetIO();
             // Build
-            io.Fonts.GetTexDataAsRGBA32(out byte* pixels, out int width, out int height, out int bytesPerPixel);
+            IntPtr pixels;
+            int width, height, bytesPerPixel;
+            io.Fonts.GetTexDataAsRGBA32(out pixels, out width, out height, out bytesPerPixel);
             // Store our identifier
             io.Fonts.SetTexID(_fontAtlasID);
 
@@ -421,7 +266,7 @@ namespace Mole.Veldrid
             _fontTexture.Name = "ImGui.NET Font Texture";
             gd.UpdateTexture(
                 _fontTexture,
-                (IntPtr)pixels,
+                pixels,
                 (uint)(bytesPerPixel * width * height),
                 0,
                 0,
@@ -449,31 +294,6 @@ namespace Mole.Veldrid
                 _frameBegun = false;
                 ImGui.Render();
                 RenderImDrawData(ImGui.GetDrawData(), gd, cl);
-
-                // Update and Render additional Platform Windows
-                if ((ImGui.GetIO().ConfigFlags & ImGuiConfigFlags.ViewportsEnable) != 0)
-                {
-                    ImGui.UpdatePlatformWindows();
-                    ImGuiPlatformIOPtr platformIO = ImGui.GetPlatformIO();
-                    for (int i = 1; i < platformIO.Viewports.Size; i++)
-                    {
-                        ImGuiViewportPtr vp = platformIO.Viewports[i];
-                        VeldridImGuiWindow window = (VeldridImGuiWindow)GCHandle.FromIntPtr(vp.PlatformUserData).Target;
-                        cl.SetFramebuffer(window.Swapchain.Framebuffer);
-                        RenderImDrawData(vp.DrawData, gd, cl);
-                    }
-                }
-            }
-        }
-
-        public static void SwapExtraWindows(GraphicsDevice gd)
-        {
-            ImGuiPlatformIOPtr platformIO = ImGui.GetPlatformIO();
-            for (int i = 1; i < platformIO.Viewports.Size; i++)
-            {
-                ImGuiViewportPtr vp = platformIO.Viewports[i];
-                VeldridImGuiWindow window = (VeldridImGuiWindow)GCHandle.FromIntPtr(vp.PlatformUserData).Target;
-                gd.SwapBuffers(window.Swapchain);
             }
         }
 
@@ -485,44 +305,13 @@ namespace Mole.Veldrid
             if (_frameBegun)
             {
                 ImGui.Render();
-                ImGui.UpdatePlatformWindows();
             }
 
             SetPerFrameImGuiData(deltaSeconds);
             UpdateImGuiInput(snapshot);
-            UpdateMonitors();
 
             _frameBegun = true;
             ImGui.NewFrame();
-        }
-
-        private static unsafe void UpdateMonitors()
-        {
-            if (p_sdl_GetNumVideoDisplays == null)
-            {
-                p_sdl_GetNumVideoDisplays = Sdl2Native.LoadFunction<SDL_GetNumVideoDisplays_t>("SDL_GetNumVideoDisplays");
-            }
-            if (p_sdl_GetDisplayUsableBounds_t == null)
-            {
-                p_sdl_GetDisplayUsableBounds_t = Sdl2Native.LoadFunction<SDL_GetDisplayUsableBounds_t>("SDL_GetDisplayUsableBounds");
-            }
-
-            ImGuiPlatformIOPtr platformIO = ImGui.GetPlatformIO();
-            Marshal.FreeHGlobal(platformIO.NativePtr->Monitors.Data);
-            int numMonitors = p_sdl_GetNumVideoDisplays();
-            IntPtr data = Marshal.AllocHGlobal(Unsafe.SizeOf<ImGuiPlatformMonitor>() * numMonitors);
-            platformIO.NativePtr->Monitors = new ImVector(numMonitors, numMonitors, data);
-            for (int i = 0; i < numMonitors; i++)
-            {
-                Rectangle r;
-                p_sdl_GetDisplayUsableBounds_t(i, &r);
-                ImGuiPlatformMonitorPtr monitor = platformIO.Monitors[i];
-                monitor.DpiScale = 1f;
-                monitor.MainPos = new Vector2(r.X, r.Y);
-                monitor.MainSize = new Vector2(r.Width, r.Height);
-                monitor.WorkPos = new Vector2(r.X, r.Y);
-                monitor.WorkSize = new Vector2(r.Width, r.Height);
-            }
         }
 
         /// <summary>
@@ -537,9 +326,6 @@ namespace Mole.Veldrid
                 _windowHeight / _scaleFactor.Y);
             io.DisplayFramebufferScale = _scaleFactor;
             io.DeltaTime = deltaSeconds; // DeltaTime is in seconds.
-
-            ImGui.GetPlatformIO().Viewports[0].Pos = new Vector2(_window.X, _window.Y);
-            ImGui.GetPlatformIO().Viewports[0].Size = new Vector2(_window.Width, _window.Height);
         }
 
         private void UpdateImGuiInput(InputSnapshot snapshot)
@@ -572,24 +358,9 @@ namespace Mole.Veldrid
             }
 
             io.MouseDown[0] = leftPressed || snapshot.IsMouseDown(MouseButton.Left);
-            io.MouseDown[1] = middlePressed || snapshot.IsMouseDown(MouseButton.Right);
-            io.MouseDown[2] = rightPressed || snapshot.IsMouseDown(MouseButton.Middle);
-
-            if (p_sdl_GetGlobalMouseState == null)
-            {
-                p_sdl_GetGlobalMouseState = Sdl2Native.LoadFunction<SDL_GetGlobalMouseState_t>("SDL_GetGlobalMouseState");
-            }
-
-            int x, y;
-            unsafe
-            {
-                uint buttons = p_sdl_GetGlobalMouseState(&x, &y);
-                io.MouseDown[0] = (buttons & 0b0001) != 0;
-                io.MouseDown[1] = (buttons & 0b0010) != 0;
-                io.MouseDown[2] = (buttons & 0b0100) != 0;
-            }
-
-            io.MousePos = new Vector2(x, y);
+            io.MouseDown[1] = rightPressed || snapshot.IsMouseDown(MouseButton.Right);
+            io.MouseDown[2] = middlePressed || snapshot.IsMouseDown(MouseButton.Middle);
+            io.MousePos = mousePosition;
             io.MouseWheel = snapshot.WheelDelta;
 
             IReadOnlyList<char> keyCharPresses = snapshot.KeyCharPresses;
@@ -626,14 +397,6 @@ namespace Mole.Veldrid
             io.KeyAlt = _altDown;
             io.KeyShift = _shiftDown;
             io.KeySuper = _winKeyDown;
-
-            ImVector<ImGuiViewportPtr> viewports = ImGui.GetPlatformIO().Viewports;
-            for (int i = 1; i < viewports.Size; i++)
-            {
-                ImGuiViewportPtr v = viewports[i];
-                VeldridImGuiWindow window = ((VeldridImGuiWindow)GCHandle.FromIntPtr(v.PlatformUserData).Target);
-                window.Update();
-            }
         }
 
         private static void SetKeyMappings()
@@ -659,7 +422,6 @@ namespace Mole.Veldrid
             io.KeyMap[(int)ImGuiKey.X] = (int)Key.X;
             io.KeyMap[(int)ImGuiKey.Y] = (int)Key.Y;
             io.KeyMap[(int)ImGuiKey.Z] = (int)Key.Z;
-            io.KeyMap[(int)ImGuiKey.Space] = (int)Key.Space;
         }
 
         private void RenderImDrawData(ImDrawDataPtr draw_data, GraphicsDevice gd, CommandList cl)
@@ -686,7 +448,6 @@ namespace Mole.Veldrid
                 _indexBuffer = gd.ResourceFactory.CreateBuffer(new BufferDescription((uint)(totalIBSize * 1.5f), BufferUsage.IndexBuffer | BufferUsage.Dynamic));
             }
 
-            Vector2 pos = draw_data.DisplayPos;
             for (int i = 0; i < draw_data.CmdListsCount; i++)
             {
                 ImDrawListPtr cmd_list = draw_data.CmdListsRange[i];
@@ -710,14 +471,14 @@ namespace Mole.Veldrid
             // Setup orthographic projection matrix into our constant buffer
             ImGuiIOPtr io = ImGui.GetIO();
             Matrix4x4 mvp = Matrix4x4.CreateOrthographicOffCenter(
-                pos.X,
-                pos.X + draw_data.DisplaySize.X,
-                pos.Y + draw_data.DisplaySize.Y,
-                pos.Y,
+                0f,
+                io.DisplaySize.X,
+                io.DisplaySize.Y,
+                0.0f,
                 -1.0f,
                 1.0f);
 
-            cl.UpdateBuffer(_projMatrixBuffer, 0, ref mvp);
+            _gd.UpdateBuffer(_projMatrixBuffer, 0, ref mvp);
 
             cl.SetVertexBuffer(0, _vertexBuffer);
             cl.SetIndexBuffer(_indexBuffer, IndexFormat.UInt16);
@@ -755,8 +516,8 @@ namespace Mole.Veldrid
 
                         cl.SetScissorRect(
                             0,
-                            (uint)(pcmd.ClipRect.X - pos.X),
-                            (uint)(pcmd.ClipRect.Y - pos.Y),
+                            (uint)pcmd.ClipRect.X,
+                            (uint)pcmd.ClipRect.Y,
                             (uint)(pcmd.ClipRect.Z - pcmd.ClipRect.X),
                             (uint)(pcmd.ClipRect.W - pcmd.ClipRect.Y));
 
@@ -774,7 +535,6 @@ namespace Mole.Veldrid
         /// </summary>
         public void Dispose()
         {
-            GC.SuppressFinalize(this);
             _vertexBuffer.Dispose();
             _indexBuffer.Dispose();
             _projMatrixBuffer.Dispose();
@@ -806,6 +566,3 @@ namespace Mole.Veldrid
         }
     }
 }
-#pragma warning restore IDE0044 // Add readonly modifier
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
-#pragma warning restore IDE0060 // Remove unused parameter

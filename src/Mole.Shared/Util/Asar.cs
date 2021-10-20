@@ -16,7 +16,7 @@ namespace Mole.Shared.Util
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static unsafe class Asar
     {
-        public const string DllPath = "asar";
+        public const string DllPath = "libasar";
         public const int ExpectedApiVersion = 303;
 
         /// <summary>

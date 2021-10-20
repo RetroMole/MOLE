@@ -1,15 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <AssemblyName>Mole.Veldrid</AssemblyName>
-    <RootNamespace>Mole.Veldrid</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RootNamespace>Mole.Veldrid</RootNamespace>
+    <AssemblyName>Mole.Veldrid</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,11 +19,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ImGui.NET.Docking" Version="1.75.0" />
+    <PackageReference Include="ImGui.NET" Version="1.78.0" />
     <PackageReference Include="Veldrid" Version="4.8.0" />
-    <PackageReference Include="Veldrid.ImGui" Version="5.72.0" />
     <PackageReference Include="Veldrid.SDL2" Version="4.8.0" />
     <PackageReference Include="Veldrid.StartupUtilities" Version="4.8.0" />
-    <PackageReference Include="Veldrid.Utilities" Version="4.8.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\deps\cimgui\linux-x64\cimgui.so">
+      <Link>cimgui.so</Link>
+    </Content>
+    <Content Include="..\..\deps\cimgui\osx-x64\cimgui.dylib">
+      <Link>cimgui.dylib</Link>
+    </Content>
+    <Content Include="..\..\deps\cimgui\win-x64\cimgui.dll">
+      <Link>cimgui.dll</Link>
+    </Content>
+  </ItemGroup>
+
 </Project>

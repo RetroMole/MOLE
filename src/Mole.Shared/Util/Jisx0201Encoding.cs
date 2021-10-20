@@ -9,7 +9,7 @@ namespace System.Text
         public override int GetMaxByteCount(int charCount) => charCount;
         public override int GetMaxCharCount(int byteCount) => byteCount;
 
-        private char[] _conversionArray =
+        private readonly char[] _conversionArray =
             new char[32].Concat(new char[] {
                 ' ', '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/',
                 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=', '>', '?',

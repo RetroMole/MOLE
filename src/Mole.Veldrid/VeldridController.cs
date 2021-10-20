@@ -1,65 +1,67 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Numerics;
 using ImGuiNET;
 using Veldrid;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
 
+using static ImGuiNET.ImGuiNative;
+
 namespace Mole.Veldrid
 {
-    [SuppressMessage("ReSharper", "AccessToDisposedClosure")]
-    public class VeldridController
+    public static class VeldridController
     {
+        private static Sdl2Window _window;
+        private static GraphicsDevice _gd;
+        private static CommandList _cl;
         private static ImGuiController _controller;
-        private static readonly Vector3 ClearColor = new(0.45f, 0.55f, 0.6f);
 
-        delegate void DrawSignature();
+        private static readonly Vector3 ClearColor = new Vector3(0.45f, 0.55f, 0.6f);
+        public static void SetThing(out float i, float val) { i = val; }
+        
+        delegate void Draw();
+        private static Draw _draw;
 
-        public VeldridController(GraphicsBackend gBack, object ui)
+        public static void Main(GraphicsBackend backend, object ui)
         {
+            _draw = (Draw)ui.GetType().GetMethod("Draw")?.CreateDelegate(typeof(Draw));
             VeldridStartup.CreateWindowAndGraphicsDevice(
-                new WindowCreateInfo(50, 50, 1280, 720, WindowState.Normal, "MOLE"),
+                new WindowCreateInfo(50, 50, 1280, 720, WindowState.Normal, "Mole Veldrid"),
                 new GraphicsDeviceOptions(true, null, true, 
-                    ResourceBindingModel.Improved, true, true), 
-                gBack, 
-                out Sdl2Window window, 
-                out GraphicsDevice gd);
-            window.Resized += () =>
+                    ResourceBindingModel.Improved, true, true),
+                backend,
+                out _window,
+                out _gd);
+            _window.Resized += () =>
             {
-                gd.MainSwapchain.Resize((uint)window.Width, (uint)window.Height);
-                _controller.WindowResized(window.Width, window.Height);
+                _gd.MainSwapchain.Resize((uint)_window.Width, (uint)_window.Height);
+                _controller.WindowResized(_window.Width, _window.Height);
             };
-            var cl = gd.ResourceFactory.CreateCommandList();
-            _controller = new ImGuiController(gd, window, gd.MainSwapchain.Framebuffer.OutputDescription, window.Width, window.Height);
-            Random random = new();
-
-            var draw = (DrawSignature)ui.GetType().GetMethod("Draw")?.CreateDelegate(typeof(DrawSignature));
+            _cl = _gd.ResourceFactory.CreateCommandList();
+            _controller = new ImGuiController(_gd, _gd.MainSwapchain.Framebuffer.OutputDescription, _window.Width, _window.Height);
 
             // Main application loop
-            while (window.Exists)
+            while (_window.Exists)
             {
-                InputSnapshot snapshot = window.PumpEvents();
-                if (!window.Exists) { break; }
-                _controller.Update(1f / 60f, snapshot); // Feed the input events to our ImGui controller, which passes them through to ImGui.
-                ImGuiViewportPtr mainViewportPtr = ImGui.GetMainViewport();
-                var mainViewPortDockSpaceId = ImGui.DockSpaceOverViewport(mainViewportPtr);
-                draw();
-                cl.Begin();
-                cl.SetFramebuffer(gd.MainSwapchain.Framebuffer);
-                cl.ClearColorTarget(0, new RgbaFloat(ClearColor.X, ClearColor.Y, ClearColor.Z, 1f));
-                _controller.Render(gd, cl);
-                cl.End();
-                gd.SubmitCommands(cl);
-                gd.SwapBuffers(gd.MainSwapchain);
-                ImGuiController.SwapExtraWindows(gd);
+                InputSnapshot snapshot = _window.PumpEvents();
+                if (!_window.Exists) { break; }
+                _controller.Update(1f / 60f, snapshot);
+                _draw();
+                _cl.Begin();
+                _cl.SetFramebuffer(_gd.MainSwapchain.Framebuffer);
+                _cl.ClearColorTarget(0, new RgbaFloat(ClearColor.X, ClearColor.Y, ClearColor.Z, 1f));
+                _controller.Render(_gd, _cl);
+                _cl.End();
+                _gd.SubmitCommands(_cl);
+                _gd.SwapBuffers(_gd.MainSwapchain);
             }
 
             // Clean up Veldrid resources
-            gd.WaitForIdle();
+            _gd.WaitForIdle();
             _controller.Dispose();
-            cl.Dispose();
-            gd.Dispose();
+            _cl.Dispose();
+            _gd.Dispose();
         }
     }
 }
