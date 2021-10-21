@@ -1,10 +1,4 @@
-[submodule "ImGui.NET"]
-	path = src/ImGui.NET
-	url = https://github.com/mellinoe/ImGui.NET.git
-	branch = docking
-[submodule "src/src/MOLE/Util/TerraCompress"]
-	path = src/MOLE/Util/TerraCompress
-	url = https://github.com/Smallhacker/TerraCompress.git
-[submodule "src/Asar"]
-	path = src/Asar
+
+[submodule "deps/asar/Asar"]
+	path = deps/asar/Asar
 	url = https://github.com/RPGHacker/asar.git
