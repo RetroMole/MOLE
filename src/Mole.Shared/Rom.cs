@@ -369,7 +369,6 @@ namespace Mole.Shared
         public IEnumerator<byte> GetEnumerator() => _rom.OfType<byte>().GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => (IEnumerator<byte>)_rom.GetEnumerator();
         public void Dispose() {
-            Asar.Close();
             GC.SuppressFinalize(this);
         } // TODO: Possible Memory leak, does the enumerator/enumerable stuff need manual disposal?
     }
