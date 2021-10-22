@@ -1,62 +1,89 @@
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
+using System.Threading;
 using ImGuiNET;
 using Mole.Shared;
 
 namespace Mole.Gui.Windows
 {
-    public class FileDialog
+    /// <summary>
+    /// File Dialog
+    /// </summary>
+    public class FileDialog : Window
     {
-        public static void Main(bool draw, ref Rom rom, ref Gfx gfx, ref bool filediag, ref string path)
+        private string _path = "";
+
+        [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
+        [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH")]
+        public override void Draw(Ui.UiData data, List<Window> windows)
         {
-            if (draw)
+            if (!ShouldDraw) return;
+            
+            if (!ImGui.IsPopupOpen("RomOpen")) 
+                ImGui.OpenPopup("RomOpen");
+
+            if (ImGui.IsPopupOpen("RomOpen"))
             {
-                if (!ImGui.IsPopupOpen("RomOpen")) 
-                    ImGui.OpenPopup("RomOpen");
-
-                if (ImGui.IsPopupOpen("RomOpen"))
+                ImGui.SetNextWindowPos(ImGui.GetMainViewport().Size / 2, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+                if (ImGui.BeginPopupModal("RomOpen", ref ShouldDraw))
                 {
-                    ImGui.SetNextWindowPos(ImGui.GetMainViewport().Size / 2, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-                    if (ImGui.BeginPopupModal("RomOpen"))
+                    if (ImGui.InputText("Path", ref _path,
+                        500, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
                     {
-                        if (ImGui.InputText("Path", ref path,
-                            500, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
-                        {
-                            ImGui.CloseCurrentPopup();
-                            filediag = false;
-                            if (!File.Exists(path)) {
-                                LoggerEntry.Logger.Warning("Invalid path: {0}", path);
-                                return;
-                            }
-                            rom = new Rom(path);
-                            gfx = new Gfx(rom);
+                        ImGui.CloseCurrentPopup();
+                        ShouldDraw = false;
+                        if (!File.Exists(_path)) {
+                            LoggerEntry.Logger.Warning("Invalid path: {0}", _path);
+                            return;
                         }
 
-                        if (ImGui.Button("Open"))
-                        {
-                            ImGui.CloseCurrentPopup();
-                            filediag = false;
-                            if (!File.Exists(path)) {
-                                LoggerEntry.Logger.Warning("Invalid path: {0}", path);
-                                return;
-                            }
-                            rom = new Rom(path);
-                            gfx = new Gfx(rom);
-                        }
-
-                        if (filediag == false) return;
-                        
-                        ImGui.SetItemDefaultFocus();
-                        ImGui.SameLine();
-                        
-                        if (ImGui.Button("Cancel"))
-                        {
-                            ImGui.CloseCurrentPopup();
-                            filediag = false;
-                        }
-
-                        ImGui.EndPopup();
+                        data.Path = _path;
+                        windows[2].ShouldDraw = true;
+                        windows[3].ShouldDraw = true;
+                        new Thread(() => {
+                            data.Rom = new(data.Path);
+                            data.Gfx = new();
+                            new Thread(() => {
+                                Gfx.NewRef(ref data.Gfx, data.Rom);
+                            }).Start();
+                        }).Start();
                     }
+
+                    if (ImGui.Button("Open"))
+                    {
+                        ImGui.CloseCurrentPopup();
+                        ShouldDraw = false;
+                        if (!File.Exists(_path)) {
+                            LoggerEntry.Logger.Warning("Invalid path: {0}", _path);
+                            return;
+                        }
+                        
+                        data.Path = _path;
+                        windows[2].ShouldDraw = true;
+                        windows[3].ShouldDraw = true;
+                        new Thread(() => {
+                            data.Rom = new(data.Path);
+                            data.Gfx = new();
+                            new Thread(() => {
+                                Gfx.NewRef(ref data.Gfx, data.Rom);
+                            }).Start();
+                        }).Start();
+                    }
+
+                    if (ShouldDraw == false) return;
+                        
+                    ImGui.SetItemDefaultFocus();
+                    ImGui.SameLine();
+                        
+                    if (ImGui.Button("Cancel"))
+                    {
+                        ImGui.CloseCurrentPopup();
+                        ShouldDraw = false;
+                    }
+
+                    ImGui.EndPopup();
                 }
             }
         }

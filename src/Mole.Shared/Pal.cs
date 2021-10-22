@@ -29,10 +29,11 @@
             /// </summary>
             public ushort this[int index] => Pal[index];
         }
+        
         /// <summary>
         /// SNES 5-bit BGR representation of the palette
         /// </summary>
-        public PalSnes Snes = new();
+        public readonly PalSnes Snes = new();
 
         /// <summary>
         /// Default Constructor
