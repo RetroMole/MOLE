@@ -1,67 +1,82 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text;
+
 namespace Mole.Shared.Util
 {
     /// <summary>
-    /// Custom Undo-Redo System
+    /// Undo/Redo System
     /// </summary>
     public class UndoRedo
     {
-        /// <summary>
-        /// Stack of Undo Actions
-        /// </summary>
-        public Stack<Action> UndoStack { get; } = new Stack<Action>();
-        /// <summary>
-        /// Stack of Redo Actions
-        /// </summary>
-        public Stack<Action> RedoStack { get; } = new Stack<Action>();
-        /// <summary>
-        /// Stack of Do Actions
-        /// </summary>
-        public Stack<Action> DoStack { get; } = new Stack<Action>();
-        /// <summary>
-        /// Stack used during juggling to hold backups of Do Actions
-        /// </summary>
-        public Stack<Action> BackupStack { get; } = new Stack<Action>();
-
-        /// <summary>
-        /// Juggles stacks to "Do" something
-        /// </summary>
-        /// <param name="doAct">Do Action</param>
-        /// <param name="undoAct">Undo Action</param>
-        /// <param name="entry">Weather there should be a new entry for this action in the stacks</param>
-        public void Do(Action doAct, Action undoAct, bool entry)
+        public class Action
         {
-            if (entry)
+            public enum ActionType
             {
-                DoStack.Push(doAct);
-                UndoStack.Push(undoAct);
-                RedoStack.Clear();
-                BackupStack.Clear();
+                TestAction
             }
-            doAct();
+
+            public ActionType Type;
         }
 
+        private readonly Stack<Action> _undoActions = new();
+        private readonly Stack<Action> _redoActions = new();
+
         /// <summary>
-        /// Juggles stacks to "Undo" the latest recorded action
+        /// Push an Action to the stack
+        /// </summary>
+        /// <param name="a">Action</param>
+        public void Push(Action a) => _undoActions.Push(a);
+
+        /// <summary>
+        /// Undo latest action
         /// </summary>
         public void Undo()
         {
-            var undoAct = UndoStack.Pop();
-            undoAct();
-            BackupStack.Push(undoAct);
-            RedoStack.Push(DoStack.Pop());
+            _redoActions.Push(_undoActions.Peek());
+            _undoActions.Pop();
         }
 
         /// <summary>
-        /// Juggles stacks to "Redo the latest recorded undone action"
+        /// Redo latest action
         /// </summary>
         public void Redo()
         {
-            var redoAct = RedoStack.Pop();
-            redoAct();
-            DoStack.Push(redoAct);
-            UndoStack.Push(BackupStack.Pop());
+            _undoActions.Push(_redoActions.Peek());
+            _redoActions.Pop();
+        }
+
+        /// <summary>
+        /// Flushes current stack
+        /// </summary>
+        public void Flush()
+        {
+            
+        }
+
+        /// <summary>
+        /// Exports stack for project
+        /// </summary>
+        /// <returns>Current stack</returns>
+        public string ExportForProject()
+        {
+            var sb = new StringBuilder();
+            foreach (Action a in _undoActions)
+            {
+                sb.Append("Undo");
+                sb.Append(" | ");
+                sb.Append(a.Type.ToString());
+                switch (a.Type) { }
+                sb.Append("\n");
+            }
+            foreach (Action a in _redoActions)
+            {
+                sb.Append("Redo");
+                sb.Append(" | ");
+                sb.Append(a.Type.ToString());
+                switch (a.Type) { }
+                sb.Append("\n");
+            }
+            return sb.ToString();
         }
     }
 }

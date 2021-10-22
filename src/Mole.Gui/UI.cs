@@ -13,9 +13,9 @@ namespace Mole.Gui
     {
         private static readonly List<Window> Windows = new() {
            new About(),
-           new FileDialog(),
-           new RomInfo(),
-           new WGfx()
+           //new FileDialog(),
+           //new RomInfo(),
+           //new WGfx()
         };
 
         private static bool _showDemo;

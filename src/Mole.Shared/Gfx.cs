@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Mole.Shared.Util;
@@ -10,19 +11,6 @@ namespace Mole.Shared
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public class Gfx
     {
-        public enum StateEnum
-        {
-            LoadingGfx,
-            LoadingExGfx,
-            LoadingSuperExGfx,
-            DecompressingGfx,
-            CleaningUpGfx,
-            DecompressingExGfx,
-            CleaningUpExGfx,
-            DecompressingSuperExGfx,
-            CleaningUpSuperExGfx,
-        }
-        
         public uint[] ExGfxPointers = new uint[0x80];
         public uint[] GfxPointers = new uint[0x34];
         public uint[] SuperExGfxPointers = new uint[0xF00];
@@ -30,63 +18,106 @@ namespace Mole.Shared
         public byte[][] DecompressedGfx;
         public byte[][] DecompressedExGfx;
         public byte[][] DecompressedSuperExGfx;
-        public int MaxProgress = 0;
-        public int Progress = 0;
-        public bool Loaded;
-        public StateEnum State;
 
         [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
-        public static void NewRef(ref Gfx gfx, Rom rom)
+        public Gfx(Progress progress, Rom rom)
         {
             // ReSharper disable once UseObjectOrCollectionInitializer
-            gfx.State = StateEnum.LoadingGfx;
+            progress.State = Progress.StateEnum.LoadingGfx;
             LoggerEntry.Logger.Information("Getting GFX Pointers...");
             var low = rom.Skip(rom.SnesToPc(0x00B992)).Take(0x32).ToArray();
             var high = rom.Skip(rom.SnesToPc(0x00B9C4)).Take(0x32).ToArray();
             var bank = rom.Skip(rom.SnesToPc(0x00B9F6)).Take(0x32).ToArray();
-            gfx.MaxProgress = 0x32;
+            progress.MaxProgress = 0x32;
             for (var i = 0; i < 0x32; i++) {
-                gfx.Progress = i;
-                gfx.GfxPointers[i] = BitConverter.ToUInt32(new byte[] {low[i], high[i], bank[i], 0});
+                progress.CurrentProgress = i;
+                GfxPointers[i] = BitConverter.ToUInt32(new byte[] {low[i], high[i], bank[i], 0});
             }
-            gfx.GfxPointers[0x32] = 0x088000;
-            gfx.GfxPointers[0x33] = 0x08BFC0;
+            GfxPointers[0x32] = 0x088000;
+            GfxPointers[0x33] = 0x08BFC0;
 
-            gfx.State = StateEnum.LoadingExGfx;
+            progress.State = Progress.StateEnum.LoadingExGfx;
             LoggerEntry.Logger.Information("Getting ExGFX Pointers...");
             var ex = rom.Skip(rom.SnesToPc(0x0FF600)).Take(0x180).ToArray();
-            gfx.MaxProgress = 0x80;
+            progress.MaxProgress = 0x80;
             for (var i = 0; i < 0x80; i++) {
-                gfx.Progress = i;
-                gfx.ExGfxPointers[i] = Helper.B2Ul(ex.Skip(i * 3).Take(3).ToArray());
+                progress.CurrentProgress = i;
+                ExGfxPointers[i] = Helper.B2Ul(ex.Skip(i * 3).Take(3).ToArray());
             }
 
-            gfx.State = StateEnum.LoadingSuperExGfx;
+            progress.State = Progress.StateEnum.LoadingSuperExGfx;
             if (rom.RomSize <= 512) {
                 LoggerEntry.Logger.Warning("Unexpanded ROM, SuperExGFX can't be used");
-                gfx.SuperExGfxSupported = false;
+                SuperExGfxSupported = false;
             } else {
                 LoggerEntry.Logger.Information("Getting SuperExGFX Pointers...");
                 var supex = rom.Skip(rom.SnesToPc((int) Helper.B2Ul(rom.Skip(rom.SnesToPc(0x0FF937)).Take(3).ToArray())))
                     .Take(0x2D00).ToArray();
-                gfx.MaxProgress = 0xF00;
+                progress.MaxProgress = 0xF00;
                 for (var i = 0; i < 0xF00; i++) {
-                    gfx.Progress = i;
-                    gfx.SuperExGfxPointers[i] = Helper.B2Ul(supex.Skip(i * 3).Take(3).ToArray());
+                    progress.CurrentProgress = i;
+                    SuperExGfxPointers[i] = Helper.B2Ul(supex.Skip(i * 3).Take(3).ToArray());
                 }
             }
 
-            gfx.DecompressedGfx = DecompressGfx(gfx.GfxPointers, rom, ref gfx.Progress, ref gfx.MaxProgress, ref gfx.State, 
-                StateEnum.DecompressingGfx, StateEnum.CleaningUpGfx, "GFX");
+            DecompressedGfx = DecompressGfx(GfxPointers, rom, ref progress.CurrentProgress, ref progress.MaxProgress, ref progress.State, 
+                Progress.StateEnum.DecompressingGfx, Progress.StateEnum.CleaningUpGfx, "GFX");
             
-            gfx.DecompressedExGfx = DecompressGfx(gfx.ExGfxPointers, rom, ref gfx.Progress, ref gfx.MaxProgress, ref gfx.State, 
-                StateEnum.DecompressingExGfx, StateEnum.CleaningUpExGfx, "ExGFX");
+            DecompressedExGfx = DecompressGfx(ExGfxPointers, rom, ref progress.CurrentProgress, ref progress.MaxProgress, ref progress.State, 
+                Progress.StateEnum.DecompressingExGfx, Progress.StateEnum.CleaningUpExGfx, "ExGFX");
             
-            if (gfx.SuperExGfxSupported)
-                gfx.DecompressedSuperExGfx = DecompressGfx(gfx.SuperExGfxPointers, rom, ref gfx.Progress, ref gfx.MaxProgress, ref gfx.State,
-                    StateEnum.DecompressingSuperExGfx, StateEnum.CleaningUpSuperExGfx, "SuperExGFX");
-            
-            gfx.Loaded = true;
+            if (SuperExGfxSupported)
+                DecompressedSuperExGfx = DecompressGfx(SuperExGfxPointers, rom, ref progress.CurrentProgress, ref progress.MaxProgress, ref progress.State,
+                    Progress.StateEnum.DecompressingSuperExGfx, Progress.StateEnum.CleaningUpSuperExGfx, "SuperExGFX");
+        }
+
+        /// <summary>
+        /// Export all GFX info
+        /// </summary>
+        public byte[] ExportForProject()
+        {
+            // Header
+            var bytes = new List<byte> { SuperExGfxSupported ? (byte)0x1 : (byte)0x0 };
+            // Pointers
+            foreach (byte b in BitConverter.GetBytes(GfxPointers.Length))
+                bytes.Add(b);
+            foreach (byte b in BitConverter.GetBytes(ExGfxPointers.Length))
+                bytes.Add(b);
+            if (SuperExGfxSupported) // Store only if SuperExGfx supported
+                foreach (byte b in BitConverter.GetBytes(SuperExGfxPointers.Length))
+                    bytes.Add(b);
+            // Decompressed
+            foreach (byte b in BitConverter.GetBytes(DecompressedGfx.Length))
+                bytes.Add(b);
+            foreach (byte b in BitConverter.GetBytes(DecompressedExGfx.Length))
+                bytes.Add(b);
+            if (SuperExGfxSupported) // Store only if SuperExGfx supported
+                foreach (byte b in BitConverter.GetBytes(DecompressedSuperExGfx.Length))
+                    bytes.Add(b);
+            // Data
+            // Pointers
+            foreach (uint b in GfxPointers)
+            foreach(byte bb in BitConverter.GetBytes(b))
+                bytes.Add(bb);
+            foreach (uint b in ExGfxPointers)
+            foreach(byte bb in BitConverter.GetBytes(b))
+                bytes.Add(bb);
+            if (SuperExGfxSupported) // Store only if SuperExGfx supported
+                foreach (uint b in SuperExGfxPointers)
+                foreach(byte bb in BitConverter.GetBytes(b))
+                    bytes.Add(bb);
+            // Decompressed
+            foreach (byte[] b in DecompressedGfx)
+            foreach (byte bb in b)
+                bytes.Add(bb);
+            foreach (byte[] b in DecompressedExGfx)
+            foreach (byte bb in b)
+                bytes.Add(bb);
+            if (SuperExGfxSupported) // Store only if SuperExGfx supported
+                foreach (byte[] b in DecompressedSuperExGfx)
+                foreach (byte bb in b)
+                    bytes.Add(bb);
+            return bytes.ToArray();
         }
 
         /// <summary>
@@ -102,8 +133,8 @@ namespace Mole.Shared
         /// <param name="postfix">Logger postfix</param>
         /// <returns>Decompressed GFX</returns>
         // ReSharper disable once RedundantAssignment
-        public static byte[][] DecompressGfx(uint[] gfxPointers, Rom rom, ref int progress, ref int maxProgress, ref StateEnum state, 
-            StateEnum decompressing, StateEnum cleaning, string postfix)
+        public static byte[][] DecompressGfx(uint[] gfxPointers, Rom rom, ref int progress, ref int maxProgress, ref Progress.StateEnum state, 
+            Progress.StateEnum decompressing, Progress.StateEnum cleaning, string postfix)
         {
             state = decompressing;
             LoggerEntry.Logger.Information($"Decompressing {postfix}...");
