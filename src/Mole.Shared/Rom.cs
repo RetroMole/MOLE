@@ -22,6 +22,8 @@ namespace Mole.Shared
         /// </summary>
         private UndoRedo Ur { get; } = new();
 
+        public bool Loaded = false;
+
         /// <summary>
         /// Indexer and internal ROM representation
         /// </summary>
@@ -135,6 +137,8 @@ namespace Mole.Shared
             Version = InternalHeader[0x1B];
             Checksum = BitConverter.ToUInt16(new byte[] { InternalHeader[0x1C], InternalHeader[0x1D] });
             ChecksumComplement = BitConverter.ToUInt16(new byte[] { InternalHeader[0x1E], InternalHeader[0x1F] });
+
+            Loaded = true;
         }
 
         /// <summary>
