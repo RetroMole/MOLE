@@ -55,16 +55,6 @@
       <Link>cimgui.dll</Link>
     </Content>
 
-    <!-- SDL2 Image -->
-    <Content Include="..\..\deps\sdl2_image\ibsdl2_image.dylib" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))'">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>libsdl2_image.dylib</Link>
-    </Content>
-    <Content Include="..\..\deps\sdl2_image\SDL2_image.dll" Condition="'$(OS)' == 'Windows_NT'">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>SDL2_image.dll</Link>
-    </Content>
-
     <!-- Icon -->
     <Content Include="..\..\res\Icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
