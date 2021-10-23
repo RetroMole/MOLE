@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Mole.Shared.Util;
 
 namespace Mole.Gui.Windows
 {
@@ -9,6 +10,6 @@ namespace Mole.Gui.Windows
     {
         public bool ShouldDraw = false;
         
-        public virtual void Draw(Ui.UiData data, List<Window> windows) { }
+        public virtual void Draw(Project.UiData data, List<Window> windows) { }
     }
 }
