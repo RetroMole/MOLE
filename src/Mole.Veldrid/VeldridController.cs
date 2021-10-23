@@ -5,6 +5,7 @@ using ImGuiNET;
 using Veldrid;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
+using System.Runtime.InteropServices;
 
 using static ImGuiNET.ImGuiNative;
 
@@ -26,6 +27,7 @@ namespace Mole.Veldrid
         public static void Main(GraphicsBackend backend, object ui)
         {
             _draw = (Draw)ui.GetType().GetMethod("Draw")?.CreateDelegate(typeof(Draw));
+
             VeldridStartup.CreateWindowAndGraphicsDevice(
                 new WindowCreateInfo(50, 50, 1280, 720, WindowState.Normal, "Mole Veldrid"),
                 new GraphicsDeviceOptions(true, null, true, 
