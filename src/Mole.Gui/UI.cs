@@ -42,6 +42,8 @@ namespace Mole.Gui
                         Windows[1].ShouldDraw = true;
                     if (ImGui.MenuItem("Open Project", "Ctrl+O"))
                         Windows[4].ShouldDraw = true;
+                    if (ImGui.MenuItem("Save Project", "Ctrl+S")
+                        && Data.Project != null) Data.Project.SaveProject();
                     if (ImGui.MenuItem("Close Project", "Ctrl+C"))
                     {
                         Data.Progress = new Progress();
