@@ -13,22 +13,16 @@ namespace Mole.Gui
     public class Ui
     {
         private static readonly List<Window> Windows = new() {
-           new About(),
-           new FileDialog(),
-           new RomInfo(),
-           new WGfx(),
-           new ProjectDialog(),
-           new LoadingDialog()
+            new About(),
+            new FileDialog(),
+            new RomInfo(),
+            new WGfx(),
+            new ProjectDialog(),
+            new LoadingDialog()
         };
 
         private static bool _showDemo;
-        private static readonly UiData Data = new();
-
-        public class UiData
-        {
-            public Project Project;
-            public Progress Progress = new();
-        }
+        private static readonly Project.UiData Data = new();
 
         [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
         public static void Draw()
@@ -48,6 +42,11 @@ namespace Mole.Gui
                         Windows[1].ShouldDraw = true;
                     if (ImGui.MenuItem("Open Project", "Ctrl+O"))
                         Windows[4].ShouldDraw = true;
+                    if (ImGui.MenuItem("Close Project", "Ctrl+C"))
+                    {
+                        Data.Progress = new Progress();
+                        Data.Project = null;
+                    }
                     ImGui.EndMenu();
                 }
 

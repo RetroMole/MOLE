@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ImGuiNET;
+using Mole.Shared.Util;
 
 namespace Mole.Gui.Windows
 {
@@ -8,7 +9,7 @@ namespace Mole.Gui.Windows
     /// </summary>
     public class About : Window
     {
-        public override void Draw(Ui.UiData data, List<Window> windows)
+        public override void Draw(Project.UiData data, List<Window> windows)
         {
             if (!ShouldDraw) return;
             

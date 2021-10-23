@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using ImGuiNET;
+using Mole.Shared.Util;
 
 namespace Mole.Gui.Windows
 {
@@ -11,7 +12,7 @@ namespace Mole.Gui.Windows
     [SuppressMessage("ReSharper", "InterpolatedStringExpressionIsNotIFormattable")]
     public class RomInfo : Window
     {
-        public override void Draw(Ui.UiData data, List<Window> windows)
+        public override void Draw(Project.UiData data, List<Window> windows)
         {
             if (!ShouldDraw || !data.Progress.Loaded) return;
             

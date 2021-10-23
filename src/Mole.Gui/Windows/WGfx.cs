@@ -14,7 +14,7 @@ namespace Mole.Gui.Windows
     /// </summary>
     public class WGfx : Window
     {
-        public override void Draw(Ui.UiData data, List<Window> windows)
+        public override void Draw(Project.UiData data, List<Window> windows)
         {
             if (!ShouldDraw || !data.Progress.Loaded) return;
             
@@ -70,7 +70,6 @@ namespace Mole.Gui.Windows
                 {
                     var x = k / 8 * sz;
                     var y = k % 8 * sz;
-                    LoggerEntry.Logger.Information($"0x{i:X2}, {k % 8} {k / 8}, {k}, {chr.GetLength(0)} {chr.GetLength(1)}");
                     var c = chr[k / 8, k % 8];
                     if (c >= pal.Length)
                     {

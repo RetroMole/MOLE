@@ -86,11 +86,11 @@ namespace Mole.Shared
         private byte[] ExportTemplateDecompressed(byte[][] array)
         {
             var bytes = new List<byte>();
-            foreach (var b in BitConverter.GetBytes(array.GetLength(0)))
-                bytes.Add(b);
-            foreach (var b in array)
-            foreach (var bb in b)
-                bytes.Add(bb);
+            foreach (var b in array) {
+                if (b == null) continue;
+                foreach (var bb in b)
+                    bytes.Add(bb);
+            }
             return bytes.ToArray();
         }
         

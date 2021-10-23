@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -18,7 +19,7 @@ namespace Mole.Gui.Windows
 
         [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
         [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH")]
-        public override void Draw(Ui.UiData data, List<Window> windows)
+        public override void Draw(Project.UiData data, List<Window> windows)
         {
             if (!ShouldDraw) return;
             
@@ -41,10 +42,14 @@ namespace Mole.Gui.Windows
                         }
                         
                         new Thread(() => {
-                            data.Project = new Project(data.Progress, 
-                                Directory.GetDirectoryRoot(_path));
-                            windows[2].ShouldDraw = true;
-                            windows[3].ShouldDraw = true;
+                            try {
+                                data.Project = new Project(data.Progress, _path);
+                                windows[2].ShouldDraw = true;
+                                windows[3].ShouldDraw = true;
+                            } catch (Exception e) {
+                                data.Progress.Exception = e;
+                                data.Progress.ShowException = true;
+                            }
                         }).Start();
                     }
 
@@ -58,9 +63,14 @@ namespace Mole.Gui.Windows
                         }
                         
                         new Thread(() => {
-                            data.Project = new Project(data.Progress, _path);
-                            windows[2].ShouldDraw = true;
-                            windows[3].ShouldDraw = true;
+                            try {
+                                data.Project = new Project(data.Progress, _path);
+                                windows[2].ShouldDraw = true;
+                                windows[3].ShouldDraw = true;
+                            } catch (Exception e) {
+                                data.Progress.Exception = e;
+                                data.Progress.ShowException = true;
+                            }
                         }).Start();
                     }
                     

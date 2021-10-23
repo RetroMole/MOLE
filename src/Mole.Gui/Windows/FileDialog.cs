@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -5,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using ImGuiNET;
 using Mole.Shared;
 using Mole.Shared.Util;
@@ -20,7 +22,7 @@ namespace Mole.Gui.Windows
 
         [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
         [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH")]
-        public override void Draw(Ui.UiData data, List<Window> windows)
+        public override void Draw(Project.UiData data, List<Window> windows)
         {
             if (!ShouldDraw) return;
             
@@ -32,6 +34,8 @@ namespace Mole.Gui.Windows
                 ImGui.SetNextWindowPos(ImGui.GetMainViewport().Size / 2, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
                 if (ImGui.BeginPopupModal("RomOpen", ref ShouldDraw))
                 {
+                    ImGui.Text("Warning: If the project for that rom exists.");
+                    ImGui.Text("Warning: It will be deleted.");
                     if (ImGui.InputText("Path", ref _path,
                         500, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
                     {
@@ -42,12 +46,22 @@ namespace Mole.Gui.Windows
                             return;
                         }
                         
-                        new Thread(() => {
-                            data.Project = new Project(data.Progress, 
-                                Directory.GetDirectoryRoot(_path), _path);
+                        var task = new Task(() => {
+                            var sp = _path.Split('.').ToList();
+                            sp.RemoveAt(sp.Count - 1);
+                            Directory.CreateDirectory(string.Join('.', sp));
+                            data.Project = new Project(data.Progress,
+                                string.Join('.', sp), _path);
                             windows[2].ShouldDraw = true;
                             windows[3].ShouldDraw = true;
-                        }).Start();
+                        });
+
+                        task.ContinueWith(t => {
+                            data.Progress.Exception = t.Exception;
+                            data.Progress.ShowException = true;
+                        }, TaskContinuationOptions.OnlyOnFaulted);
+                        
+                        task.Start();
                     }
 
                     if (ImGui.Button("Open"))
@@ -58,16 +72,24 @@ namespace Mole.Gui.Windows
                             LoggerEntry.Logger.Warning("Invalid path: {0}", _path);
                             return;
                         }
-                        
-                        new Thread(() => {
+
+                        var task = new Task(() =>
+                        {
                             var sp = _path.Split('.').ToList();
                             sp.RemoveAt(sp.Count - 1);
                             Directory.CreateDirectory(string.Join('.', sp));
-                            data.Project = new Project(data.Progress, 
+                            data.Project = new Project(data.Progress,
                                 string.Join('.', sp), _path);
                             windows[2].ShouldDraw = true;
                             windows[3].ShouldDraw = true;
-                        }).Start();
+                        });
+
+                        task.ContinueWith(t => {
+                            data.Progress.Exception = t.Exception;
+                            data.Progress.ShowException = true;
+                        }, TaskContinuationOptions.OnlyOnFaulted);
+                        
+                        task.Start();
                     }
 
                     if (ShouldDraw == false) return;

@@ -1,3 +1,5 @@
+using System;
+
 namespace Mole.Shared.Util
 {
     public class Progress
@@ -20,6 +22,9 @@ namespace Mole.Shared.Util
         public int CurrentProgress = 0;
         public int MaxProgress = 0;
         public bool Loaded = false;
+        public bool Working = false;
         public StateEnum State;
+        public Exception Exception;
+        public bool ShowException;
     }
 }
