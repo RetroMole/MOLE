@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Mole.Gui.Windows;
 using Mole.Shared;
+using Mole.Shared.Util;
 using Num = System.Numerics;
 
 namespace Mole.Gui
@@ -13,19 +14,20 @@ namespace Mole.Gui
     {
         private static readonly List<Window> Windows = new() {
            new About(),
-           //new FileDialog(),
-           //new RomInfo(),
-           //new WGfx()
+           new FileDialog(),
+           new RomInfo(),
+           new WGfx(),
+           new ProjectDialog(),
+           new LoadingDialog()
         };
 
         private static bool _showDemo;
-        private static UiData _data = new();
+        private static readonly UiData Data = new();
 
         public class UiData
         {
-            public Rom Rom;
-            public Gfx Gfx;
-            public string Path;
+            public Project Project;
+            public Progress Progress = new();
         }
 
         [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
@@ -42,9 +44,10 @@ namespace Mole.Gui
             {
                 if (ImGui.BeginMenu("File"))
                 {
-                    if (ImGui.MenuItem("Open ROM", "Ctrl+O"))
+                    if (ImGui.MenuItem("Open ROM", "Ctrl+N"))
                         Windows[1].ShouldDraw = true;
-                        
+                    if (ImGui.MenuItem("Open Project", "Ctrl+O"))
+                        Windows[4].ShouldDraw = true;
                     ImGui.EndMenu();
                 }
 
@@ -56,7 +59,7 @@ namespace Mole.Gui
 
                 if (ImGui.BeginMenu("Help"))
                 {
-                    if (ImGui.MenuItem("About", null))
+                    if (ImGui.MenuItem("About"))
                         Windows[0].ShouldDraw = true;
 
                     ImGui.EndMenu();
@@ -68,7 +71,7 @@ namespace Mole.Gui
             if (_showDemo) ImGui.ShowDemoWindow(ref _showDemo);
 
             foreach (var w in Windows)
-                w.Draw(_data, Windows);
+                w.Draw(Data, Windows);
         }
     }
 }

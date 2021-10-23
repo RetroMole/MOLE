@@ -16,32 +16,23 @@ namespace Mole.Gui.Windows
     {
         public override void Draw(Ui.UiData data, List<Window> windows)
         {
-            if (!ShouldDraw || data.Gfx == null) return;
+            if (!ShouldDraw || !data.Progress.Loaded) return;
             
             ImGui.SetNextWindowSize(new Num.Vector2(600, 900), ImGuiCond.FirstUseEver);
             ImGui.Begin("GFX Info");
-            
-            if (data.Gfx is not { Loaded: true }) {
-                ImGui.Text("Loading GFX, please wait...");
-                ImGui.Separator();
-                ImGui.Text(data.Gfx.State.ToString());
-                ImGui.Text($"Progress: 0x{data.Gfx.Progress:X2} / 0x{data.Gfx.MaxProgress:X2}");
-                ImGui.End();
-                return;
-            }
             ImGui.Text("GFX");
-            ImGui.Text($"Pointers: 0x{data.Gfx.GfxPointers.Length:X2}");
-            ImGui.Text($"Decompressed: 0x{data.Gfx.DecompressedGfx.Length:X2}");
+            ImGui.Text($"Pointers: 0x{data.Project.Gfx.GfxPointers.Length:X2}");
+            ImGui.Text($"Decompressed: 0x{data.Project.Gfx.DecompressedGfx.Length:X2}");
             ImGui.Separator();
             ImGui.Text("ExGFX");
-            ImGui.Text($"Pointers: 0x{data.Gfx.ExGfxPointers.Length:X2}");
-            ImGui.Text($"Decompressed: 0x{data.Gfx.DecompressedExGfx.Length:X2}");
+            ImGui.Text($"Pointers: 0x{data.Project.Gfx.ExGfxPointers.Length:X2}");
+            ImGui.Text($"Decompressed: 0x{data.Project.Gfx.DecompressedExGfx.Length:X2}");
             ImGui.Separator();
             ImGui.Text("SuperExGFX");
-            ImGui.Text($"Pointers: 0x{data.Gfx.SuperExGfxPointers.Length:X2}");
-            ImGui.Text($"Supported: {data.Gfx.SuperExGfxSupported}");
-            if (data.Gfx.SuperExGfxSupported)
-                ImGui.Text($"Decompressed: 0x{data.Gfx.DecompressedSuperExGfx.Length:X2}");
+            ImGui.Text($"Pointers: 0x{data.Project.Gfx.SuperExGfxPointers.Length:X2}");
+            ImGui.Text($"Supported: {data.Project.Gfx.SuperExGfxSupported}");
+            if (data.Project.Gfx.SuperExGfxSupported)
+                ImGui.Text($"Decompressed: 0x{data.Project.Gfx.DecompressedSuperExGfx.Length:X2}");
             ImGui.Separator();
             ImGui.Text("Rendering");
 
@@ -66,13 +57,13 @@ namespace Mole.Gui.Windows
             var sp = sz/4;
             var drawList = ImGui.GetWindowDrawList();
             ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Num.Vector2(0, sp));
-            for (int i = 0; i < data.Gfx.DecompressedGfx.Length; i++)
+            for (int i = 0; i < data.Project.Gfx.DecompressedGfx.Length; i++)
             {
                 if (i % 16 == 0)
                     ImGui.Dummy(new Num.Vector2(0,0));
 
                 ImGui.SameLine(0f, sp);
-                byte[,] chr = Bpp.BppPlanar2(data.Gfx.DecompressedGfx[i]);
+                byte[,] chr = Bpp.BppPlanar2(data.Project.Gfx.DecompressedGfx[i]);
                 var p = ImGui.GetCursorScreenPos();
 
                 for (int k = 0; k < chr.Length; k++)

@@ -17,11 +17,6 @@ namespace Mole.Shared
     [SuppressMessage("ReSharper", "MemberInitializerValueIgnored")]
     public class Rom : IEnumerator<byte>, IEnumerable<byte>
     {
-        /// <summary>
-        /// UndoRedo system required for ROM operations
-        /// </summary>
-        private UndoRedo Ur { get; } = new();
-
         public bool Loaded = false;
 
         /// <summary>

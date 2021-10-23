@@ -13,14 +13,13 @@ namespace Mole.Shared.Util
             CleaningUpExGfx,
             DecompressingSuperExGfx,
             CleaningUpSuperExGfx,
-            CreatingProjectFiles,
-            SavingHashes,
+            SavingProject,
             CopyingRom
         }
         
         public int CurrentProgress = 0;
         public int MaxProgress = 0;
-        public bool Loaded;
+        public bool Loaded = false;
         public StateEnum State;
     }
 }

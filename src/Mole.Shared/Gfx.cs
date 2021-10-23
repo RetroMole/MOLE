@@ -9,6 +9,7 @@ namespace Mole.Shared
 {
     [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+    [SuppressMessage("ReSharper", "UseObjectOrCollectionInitializer")]
     public class Gfx
     {
         public uint[] ExGfxPointers = new uint[0x80];
@@ -71,54 +72,50 @@ namespace Mole.Shared
                     Progress.StateEnum.DecompressingSuperExGfx, Progress.StateEnum.CleaningUpSuperExGfx, "SuperExGFX");
         }
 
-        /// <summary>
-        /// Export all GFX info
-        /// </summary>
-        public byte[] ExportForProject()
+        public Gfx() { }
+        
+        private byte[] ExportTemplatePointers(uint[] array)
         {
-            // Header
-            var bytes = new List<byte> { SuperExGfxSupported ? (byte)0x1 : (byte)0x0 };
-            // Pointers
-            foreach (byte b in BitConverter.GetBytes(GfxPointers.Length))
-                bytes.Add(b);
-            foreach (byte b in BitConverter.GetBytes(ExGfxPointers.Length))
-                bytes.Add(b);
-            if (SuperExGfxSupported) // Store only if SuperExGfx supported
-                foreach (byte b in BitConverter.GetBytes(SuperExGfxPointers.Length))
-                    bytes.Add(b);
-            // Decompressed
-            foreach (byte b in BitConverter.GetBytes(DecompressedGfx.Length))
-                bytes.Add(b);
-            foreach (byte b in BitConverter.GetBytes(DecompressedExGfx.Length))
-                bytes.Add(b);
-            if (SuperExGfxSupported) // Store only if SuperExGfx supported
-                foreach (byte b in BitConverter.GetBytes(DecompressedSuperExGfx.Length))
-                    bytes.Add(b);
-            // Data
-            // Pointers
-            foreach (uint b in GfxPointers)
-            foreach(byte bb in BitConverter.GetBytes(b))
-                bytes.Add(bb);
-            foreach (uint b in ExGfxPointers)
-            foreach(byte bb in BitConverter.GetBytes(b))
-                bytes.Add(bb);
-            if (SuperExGfxSupported) // Store only if SuperExGfx supported
-                foreach (uint b in SuperExGfxPointers)
-                foreach(byte bb in BitConverter.GetBytes(b))
-                    bytes.Add(bb);
-            // Decompressed
-            foreach (byte[] b in DecompressedGfx)
-            foreach (byte bb in b)
-                bytes.Add(bb);
-            foreach (byte[] b in DecompressedExGfx)
-            foreach (byte bb in b)
-                bytes.Add(bb);
-            if (SuperExGfxSupported) // Store only if SuperExGfx supported
-                foreach (byte[] b in DecompressedSuperExGfx)
-                foreach (byte bb in b)
+            var bytes = new List<byte>();
+            foreach (var b in array)
+                foreach (var bb in BitConverter.GetBytes(b))
                     bytes.Add(bb);
             return bytes.ToArray();
         }
+        
+        private byte[] ExportTemplateDecompressed(byte[][] array)
+        {
+            var bytes = new List<byte>();
+            foreach (var b in BitConverter.GetBytes(array.GetLength(0)))
+                bytes.Add(b);
+            foreach (var b in array)
+            foreach (var bb in b)
+                bytes.Add(bb);
+            return bytes.ToArray();
+        }
+        
+        public uint[] ImportPointers(byte[] array)
+        {
+            var bytes = new List<uint>();
+            for (int i = 0; i < array.Length; i += 4)
+                bytes.Add(BitConverter.ToUInt32(array.Skip(i).Take(4).ToArray()));
+            return bytes.ToArray();
+        }
+        
+        public byte[][] ImportDecompressed(byte[] array)
+        {
+            var bytes = new List<byte[]>();
+            for (int i = 0; i < array.Length; i += 64)
+                bytes.Add(array.Skip(i).Take(64).ToArray());
+            return bytes.ToArray();
+        }
+
+        public byte[] ExportGfxPointers() => ExportTemplatePointers(GfxPointers);
+        public byte[] ExportGfxDecompressed() => ExportTemplateDecompressed(DecompressedGfx);
+        public byte[] ExportExGfxPointers() => ExportTemplatePointers(ExGfxPointers);
+        public byte[] ExportExGfxDecompressed() => ExportTemplateDecompressed(DecompressedExGfx);
+        public byte[] ExportSuperExGfxPointers() => ExportTemplatePointers(SuperExGfxPointers);
+        public byte[] ExportSuperExGfxDecompressed() => ExportTemplateDecompressed(DecompressedSuperExGfx);
 
         /// <summary>
         /// Decompresses GFX

@@ -13,31 +13,24 @@ namespace Mole.Gui.Windows
     {
         public override void Draw(Ui.UiData data, List<Window> windows)
         {
-            if (!ShouldDraw) return;
+            if (!ShouldDraw || !data.Progress.Loaded) return;
             
             ImGui.SetNextWindowSize(new Vector2(420, 69), ImGuiCond.FirstUseEver);
             ImGui.Begin("ROM Info");
-            
-            if (data.Rom is not { Loaded: true }) {
-                ImGui.Text("Loading ROM, please wait...");
-                ImGui.End();
-                return;
-            }
-             
-            ImGui.Text($"ROM Filename: {data.Rom.FileName}"); 
-            ImGui.Text($"ROM Path: {data.Rom.FilePath}");
-            ImGui.Text($"Copier Header Size: {(data.Rom.Header != null ? data.Rom.Header.Length : "None"):X2}");
+            ImGui.Text($"ROM Filename: {data.Project.Rom.FileName}"); 
+            ImGui.Text($"ROM Path: {data.Project.Rom.FilePath}");
+            ImGui.Text($"Copier Header Size: {(data.Project.Rom.Header != null ? data.Project.Rom.Header.Length : "None"):X2}");
             ImGui.Separator(); 
             ImGui.Text("Internal ROM Header:");
-            ImGui.Text($"  ROM Title: \"{data.Rom.Title}\""); 
-            ImGui.Text($"  Mapping Mode: {(data.Rom.FastRom ? "FastROM" : "SlowROM")}, {data.Rom.Mapping}");
-            ImGui.Text($"  ROM Size: {data.Rom.RomSize}kb"); 
-            ImGui.Text($"  SRAM Size: {data.Rom.SramSize}kb");
-            ImGui.Text($"  Region: {data.Rom.Region}");
-            ImGui.Text($"  Developer ID: {data.Rom.DevId:X2}");
-            ImGui.Text($"  Version: {data.Rom.Version}");
-            ImGui.Text($"  Checksum: {data.Rom.Checksum:X4}");
-            ImGui.Text($"  Checksum Complement: {data.Rom.ChecksumComplement:X4}");
+            ImGui.Text($"  ROM Title: \"{data.Project.Rom.Title}\""); 
+            ImGui.Text($"  Mapping Mode: {(data.Project.Rom.FastRom ? "FastROM" : "SlowROM")}, {data.Project.Rom.Mapping}");
+            ImGui.Text($"  ROM Size: {data.Project.Rom.RomSize}kb"); 
+            ImGui.Text($"  SRAM Size: {data.Project.Rom.SramSize}kb");
+            ImGui.Text($"  Region: {data.Project.Rom.Region}");
+            ImGui.Text($"  Developer ID: {data.Project.Rom.DevId:X2}");
+            ImGui.Text($"  Version: {data.Project.Rom.Version}");
+            ImGui.Text($"  Checksum: {data.Project.Rom.Checksum:X4}");
+            ImGui.Text($"  Checksum Complement: {data.Project.Rom.ChecksumComplement:X4}");
             ImGui.End();
         }
     }

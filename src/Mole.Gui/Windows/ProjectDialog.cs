@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Text;
 using System.Threading;
 using ImGuiNET;
 using Mole.Shared;
@@ -14,7 +12,7 @@ namespace Mole.Gui.Windows
     /// <summary>
     /// File Dialog
     /// </summary>
-    public class FileDialog : Window
+    public class ProjectDialog : Window
     {
         private string _path = "";
 
@@ -24,27 +22,27 @@ namespace Mole.Gui.Windows
         {
             if (!ShouldDraw) return;
             
-            if (!ImGui.IsPopupOpen("RomOpen")) 
-                ImGui.OpenPopup("RomOpen");
+            if (!ImGui.IsPopupOpen("ProjectOpen")) 
+                ImGui.OpenPopup("ProjectOpen");
 
-            if (ImGui.IsPopupOpen("RomOpen"))
+            if (ImGui.IsPopupOpen("ProjectOpen"))
             {
                 ImGui.SetNextWindowPos(ImGui.GetMainViewport().Size / 2, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-                if (ImGui.BeginPopupModal("RomOpen", ref ShouldDraw))
+                if (ImGui.BeginPopupModal("ProjectOpen", ref ShouldDraw))
                 {
                     if (ImGui.InputText("Path", ref _path,
                         500, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
                     {
                         ImGui.CloseCurrentPopup();
                         ShouldDraw = false;
-                        if (!File.Exists(_path)) {
+                        if (!Directory.Exists(_path)) {
                             LoggerEntry.Logger.Warning("Invalid path: {0}", _path);
                             return;
                         }
                         
                         new Thread(() => {
                             data.Project = new Project(data.Progress, 
-                                Directory.GetDirectoryRoot(_path), _path);
+                                Directory.GetDirectoryRoot(_path));
                             windows[2].ShouldDraw = true;
                             windows[3].ShouldDraw = true;
                         }).Start();
@@ -54,24 +52,18 @@ namespace Mole.Gui.Windows
                     {
                         ImGui.CloseCurrentPopup();
                         ShouldDraw = false;
-                        if (!File.Exists(_path)) {
+                        if (!Directory.Exists(_path)) {
                             LoggerEntry.Logger.Warning("Invalid path: {0}", _path);
                             return;
                         }
                         
                         new Thread(() => {
-                            var sp = _path.Split('.').ToList();
-                            sp.RemoveAt(sp.Count - 1);
-                            Directory.CreateDirectory(string.Join('.', sp));
-                            data.Project = new Project(data.Progress, 
-                                string.Join('.', sp), _path);
+                            data.Project = new Project(data.Progress, _path);
                             windows[2].ShouldDraw = true;
                             windows[3].ShouldDraw = true;
                         }).Start();
                     }
-
-                    if (ShouldDraw == false) return;
-                        
+                    
                     ImGui.SetItemDefaultFocus();
                     ImGui.SameLine();
                         
