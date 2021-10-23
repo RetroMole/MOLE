@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="ImGui.NET" Version="1.78.0" />
+    <PackageReference Include="NativeLibraryLoader" Version="1.0.12" />
     <PackageReference Include="Veldrid" Version="4.8.0" />
     <PackageReference Include="Veldrid.SDL2" Version="4.8.0" />
     <PackageReference Include="Veldrid.StartupUtilities" Version="4.8.0" />
