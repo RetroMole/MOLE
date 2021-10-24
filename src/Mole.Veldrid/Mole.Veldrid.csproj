@@ -20,24 +20,10 @@
 
   <ItemGroup>
     <PackageReference Include="ImGui.NET" Version="1.78.0" />
+    <PackageReference Include="NativeLibraryLoader" Version="1.0.12" />
     <PackageReference Include="Veldrid" Version="4.8.0" />
     <PackageReference Include="Veldrid.SDL2" Version="4.8.0" />
     <PackageReference Include="Veldrid.StartupUtilities" Version="4.8.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="..\..\deps\cimgui\linux-x64\cimgui.so" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>cimgui.so</Link>
-    </Content>
-    <Content Include="..\..\deps\cimgui\osx-x64\cimgui.dylib" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))'">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>cimgui.dylib</Link>
-    </Content>
-    <Content Include="..\..\deps\cimgui\win-x64\cimgui.dll" Condition="'$(OS)' == 'Windows_NT'">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>cimgui.dll</Link>
-    </Content>
   </ItemGroup>
 
 </Project>
