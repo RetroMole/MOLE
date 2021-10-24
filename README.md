@@ -1,4 +1,4 @@
-[![GitHub Super-Linter](https://github.com/Vawlpe/MOLE/actions/workflows/super-linter.yml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/super-linter.yaml)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/40ebb72715874f39838bf6df8ab33ea5)](https://www.codacy.com/gh/TheAirBlow/MOLE/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TheAirBlow/MOLE&amp;utm_campaign=Badge_Grade)
 [![Build Status](https://github.com/Vawlpe/MOLE/actions/workflows/build.yaml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/build.yaml)
 [![Test](https://github.com/Vawlpe/MOLE/actions/workflows/test.yaml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/test.yaml)
 [![Asar](https://github.com/Vawlpe/MOLE/actions/workflows/asar.yaml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/asar.yaml)
@@ -6,9 +6,10 @@
 [![License](https://badgen.net/github/license/Vawlpe/MOLE)](./LICENSE.md)
 [![Latest commit](https://img.shields.io/github/last-commit/Vawlpe/MOLE)](https://github.com/Vawlpe/MOLE/commits/)
 [![Version](https://badge.fury.io/gh/Vawlpe%2FMOLE.svg)](https://github.com/Vawlpe/MOLE)
-[![Discord](https://img.shields.io/discord/591914197219016707.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/hAGM9UPv4q)
 
 **MOLE** is being designed as an **OpenSource**  editor for **Super Mario World** with the intent to bring many of the features from existing SMW ROMHacking tools/patches such as **Lunar Magic**, **Asar**, **YYCHR**, and [many others](#compatibility) into a single easy-to-use [**multi-platform**](#how-to-run) and [localized](#localizationtranslation) tool.
+
+**Warning:** This is unofficial repository - please visit the [original repo](https://github.com/vawlpe/MOLE).
 
 Trello board: [v0.1.0](https://trello.com/b/UdcwaJmr/mole-v010)
 ___
