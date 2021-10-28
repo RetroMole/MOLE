@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mole.Gui", "Mole.Gui\Mole.G
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mole.Veldrid", "Mole.Veldrid\Mole.Veldrid.csproj", "{3B5F6769-4C0D-4336-A069-C86EFFE8A157}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerraCompress", "..\deps\TerraCompress\src\TerraCompress.csproj", "{FBBC99D9-5050-489F-BAAA-D7D42DC0DFE3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerraCompress", "..\deps\TerraCompress\src\TerraCompress.csproj", "{1D777076-BB2B-4722-B6DA-0F93C74A99D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,14 +56,14 @@ Global
 		{3B5F6769-4C0D-4336-A069-C86EFFE8A157}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3B5F6769-4C0D-4336-A069-C86EFFE8A157}.Release|x64.ActiveCfg = Release|Any CPU
 		{3B5F6769-4C0D-4336-A069-C86EFFE8A157}.Release|x64.Build.0 = Release|Any CPU
-		{FBBC99D9-5050-489F-BAAA-D7D42DC0DFE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FBBC99D9-5050-489F-BAAA-D7D42DC0DFE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FBBC99D9-5050-489F-BAAA-D7D42DC0DFE3}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{FBBC99D9-5050-489F-BAAA-D7D42DC0DFE3}.Debug|x64.Build.0 = Debug|Any CPU
-		{FBBC99D9-5050-489F-BAAA-D7D42DC0DFE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FBBC99D9-5050-489F-BAAA-D7D42DC0DFE3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FBBC99D9-5050-489F-BAAA-D7D42DC0DFE3}.Release|x64.ActiveCfg = Release|Any CPU
-		{FBBC99D9-5050-489F-BAAA-D7D42DC0DFE3}.Release|x64.Build.0 = Release|Any CPU
+		{1D777076-BB2B-4722-B6DA-0F93C74A99D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D777076-BB2B-4722-B6DA-0F93C74A99D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D777076-BB2B-4722-B6DA-0F93C74A99D4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1D777076-BB2B-4722-B6DA-0F93C74A99D4}.Debug|x64.Build.0 = Debug|Any CPU
+		{1D777076-BB2B-4722-B6DA-0F93C74A99D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D777076-BB2B-4722-B6DA-0F93C74A99D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D777076-BB2B-4722-B6DA-0F93C74A99D4}.Release|x64.ActiveCfg = Release|Any CPU
+		{1D777076-BB2B-4722-B6DA-0F93C74A99D4}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

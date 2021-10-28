@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using System.Text;
+using Mole.Shared.Exceptions;
 
-namespace System.Text
+namespace Mole.Shared.Util
 {
     class Jisx0201Encoding : Encoding
     {
@@ -28,9 +30,7 @@ namespace System.Text
         public override int GetBytes(char[] chars, int charIndex, int charCount, byte[] bytes, int byteIndex)
         {
             for (var i = 0; i < charCount; i++)
-            {
                 bytes[byteIndex + i] = GetByte(chars[charIndex + i]);
-            }
 
             return charCount;
         }
@@ -38,9 +38,7 @@ namespace System.Text
         public override int GetChars(byte[] bytes, int byteIndex, int byteCount, char[] chars, int charIndex)
         {
             for (var i = 0; i < byteCount; i++)
-            {
                 chars[charIndex + i] = _conversionArray[bytes[byteIndex + i]];
-            }
 
             return byteCount;
         }
@@ -53,7 +51,7 @@ namespace System.Text
                     return (byte)i;
             }
 
-            throw new Exception("Invalid character");
+            throw new InvalidCharacterException();
         }
 
         private char GetChar(byte b) => _conversionArray[b];
