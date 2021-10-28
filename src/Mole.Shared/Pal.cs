@@ -56,12 +56,7 @@ namespace Mole.Shared
         public readonly PalSnes Snes = new();
 
         /// <summary>
-        /// 8-bit ABGTR representation of palette
-        /// </summary>
-        public uint[] ABGR => Snes.Select(c => SnesToABGR(c)).ToArray();
-
-        /// <summary>
-        /// 8-bit ABGTR representation of palette
+        /// 8-bit ABGR representation of palette
         /// </summary>
         public uint[] ABGR => Snes.Select(c => SnesToABGR(c)).ToArray();
 
