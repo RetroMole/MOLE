@@ -1,114 +1,78 @@
 ﻿using System.Linq;
 using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
 
 namespace Mole.Shared.Util
 {
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static class Bpp
     {
-        public static byte[,] ToPlane(byte[] data)
+        public static byte[,] GetChr2bpp(byte[] data, int chr)
         {
-            byte[,] res = new byte[data.Length, 8];
-            for (int r = 0; r < data.Length; r++)
+            var ch = data.Skip(16 * chr).Take(16); // Get char data
+            var bitplane0 = ch.Where((x, i) => (i % 2) == 0).ToList(); // Get even byes (0th bitplane)
+            var bitplane1 = ch.Where((x, i) => (i % 2) != 0).ToList(); // Get odd bytes (1st bitplane)
+            byte[,] res = new byte[8, 8];
+            for (int i = 0; i < 8; i++) // Loop over bytes
             {
-                for (int c = 0; c < 8; c++)
+                for (int j = 0; j < 8; j++) // Loop over bits
                 {
-                    res[r, c] = (byte)((data[r] & (1 << c)) == 0 ? 0 : 1);
+                    var bit0 = (bitplane0.ElementAt(i)>>j)&1; // Get Jth bit into 1st position 
+                    var bit1 = (bitplane1.ElementAt(i)>>j)&1; // Get Jth bit into 1st position
+                    res[i,j^7] = (byte)((bit1 << 1) | bit0); // Combine bits into result and flip horizontally
+                }
+            }
+            return res;
+        }
+        public static byte[,] GetChr3bpp(byte[] data, int chr)
+        {
+            var ch = data.Skip(24 * chr).Take(24); // Get char data
+            var bitplane0 = ch.SkipLast(8).Where((x, i) => (i % 2) == 0).ToList(); // Get even byes (0th bitplane)
+            var bitplane1 = ch.SkipLast(8).Where((x, i) => (i % 2) != 0).ToList(); // Get odd bytes (1st bitplane)
+            var bitplane2 = ch.TakeLast(8); // Get last 8 bytes (2nd bitplane)
+            byte[,] res = new byte[8, 8];
+            for (int i = 0; i < 8; i++) // Loop over bytes
+            {
+                for (int j = 0; j < 8; j++) // Loop over bits
+                {
+                    var bit0 = (bitplane0.ElementAt(i) >> j) & 1; // Get Jth bit of byte from bp0
+                    var bit1 = (bitplane1.ElementAt(i) >> j) & 1; // Get Jth bit of byte from bp1 
+                    var bit2 = (bitplane2.ElementAt(i) >> j) & 1; // Get Jth bit of byte from bp2
+                    res[i, j ^ 7] = (byte)((bit2 << 2) | (bit1 << 1) | bit0); // Combine bits into result and flip horizontally
+                }
+            }
+            return res;
+        }
+        public static byte[,] GetChr4bpp(byte[] data, int chr) => new byte[,] { };
+        public static byte[,] GetChr8bpp(byte[] data, int chr) => new byte[,] { };
+        public static byte[,] GetChrMode73bpp(byte[] data, int chr)
+        {
+            var ch = data.Skip(24 * chr).Take(24); // Get char data
+            var bitplane0 = ch.Take(8); // Get even byes (0th bitplane)
+            var bitplane1 = ch.Skip(8).Take(8); // Get odd bytes (1st bitplane)
+            var bitplane2 = ch.TakeLast(8); // Get last 8 bytes (2nd bitplane)
+            byte[,] res = new byte[8, 8];
+            for (int i = 0; i < 8; i++) // Loop over bytes
+            {
+                for (int j = 0; j < 8; j++) // Loop over bits
+                {
+                    var bit0 = (bitplane0.ElementAt(i) >> j) & 1; // Get Jth bit of byte from bp0
+                    var bit1 = (bitplane1.ElementAt(i) >> j) & 1; // Get Jth bit of byte from bp1 
+                    var bit2 = (bitplane2.ElementAt(i) >> j) & 1; // Get Jth bit of byte from bp2
+                    res[i, j ^ 7] = (byte)((bit2 << 2) | (bit1 << 1) | bit0); // Combine bits into result and flip horizontally
                 }
             }
             return res;
         }
 
-        public static byte[] GetEveryNthElement(byte[] data, int n)
-        {
-            return data.Where((x, i) => ((i+1) % n) == 0).ToArray();
-        }
 
-        public static byte[,] GetPlaneIntertwined(byte[] data, int plane)
+        public static byte[,] GetChr(byte[] data, int chr, Gfx.Format format) => format switch
         {
-            // TODO: This'll probably mess up with 3BPP and upward due to bitplanes being stored in pairs and due to not limiting the amount of elements to get 
-            return plane switch
-            {
-                0 => ToPlane(GetEveryNthElement(data.Prepend<byte>(0).ToArray(), 2)),
-                _ => ToPlane(GetEveryNthElement(data, plane + 1))
-            };
-        }
-        public static byte[,] GetPlanePlanar(byte[] data, int plane)
-        {
-            return ToPlane(data.Skip(plane * 8).Take(8).ToArray());
-        }
-
-        public static byte[,] CombinePlanes(params byte[][,] planes)
-        {
-            byte[,] res = planes[0];
-            for (int i = 1; i < planes.Length; i++)
-            {
-                var p = planes[i];
-                for (int r = 0; r < p.GetLength(0); r++)
-                {
-                    for (int c = 0; c < p.GetLength(1); c++)
-                    {
-                        res[r, c] = (byte)((res[r,c] << i) | p[r, c]);
-                    }
-                }
-            }
-            return res;
-        }
-
-        public static byte[,] FlipPlaneH(byte[,] plane)
-        {
-            int rows = plane.GetLength(0);
-            int cols = plane.GetLength(1);
-
-            for (int i = 0; i <= rows - 1; i++)
-            {
-                int j = 0;
-                int k = cols - 1;
-                while (j < k)
-                {
-                    (plane[i, j], plane[i, k]) = (plane[i, k], plane[i, j]);
-                    j++;
-                    k--;
-                }
-            }
-            return plane;
-        }
-
-        public static byte[,] FlipPlaneV(byte[,] plane)
-        {
-            int rows = plane.GetLength(0);
-            int cols = plane.GetLength(1);
-
-            for (int i = 0; i <= cols - 1; i++)
-            {
-                int j = 0;
-                int k = rows - 1;
-                while (j < k)
-                {
-                    (plane[j, i], plane[k, i]) = (plane[k, i], plane[j, i]);
-                    j++;
-                    k--;
-                }
-            }
-            return plane;
-        }
-        
-        public static byte[,] BppPlanar2(byte[] data, bool flipH = true, bool flipV = false, bool swapPlanePairs = true)
-        {
-            var d1 = GetPlaneIntertwined(data, 1);
-            var d0 = GetPlaneIntertwined(data, 0);
-            if (flipH)
-            {
-                d1 = FlipPlaneH(d1);
-                d0 = FlipPlaneH(d0);
-            }
-            if (flipV)
-            {
-                d1 = FlipPlaneV(d1);
-                d0 = FlipPlaneV(d0);
-            }
-            return swapPlanePairs ? CombinePlanes(d1, d0) : CombinePlanes(d0,d1);
-        }
+            Gfx.Format.Snes2Bpp => GetChr2bpp(data, chr),
+            Gfx.Format.Snes3Bpp => GetChr3bpp(data, chr),
+            Gfx.Format.Snes4Bpp => GetChr4bpp(data, chr),
+            Gfx.Format.Snes8Bpp => GetChr8bpp(data, chr),
+            Gfx.Format.Mode73Bpp => GetChrMode73bpp(data, chr),
+            Gfx.Format.Ambiguous3or4Bpp or _ => GetChr(data, chr, data.Length == 0xC00 ? Gfx.Format.Snes3Bpp : Gfx.Format.Snes4Bpp)
+        };
     }
 }

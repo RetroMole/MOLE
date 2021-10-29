@@ -1,38 +1,29 @@
 ﻿using ImGuiNET;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Mole.Gui.Windows;
 using Mole.Shared;
 using Mole.Shared.Util;
-using Num = System.Numerics;
 
 namespace Mole.Gui
 {
-    [SuppressMessage("ReSharper", "PositionalPropertyUsedProblem")]
     public class Ui
     {
         private static readonly List<Window> Windows = new() {
             new About(),
             new FileDialog(),
-            new RomInfo(),
-            new WGfx(),
             new ProjectDialog(),
-            new LoadingDialog()
+            new LoadingDialog(),
+            new RomInfo(),
+            new PalEditor(),
+            new WGfx(),
         };
 
         private static bool _showDemo;
         private static readonly Project.UiData Data = new();
 
-        [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
         public static void Draw()
         {
-            ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 6);
-            ImGui.PushStyleVar(ImGuiStyleVar.PopupRounding, 6);
-            ImGui.PushStyleVar(ImGuiStyleVar.GrabRounding, 6);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0);
-            ImGui.PushStyleVar(ImGuiStyleVar.PopupBorderSize, 0);
-            ImGui.PushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
+            ImGui.DockSpaceOverViewport(ImGui.GetMainViewport());
             
             if (ImGui.BeginMainMenuBar())
             {
@@ -41,7 +32,7 @@ namespace Mole.Gui
                     if (ImGui.MenuItem("Open ROM", "Ctrl+N"))
                         Windows[1].ShouldDraw = true;
                     if (ImGui.MenuItem("Open Project", "Ctrl+O"))
-                        Windows[4].ShouldDraw = true;
+                        Windows[2].ShouldDraw = true;
                     if (ImGui.MenuItem("Save Project", "Ctrl+S")
                         && Data.Project != null) Data.Project.SaveProject();
                     if (ImGui.MenuItem("Close Project", "Ctrl+C"))

@@ -6,15 +6,14 @@ namespace Mole.Shared.Util
     {
         public enum StateEnum
         {
+            LoadingLevelPalInfo,
+            LoadingTSpecPalInfo,
             LoadingGfx,
             LoadingExGfx,
             LoadingSuperExGfx,
             DecompressingGfx,
-            CleaningUpGfx,
             DecompressingExGfx,
-            CleaningUpExGfx,
             DecompressingSuperExGfx,
-            CleaningUpSuperExGfx,
             SavingProject,
             CopyingRom
         }

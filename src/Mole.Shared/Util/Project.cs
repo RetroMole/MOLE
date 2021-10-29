@@ -7,10 +7,6 @@ using System.Threading;
 
 namespace Mole.Shared.Util
 {
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-    [SuppressMessage("ReSharper", "RedundantAssignment")]
-    [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     public class Project
     {
         private string _root;
@@ -19,6 +15,7 @@ namespace Mole.Shared.Util
         public List<string> GfxPaths;
         public Gfx Gfx;
         public Rom Rom;
+        public CGRam CGRam;
         
         public readonly Dictionary<string, UndoRedo> Stacks = new Dictionary<string, UndoRedo>() {
             { "test", new UndoRedo(80) }
@@ -48,6 +45,7 @@ namespace Mole.Shared.Util
                 try {
                     progress.Working = true;
                     Rom = new Rom(romPath);
+                    CGRam = new CGRam(progress, Rom);
                     Gfx = new Gfx(progress, Rom);
 
                     Directory.CreateDirectory(dir);
@@ -101,6 +99,7 @@ namespace Mole.Shared.Util
                     RomPath = Path.Combine(dir, Directory.EnumerateFiles(
                         dir, $"rom.*").FirstOrDefault(x => !x.EndsWith("sha1")));
                     Rom = new(RomPath);
+                    CGRam = new CGRam(progress, Rom);
                     StackPaths = new List<string> { // Modify it as you modify stacks dictionary
                         Path.Combine(dir, "stack_test.stk"),
                     };

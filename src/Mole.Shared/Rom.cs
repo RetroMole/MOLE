@@ -12,9 +12,6 @@ namespace Mole.Shared
     /// <summary>
     /// ROM info and direct operations
     /// </summary>
-    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
-    [SuppressMessage("ReSharper", "PositionalPropertyUsedProblem")]
-    [SuppressMessage("ReSharper", "MemberInitializerValueIgnored")]
     public class Rom : IEnumerator<byte>, IEnumerable<byte>
     {
         public bool Loaded = false;
@@ -304,7 +301,6 @@ namespace Mole.Shared
         byte IEnumerator<byte>.Current { get => _rom[_position]; }
         public IEnumerator<byte> GetEnumerator() => _rom.OfType<byte>().GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => (IEnumerator<byte>)_rom.GetEnumerator();
-        
         public void Dispose() {
             GC.SuppressFinalize(this);
         } // TODO: Possible Memory leak, does the enumerator/enumerable stuff need manual disposal?

@@ -1,11 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Mole.Gui</RootNamespace>
     <StartupObject>Mole.Gui.Program</StartupObject>
     <AssemblyName>Mole.Gui</AssemblyName>
+    <ApplicationIcon />
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <RepositoryUrl>https://github.com/Vawlpe/MOLE</RepositoryUrl>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <Copyright>Copyright 2021 Vawlpe</Copyright>
+    <Authors>Mole.Gui</Authors>
+    <Company>Mole.Gui</Company>
+    <Product />
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -66,5 +76,12 @@
     <EmbeddedResource Include="..\..\res\Icon.bmp">
       <LogicalName>Icon.bmp</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 </Project>

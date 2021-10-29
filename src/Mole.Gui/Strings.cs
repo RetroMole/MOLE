@@ -35,7 +35,7 @@ namespace Mole.Gui
             new LibInfo { Name = "TerraCompress", Version = "1.0", Repo = "https://github.com/Smallhacker/TerraCompress", License = "Zlib/libpng License (zlib)"},
             new LibInfo { Name = "Veldrid", Version = "4.8.0", Repo = "https://github.com/mellinoe/veldrid", License = "The MIT License (MIT)"},
             new LibInfo { Name = "Monogame", Version = "3.8.0.1641", Repo = "https://github.com/MonoGame/MonoGame", License = "Microsoft Public License (Ms-PL)"},
-            new LibInfo { Name = "NLog", Version = "5.0.0-preview.2", Repo = "https://github.com/NLog/NLog", License = "BSD 3-Clause \"New\" or \"Revised\" License (BSD-3-Clause)"}
+            new LibInfo { Name = "Serilog", Version = "2.10.0", Repo = "https://github.com/serilog/serilog", License = "Apache License 2.0"}
         };
     }
 }

@@ -16,9 +16,6 @@ namespace Mole.Gui.Windows
     public class ProjectDialog : Window
     {
         private string _path = "";
-
-        [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
-        [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH")]
         public override void Draw(Project.UiData data, List<Window> windows)
         {
             if (!ShouldDraw) return;
@@ -44,8 +41,9 @@ namespace Mole.Gui.Windows
                         new Thread(() => {
                             try {
                                 data.Project = new Project(data.Progress, _path);
-                                windows[2].ShouldDraw = true;
-                                windows[3].ShouldDraw = true;
+                                windows[4].ShouldDraw = true;
+                                windows[5].ShouldDraw = true;
+                                windows[6].ShouldDraw = true;
                             } catch (Exception e) {
                                 data.Progress.Exception = e;
                                 data.Progress.ShowException = true;
@@ -65,8 +63,9 @@ namespace Mole.Gui.Windows
                         new Thread(() => {
                             try {
                                 data.Project = new Project(data.Progress, _path);
-                                windows[2].ShouldDraw = true;
-                                windows[3].ShouldDraw = true;
+                                windows[4].ShouldDraw = true;
+                                windows[5].ShouldDraw = true;
+                                windows[6].ShouldDraw = true;
                             } catch (Exception e) {
                                 data.Progress.Exception = e;
                                 data.Progress.ShowException = true;
