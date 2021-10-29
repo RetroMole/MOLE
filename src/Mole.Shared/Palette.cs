@@ -3,7 +3,7 @@
     /// <summary>
     /// Palette class, holds information about a SNES Palette and allows for conversion to and from 8-bit RGB
     /// </summary>
-    public class Pallete
+    public class Palette
     {
         /// <summary>
         /// 8-bit RGB representation of the palette
@@ -39,7 +39,7 @@
         /// Default Constructor
         /// </summary>
         /// <param name="pal">Array of SNES 5-bit BGR colors</param>
-        public Pallete(ushort[] pal)
+        public Palette(ushort[] pal)
         {
             Snes.Pal = pal;
         }
@@ -48,7 +48,7 @@
         /// RGB Constructor
         /// </summary>
         /// <param name="pal">Array of 8-bit RGB colors</param>
-        public Pallete(uint[] pal)
+        public Palette(uint[] pal)
         {
             Snes.Pal = new ushort[pal.Length];
             for (int i = 0; i < pal.Length; i++)
