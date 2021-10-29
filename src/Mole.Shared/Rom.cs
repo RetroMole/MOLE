@@ -75,6 +75,7 @@ namespace Mole.Shared
             FileInfo f = new(FilePath);
 
             _rom = r.ReadBytes((int)f.Length);
+
             int h = _rom.Length % 0x8000;
             if (h != 0)
             {
@@ -89,7 +90,9 @@ namespace Mole.Shared
 
             // Rely on asar mapping mode guess until we can access the internal header
             Mapping = Asar.GetMapper();
-            InternalHeader = _rom.Skip(SnesToPc(0x00FFC0)).Take(32).ToArray();
+            
+            // If we have an expanded SA-1 ROM, use a different header address
+            InternalHeader = _rom.Skip(Mapping == MapperType.Sa1Rom && fs.Length > 1049088 ? SnesToPc(0x407FC0) : SnesToPc(0x00FFC0)).Take(32).ToArray();
             FastRom = (InternalHeader[0x15] & 0b00010000) != 0;
             Mapping = (InternalHeader[0x15] & 0b00000111) switch
             {
@@ -100,6 +103,8 @@ namespace Mole.Shared
                 5 => MapperType.ExHiRom,
                 _ => MapperType.InvalidMapper
             };
+            
+            // Will always fail with SA-1 ROMs
             if (Mapping != Asar.GetMapper())
                 LoggerEntry.Logger.Warning("Mapping mode mismatch: Asar: {0}, Header: {1}", Asar.GetMapper(), Mapping);
 

@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Mole.Shared.Exceptions;
 
 namespace Mole.Shared.Util
 {
@@ -140,13 +141,13 @@ namespace Mole.Shared.Util
         public bool CheckAllHashes()
         {
             if (!CheckHash(RomPath)) 
-                throw new Exception($"Hash mismatch: {RomPath} ({Hash.Sha1(RomPath)} != {File.ReadAllText($"{RomPath}.sha1")})");
+                throw new HashMismatchException($"Hash mismatch: {RomPath} ({Hash.Sha1(RomPath)} != {File.ReadAllText($"{RomPath}.sha1")})");
             foreach (var p in StackPaths)
                 if (!CheckHash(p))
-                    throw new Exception($"Hash mismatch: {p} ({Hash.Sha1(p)} != {File.ReadAllText($"{p}.sha1")})");
+                    throw new HashMismatchException($"Hash mismatch: {p} ({Hash.Sha1(p)} != {File.ReadAllText($"{p}.sha1")})");
             foreach (var p in GfxPaths)
                 if (!CheckHash(p)) 
-                    throw new Exception($"Hash mismatch: {p} ({Hash.Sha1(p)} != {File.ReadAllText($"{p}.sha1")})");
+                    throw new HashMismatchException($"Hash mismatch: {p} ({Hash.Sha1(p)} != {File.ReadAllText($"{p}.sha1")})");
             return true;
         }
         
@@ -173,12 +174,23 @@ namespace Mole.Shared.Util
                 SaveHash(p);
             foreach (var p in GfxPaths) 
                 SaveHash(p);
+            Rom.Dispose(); // How I forgot about that lol
         }
 
         public static void SaveHash(string path)
             => File.WriteAllText($"{path}.sha1", Hash.Sha1(path));
 
         public static bool CheckHash(string path)
-            => Hash.Sha1(path) == File.ReadAllText($"{path}.sha1");
+        {
+            // Do not fail if hash file is not found
+            if (!File.Exists($"{path}.sha1"))
+            {
+                LoggerEntry.Logger.Warning($"No hash file for {path}");
+                File.WriteAllText($"{path}.sha1", Hash.Sha1(path));
+                return true;
+            }
+            
+            return Hash.Sha1(path) == File.ReadAllText($"{path}.sha1");
+        }
     }
 }
