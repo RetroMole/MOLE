@@ -19,9 +19,6 @@ namespace Mole.Gui.Windows
     public class FileDialog : Window
     {
         private string _path = "";
-
-        [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
-        [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH")]
         public override void Draw(Project.UiData data, List<Window> windows)
         {
             if (!ShouldDraw) return;
@@ -52,8 +49,9 @@ namespace Mole.Gui.Windows
                             Directory.CreateDirectory(string.Join('.', sp));
                             data.Project = new Project(data.Progress,
                                 string.Join('.', sp), _path);
-                            windows[2].ShouldDraw = true;
-                            windows[3].ShouldDraw = true;
+                            windows[4].ShouldDraw = true;
+                            windows[5].ShouldDraw = true;
+                            windows[6].ShouldDraw = true;
                         });
 
                         task.ContinueWith(t => {
@@ -80,8 +78,9 @@ namespace Mole.Gui.Windows
                             Directory.CreateDirectory(string.Join('.', sp));
                             data.Project = new Project(data.Progress,
                                 string.Join('.', sp), _path);
-                            windows[2].ShouldDraw = true;
-                            windows[3].ShouldDraw = true;
+                            windows[4].ShouldDraw = true;
+                            windows[5].ShouldDraw = true;
+                            windows[6].ShouldDraw = true;
                         });
 
                         task.ContinueWith(t => {
@@ -93,8 +92,6 @@ namespace Mole.Gui.Windows
                     }
 
                     if (ShouldDraw == false) return;
-                        
-                    ImGui.SetItemDefaultFocus();
                     ImGui.SameLine();
                         
                     if (ImGui.Button("Cancel"))

@@ -2,23 +2,20 @@
 using System.Numerics;
 using ImGuiNET;
 using Mole.Shared;
+using Mole.Shared.Util;
+
 namespace Mole.Gui.Windows
 {
     public class PalEditor : Window
     {
         public int PalZoom = 16;
-        public override void Draw(Ui.UiData data, List<Window> windows)
+        public override void Draw(Project.UiData data, List<Window> windows)
         {
-            if (!ShouldDraw) return;
+            if (!ShouldDraw || !data.Progress.Loaded) return;
 
             ImGui.SetNextWindowSize(new Vector2(420, 69), ImGuiCond.FirstUseEver);
             ImGui.Begin("Palette Editor");
 
-            if (data.CGRam is not { Loaded: true }) {
-                ImGui.Text("Loading Palettes, please wait..");
-                ImGui.End();
-                return;
-            }
             if (ImGui.Button("Save")) LoggerEntry.Logger.Information("Save pal");
             ImGui.SameLine(); if (ImGui.Button("Reload")) LoggerEntry.Logger.Information("Reload pal");
             ImGui.SameLine(); if (ImGui.Button("Undo")) LoggerEntry.Logger.Information("Undo pal");
@@ -50,7 +47,7 @@ namespace Mole.Gui.Windows
                             drawList.AddRectFilled(
                                 new Vector2(x, y),
                                 new Vector2(x + PalZoom, y + PalZoom),
-                                Pal.SnesToABGR(data.CGRam[(r * 16) + c])
+                                Pal.SnesToABGR(data.Project.CGRam[(r * 16) + c])
                             );
                             if (c != 15) ImGui.SameLine();
                         }
@@ -71,8 +68,8 @@ namespace Mole.Gui.Windows
                             "FG Palette 6",
                             "FG Palette 7"
                         },
-                        ref data.CGRam.CurrentFG
-                    )) CGRam.GenerateLevelCGRam(ref data.CGRam, ref data.Rom);
+                        ref data.Project.CGRam.CurrentFG
+                    )) data.Project.CGRam.GenerateLevelCGRam(ref data.Project.Rom);
 
                     if (Widgets.ComboWithArrows.New("BG", "BG",
                         new string[] {
@@ -85,8 +82,8 @@ namespace Mole.Gui.Windows
                             "BG Palette 6",
                             "BG Palette 7"
                         },
-                        ref data.CGRam.CurrentBG
-                    )) CGRam.GenerateLevelCGRam(ref data.CGRam, ref data.Rom);
+                        ref data.Project.CGRam.CurrentBG
+                    )) data.Project.CGRam.GenerateLevelCGRam(ref data.Project.Rom);
 
                     if (Widgets.ComboWithArrows.New("Spr", "Sprite",
                         new string[]
@@ -100,8 +97,8 @@ namespace Mole.Gui.Windows
                             "Sprie Palette 6",
                             "Sprie Palette 7",
                         },
-                        ref data.CGRam.CurrentSpr
-                    )) CGRam.GenerateLevelCGRam(ref data.CGRam, ref data.Rom);
+                        ref data.Project.CGRam.CurrentSpr
+                    )) data.Project.CGRam.GenerateLevelCGRam(ref data.Project.Rom);
 
                     ImGui.Columns(1);
                     ImGui.EndTabItem();

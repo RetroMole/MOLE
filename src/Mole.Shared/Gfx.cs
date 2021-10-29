@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Mole.Shared.Util;
 using Smallhacker.TerraCompress;
 
 namespace Mole.Shared
 {
-    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-    [SuppressMessage("ReSharper", "UseObjectOrCollectionInitializer")]
     public class Gfx
     {
         public uint[] ExGfxPointers = new uint[0x80];
@@ -19,11 +15,35 @@ namespace Mole.Shared
         public byte[][] DecompressedGfx;
         public byte[][] DecompressedExGfx;
         public byte[][] DecompressedSuperExGfx;
+        public Format[] GfxFormats = Enumerable.Repeat(Format.Ambiguous3or4Bpp, 0x27) //00-26
+        .Concat(new Format[]
+        {
+            Format.Mode73Bpp,       //27
+            Format.Snes2Bpp,        //28
+            Format.Snes2Bpp,        //29
+            Format.Snes2Bpp,        //2A
+            Format.Snes2Bpp,        //2A
+            Format.Ambiguous3or4Bpp,//2C
+            Format.Ambiguous3or4Bpp,//2D
+            Format.Ambiguous3or4Bpp,//2E
+            Format.Snes2Bpp,        //2F
+            Format.Snes4Bpp,        //30
+            Format.Snes4Bpp,        //31
+            Format.Ambiguous3or4Bpp,//32
+            Format.Ambiguous3or4Bpp //33
+        }).ToArray();
+        public enum Format
+        {
+            Ambiguous3or4Bpp,
+            Snes2Bpp,
+            Snes3Bpp,
+            Snes4Bpp,
+            Snes8Bpp,
+            Mode73Bpp
+        }
 
-        [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
         public Gfx(Progress progress, Rom rom)
         {
-            // ReSharper disable once UseObjectOrCollectionInitializer
             progress.State = Progress.StateEnum.LoadingGfx;
             LoggerEntry.Logger.Information("Getting GFX Pointers...");
             var low = rom.Skip(rom.SnesToPc(0x00B992)).Take(0x32).ToArray();
@@ -62,14 +82,14 @@ namespace Mole.Shared
             }
 
             DecompressedGfx = DecompressGfx(GfxPointers, rom, ref progress.CurrentProgress, ref progress.MaxProgress, ref progress.State, 
-                Progress.StateEnum.DecompressingGfx, Progress.StateEnum.CleaningUpGfx, "GFX");
+                Progress.StateEnum.DecompressingGfx, "GFX");
             
             DecompressedExGfx = DecompressGfx(ExGfxPointers, rom, ref progress.CurrentProgress, ref progress.MaxProgress, ref progress.State, 
-                Progress.StateEnum.DecompressingExGfx, Progress.StateEnum.CleaningUpExGfx, "ExGFX");
+                Progress.StateEnum.DecompressingExGfx, "ExGFX");
             
             if (SuperExGfxSupported)
                 DecompressedSuperExGfx = DecompressGfx(SuperExGfxPointers, rom, ref progress.CurrentProgress, ref progress.MaxProgress, ref progress.State,
-                    Progress.StateEnum.DecompressingSuperExGfx, Progress.StateEnum.CleaningUpSuperExGfx, "SuperExGFX");
+                    Progress.StateEnum.DecompressingSuperExGfx, "SuperExGFX");
         }
 
         public Gfx() { }
@@ -85,13 +105,15 @@ namespace Mole.Shared
         
         private byte[] ExportTemplateDecompressed(byte[][] array)
         {
-            var bytes = new List<byte>();
+            var res = new List<byte>();
             foreach (var b in array) {
                 if (b == null) continue;
+                res.Add((byte)((b.Length >> 8) & 0xFF));
+                res.Add((byte)(b.Length & 0xFF));
                 foreach (var bb in b)
-                    bytes.Add(bb);
+                    res.Add(bb);
             }
-            return bytes.ToArray();
+            return res.ToArray();
         }
         
         public uint[] ImportPointers(byte[] array)
@@ -104,10 +126,15 @@ namespace Mole.Shared
         
         public byte[][] ImportDecompressed(byte[] array)
         {
-            var bytes = new List<byte[]>();
-            for (int i = 0; i < array.Length; i += 64)
-                bytes.Add(array.Skip(i).Take(64).ToArray());
-            return bytes.ToArray();
+            var res = new List<byte[]>();
+            for (int i = 0; i < array.Length; i++)
+            {
+                var len = (array[i] << 8) | array[i+1];
+                i += 2;
+                res.Add(array.Skip(i).Take(len).ToArray());
+                i += len-1;
+            }
+            return res.ToArray();
         }
 
         public byte[] ExportGfxPointers() => ExportTemplatePointers(GfxPointers);
@@ -126,12 +153,10 @@ namespace Mole.Shared
         /// <param name="maxProgress">Max Progress</param>
         /// <param name="state">State reference</param>
         /// <param name="decompressing">Decompressing State</param>
-        /// <param name="cleaning">Cleaning State</param>
         /// <param name="postfix">Logger postfix</param>
         /// <returns>Decompressed GFX</returns>
-        // ReSharper disable once RedundantAssignment
         public static byte[][] DecompressGfx(uint[] gfxPointers, Rom rom, ref int progress, ref int maxProgress, ref Progress.StateEnum state, 
-            Progress.StateEnum decompressing, Progress.StateEnum cleaning, string postfix)
+            Progress.StateEnum decompressing, string postfix)
         {
             state = decompressing;
             LoggerEntry.Logger.Information($"Decompressing {postfix}...");
@@ -142,14 +167,6 @@ namespace Mole.Shared
                 progress = i;
                 try { dgfx[i] = lz2.Decompress(rom.ToArray(), (uint)rom.SnesToPc((int) gfxPointers[i])); }
                 catch { LoggerEntry.Logger.Information($"Failed to decompress {i} {postfix}"); }
-            }
-            state = cleaning;
-            LoggerEntry.Logger.Information($"Cleaning up {postfix}...");
-            maxProgress = dgfx.GetLength(0);
-            for (int i = 0; i < dgfx.GetLength(0); i++) {
-                progress = i;
-                try { dgfx[i] = dgfx[i].Take(64).ToArray(); }
-                catch { LoggerEntry.Logger.Information($"Failed to clean up {i} {postfix}"); }
             }
             LoggerEntry.Logger.Information($"Done!");
             return dgfx;

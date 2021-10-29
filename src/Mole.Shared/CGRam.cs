@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Mole.Shared.Util;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,10 +8,8 @@ using System.Threading.Tasks;
 
 namespace Mole.Shared
 {
-    public class CGRam
+    public class CGRam : IEnumerator<ushort>, IEnumerable<ushort>
     {
-        public bool Loaded;
-
         public ushort this[int index]
         {
             get => _cgram[index];
@@ -29,29 +29,31 @@ namespace Mole.Shared
         public int CurrentBG;
         public int CurrentSpr;
 
-        public static void NewRef(ref CGRam cgram, Rom rom)
+
+
+        public CGRam(Progress progress, Rom rom)
         {
+            progress.State = Progress.StateEnum.LoadingLevelPalInfo;
             LoggerEntry.Logger.Information("Loading Level Palette info...");
-            cgram.Layer3 = new PalUploadInfo(ref rom, 0xAC06, 0xAC0B, 0xAC10, 0xAC15);
-            cgram.ForeGround = new PalUploadInfo(ref rom, 0xAC1D, 0xAC22, 0xAC27, 0xAC2C);
-            cgram.BerryTile = new PalUploadInfo(ref rom, 0xACBD, 0xACC2, 0xACC7, 0xACCC);
-            cgram.BerrySpr = new PalUploadInfo(ref rom, 0xACD4, 0xACD9, 0xACDE, 0xACE3);
+            Layer3 = new PalUploadInfo(ref rom, 0xAC06, 0xAC0B, 0xAC10, 0xAC15);
+            ForeGround = new PalUploadInfo(ref rom, 0xAC1D, 0xAC22, 0xAC27, 0xAC2C);
+            BerryTile = new PalUploadInfo(ref rom, 0xACBD, 0xACC2, 0xACC7, 0xACCC);
+            BerrySpr = new PalUploadInfo(ref rom, 0xACD4, 0xACD9, 0xACDE, 0xACE3);
 
+            progress.State = Progress.StateEnum.LoadingTSpecPalInfo;
             LoggerEntry.Logger.Information("Loading Tileset Specific Palette info");
-            cgram.FG = new PalUploadInfo(ref rom, 0xAC42, 0xAC59, 0xAC5E, 0xAC63);
-            cgram.BG = new PalUploadInfo(ref rom, 0xAC94, 0xACAB, 0xACB0, 0xACB5);
-            cgram.Spr = new PalUploadInfo(ref rom, 0xAC6B, 0xAC82, 0xAC87, 0xAC8C);
-
-            cgram.Loaded = true;
+            FG = new PalUploadInfo(ref rom, 0xAC42, 0xAC59, 0xAC5E, 0xAC63);
+            BG = new PalUploadInfo(ref rom, 0xAC94, 0xACAB, 0xACB0, 0xACB5);
+            Spr = new PalUploadInfo(ref rom, 0xAC6B, 0xAC82, 0xAC87, 0xAC8C);
         }
-        public static void UploadPalette(ref CGRam cgram, ref Rom rom,
+        public void UploadPalette(ref Rom rom,
             ushort ptr, ushort off, ushort xs, ushort ys)
         {
             for (var i = 0; i <= ys; i++)
             {
                 for (var j = 0; j <= xs; j++)
                 {
-                    cgram[(off / 2) + j] = (ushort)((rom[rom.SnesToPc(ptr + 1)] << 8) | rom[rom.SnesToPc(ptr)]);
+                    this[(off / 2) + j] = (ushort)((rom[rom.SnesToPc(ptr + 1)] << 8) | rom[rom.SnesToPc(ptr)]);
                     ptr += 2;
                 }
                 off += 32;
@@ -73,28 +75,49 @@ namespace Mole.Shared
             }
         }
 
-        public static void GenerateLevelCGRam(ref CGRam cgram, ref Rom rom)
+        public void GenerateLevelCGRam(ref Rom rom)
         {
             LoggerEntry.Logger.Information("Generating Level CGRam...");
-            cgram._cgram = new ushort[256];
+            _cgram = new ushort[256];
             for (int i = 0; i < 8; i++)
-                cgram[1 + (i * 16)] = 0x7FDD;
+                this[1 + (i * 16)] = 0x7FDD;
             for (int i = 0; i < 8; i++)
-                cgram[0x81 + (i * 16)] = 0x7FFF;
-            UploadPalette(ref cgram, ref rom, cgram.Layer3.Pointer, cgram.Layer3.Index, cgram.Layer3.X, cgram.Layer3.Y);
-            UploadPalette(ref cgram, ref rom, cgram.ForeGround.Pointer, cgram.ForeGround.Index, cgram.ForeGround.X, cgram.ForeGround.Y);
-            UploadPalette(ref cgram, ref rom, cgram.BerryTile.Pointer, cgram.BerryTile.Index, cgram.BerryTile.X, cgram.BerryTile.Y);
-            UploadPalette(ref cgram, ref rom, cgram.BerrySpr.Pointer, cgram.BerrySpr.Index, cgram.BerrySpr.X, cgram.BerrySpr.Y);
+                this[0x81 + (i * 16)] = 0x7FFF;
+            UploadPalette(ref rom, Layer3.Pointer, Layer3.Index, Layer3.X, Layer3.Y);
+            UploadPalette(ref rom, ForeGround.Pointer, ForeGround.Index, ForeGround.X, ForeGround.Y);
+            UploadPalette(ref rom, BerryTile.Pointer, BerryTile.Index, BerryTile.X, BerryTile.Y);
+            UploadPalette(ref rom, BerrySpr.Pointer, BerrySpr.Index, BerrySpr.X, BerrySpr.Y);
 
-            UploadPalette(ref cgram, ref rom,
-                (ushort)(cgram.FG.Pointer + rom[rom.SnesToPc(0xABD3) + cgram.CurrentFG]),
-                cgram.FG.Index, cgram.FG.X, cgram.FG.Y);
-            UploadPalette(ref cgram, ref rom,
-                 (ushort)(cgram.BG.Pointer + rom[rom.SnesToPc(0xABD3) + cgram.CurrentBG]),
-                 cgram.BG.Index, cgram.BG.X, cgram.BG.Y);
-            UploadPalette(ref cgram, ref rom,
-                 (ushort)(cgram.Spr.Pointer + rom[rom.SnesToPc(0xABD3) + cgram.CurrentSpr]),
-                 cgram.Spr.Index, cgram.Spr.X, cgram.Spr.Y);
+            UploadPalette(ref rom,
+                (ushort)(FG.Pointer + rom[rom.SnesToPc(0xABD3) + CurrentFG]),
+                FG.Index, FG.X, FG.Y);
+            UploadPalette(ref rom,
+                 (ushort)(BG.Pointer + rom[rom.SnesToPc(0xABD3) + CurrentBG]),
+                 BG.Index, BG.X, BG.Y);
+            UploadPalette(ref rom,
+                 (ushort)(Spr.Pointer + rom[rom.SnesToPc(0xABD3) + CurrentSpr]),
+                 Spr.Index, Spr.X, Spr.Y);
         }
+
+        public Pal Get256Pal() => new Pal(this.ToArray());
+        public Pal Get16Pal(int index) => new(this.Skip(index * 16).Take(16).ToArray());
+        public Pal Get4Pal(int index) => new(this.Skip(index * 4).Take(4).ToArray());
+
+        // IEnum stuff
+        private int _position = -1;
+        public bool MoveNext()
+        {
+            _position++;
+            return _position < _cgram.Length;
+        }
+        public void Reset() => _position = 0;
+        public object Current { get => _cgram[_position]; }
+        ushort IEnumerator<ushort>.Current { get => _cgram[_position]; }
+        public IEnumerator<ushort> GetEnumerator() => _cgram.OfType<ushort>().GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => (IEnumerator<ushort>)_cgram.GetEnumerator();
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        } // TODO: Possible Memory leak, does the enumerator/enumerable stuff need manual disposal?
     }
 }

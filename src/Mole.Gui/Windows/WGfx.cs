@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ImGuiNET;
 using Mole.Shared;
@@ -14,72 +13,68 @@ namespace Mole.Gui.Windows
     /// </summary>
     public class WGfx : Window
     {
+        int CurrPal = 0;
+        int CurrGfx = 0;
         public override void Draw(Project.UiData data, List<Window> windows)
         {
             if (!ShouldDraw || !data.Progress.Loaded) return;
             
             ImGui.SetNextWindowSize(new Num.Vector2(600, 900), ImGuiCond.FirstUseEver);
-            ImGui.Begin("GFX Info");
-            ImGui.Text("GFX");
-            ImGui.Text($"Pointers: 0x{data.Project.Gfx.GfxPointers.Length:X2}");
-            ImGui.Text($"Decompressed: 0x{data.Project.Gfx.DecompressedGfx.Length:X2}");
-            ImGui.Separator();
-            ImGui.Text("ExGFX");
-            ImGui.Text($"Pointers: 0x{data.Project.Gfx.ExGfxPointers.Length:X2}");
-            ImGui.Text($"Decompressed: 0x{data.Project.Gfx.DecompressedExGfx.Length:X2}");
-            ImGui.Separator();
-            ImGui.Text("SuperExGFX");
-            ImGui.Text($"Pointers: 0x{data.Project.Gfx.SuperExGfxPointers.Length:X2}");
-            ImGui.Text($"Supported: {data.Project.Gfx.SuperExGfxSupported}");
-            if (data.Project.Gfx.SuperExGfxSupported)
-                ImGui.Text($"Decompressed: 0x{data.Project.Gfx.DecompressedSuperExGfx.Length:X2}");
-            ImGui.Separator();
-            ImGui.Text("Rendering");
+            ImGui.Begin("GFX Editor");
+            Widgets.ComboWithArrows.New("GFXPal", "Palette",
+                new string[]
+                {
+                    "Palette 0",
+                    "Palette 1",
+                    "Palette 2",
+                    "Palette 3",
+                    "Palette 4",
+                    "Palette 5",
+                    "Palette 6",
+                    "Palette 7",
+                    "Palette 8",
+                    "Palette 9",
+                    "Palette A",
+                    "Palette B",
+                    "Palette C",
+                    "Palette D",
+                    "Palette E",
+                    "Palette F",
+                },
+                ref CurrPal
+            );
+            Widgets.ComboWithArrows.New("GFXIndex", "Graphics",
+                Enumerable.Range(0,0x34).Select(x => $"GFX{x:X2}").ToArray<string>(),
+                ref CurrGfx
+            );
 
-            var pal = new uint[] {
-                0xFF733900,
-                0xFF942994,
-                0xFFFF5AA5,
-                0xFF9CC6DE,
-                0xFF564589,
-                0xFF5A879A,
-                0xFF4F86DC,
-                0xFF5986ED,
-                0xFFE90E5D,
-                0xFFE1D26F,
-                0xFF25C2F2,
-                0xFF5721C1,
-                0xFFEDEF6E,
-                0xFFC123F5,
-                0xFFA1FCF6
-            };
+            ImGui.Separator();
+
+            var pal = data.Project.CGRam.Get16Pal(CurrPal).ABGR;
             var sz = 6;
             var sp = sz/4;
             var drawList = ImGui.GetWindowDrawList();
             ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Num.Vector2(0, sp));
-            for (int i = 0; i < data.Project.Gfx.DecompressedGfx.Length; i++)
-            {
-                if (i % 16 == 0)
-                    ImGui.Dummy(new Num.Vector2(0,0));
 
-                ImGui.SameLine(0f, sp);
-                byte[,] chr = Bpp.BppPlanar2(data.Project.Gfx.DecompressedGfx[i]);
+            var chrSize = data.Project.Gfx.GfxFormats[CurrGfx] switch
+            {
+                Gfx.Format.Snes2Bpp => 16,
+                Gfx.Format.Snes3Bpp or Gfx.Format.Mode73Bpp => 24,
+                Gfx.Format.Snes4Bpp => 32,
+                Gfx.Format.Snes8Bpp => 64,
+                Gfx.Format.Ambiguous3or4Bpp or _ => data.Project.Gfx.DecompressedGfx[CurrGfx].Length == 0xC00 ? 24 : 32
+            };
+            for (int j = 0; j < data.Project.Gfx.DecompressedGfx[CurrGfx].Length / chrSize; j++)
+            {
+                if (j % 16 != 0) ImGui.SameLine(0f, sp);
+                byte[,] chr = Bpp.GetChr(data.Project.Gfx.DecompressedGfx[CurrGfx], j, data.Project.Gfx.GfxFormats[CurrGfx]);
                 var p = ImGui.GetCursorScreenPos();
 
                 for (int k = 0; k < chr.Length; k++)
                 {
                     var x = k / 8 * sz;
                     var y = k % 8 * sz;
-                    var c = chr[k / 8, k % 8];
-                    if (c >= pal.Length)
-                    {
-                        drawList.AddRectFilled(
-                            new Num.Vector2(p.X + x, p.Y + y),
-                            new Num.Vector2(p.X + x + sz, p.Y + y + sz),
-                            0xFFA1FCF6
-                        );
-                        return;
-                    }
+                    var c = chr[k % 8, k / 8];
                     drawList.AddRectFilled(
                         new Num.Vector2(p.X + x, p.Y + y),
                         new Num.Vector2(p.X + x + sz, p.Y + y + sz),
@@ -89,6 +84,7 @@ namespace Mole.Gui.Windows
 
                 ImGui.Dummy(new Num.Vector2(sz * 8, sz * 8));
             }
+
 
             ImGui.PopStyleVar();
             ImGui.End();

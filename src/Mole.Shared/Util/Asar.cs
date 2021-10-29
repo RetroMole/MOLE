@@ -13,7 +13,6 @@ namespace Mole.Shared.Util
     /// <summary>
     /// Contains various functions to apply patches.
     /// </summary>
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static unsafe class Asar
     {
         public const string DllPath = "libasar";

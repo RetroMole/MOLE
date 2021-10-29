@@ -27,7 +27,7 @@ namespace Mole.Veldrid
         {
             _draw = (Draw)ui.GetType().GetMethod("Draw")?.CreateDelegate(typeof(Draw));
             VeldridStartup.CreateWindowAndGraphicsDevice(
-                new WindowCreateInfo(50, 50, 1280, 720, WindowState.Normal, "Mole Veldrid"),
+                new WindowCreateInfo(50, 50, 1280, 720, WindowState.Normal, $"Mole [Veldrid:{backend}]"),
                 new GraphicsDeviceOptions(true, null, true, 
                     ResourceBindingModel.Improved, true, true),
                 backend,
