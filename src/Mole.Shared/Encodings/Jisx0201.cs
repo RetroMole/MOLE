@@ -1,8 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
-namespace System.Text
+namespace Mole.Shared.Encodings
 {
-    class Jisx0201Encoding : Encoding
+    class Jisx0201 : System.Text.Encoding
     {
         public override int GetByteCount(char[] chars, int index, int count) => chars.Length;
         public override int GetCharCount(byte[] bytes, int index, int count) => bytes.Length;

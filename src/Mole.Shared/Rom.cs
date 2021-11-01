@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Text;
+using Mole.Shared.Encodings;
 using Mole.Shared.Util;
 
 namespace Mole.Shared
@@ -25,7 +24,6 @@ namespace Mole.Shared
             set => _rom[index] = value;
         }
         
-        // ReSharper disable once FieldCanBeMadeReadOnly.Local
         private byte[] _rom;
 
         /// <summary>
@@ -101,7 +99,7 @@ namespace Mole.Shared
                 LoggerEntry.Logger.Warning("Mapping mode mismatch: Asar: {0}, Header: {1}", Asar.GetMapper(), Mapping);
 
             // Load ROM info from internal header
-            Title = new String(new Jisx0201Encoding().GetChars(InternalHeader.Take(21).ToArray()));
+            Title = new string(new Jisx0201().GetChars(InternalHeader.Take(21).ToArray()));
             RomSize = Math.Pow(2,InternalHeader[0x17]);
             SramSize = Math.Pow(2,InternalHeader[0x18]);
             Region = (InternalHeader[0x19] & 0b00000111) switch
