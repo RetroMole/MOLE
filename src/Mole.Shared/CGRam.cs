@@ -98,10 +98,7 @@ namespace Mole.Shared
                  (ushort)(Spr.Pointer + rom[rom.SnesToPc(0xABD3) + CurrentSpr]),
                  Spr.Index, Spr.X, Spr.Y);
         }
-
-        public Pal Get256Pal() => new Pal(this.ToArray());
-        public Pal Get16Pal(int index) => new(this.Skip(index * 16).Take(16).ToArray());
-        public Pal Get4Pal(int index) => new(this.Skip(index * 4).Take(4).ToArray());
+        public Pal GetPal(int index, int size) => new(this.Skip(index * size).Take(size).ToArray());
 
         // IEnum stuff
         private int _position = -1;
