@@ -11,14 +11,11 @@ namespace Mole.Shared.Util
     {
         private string _root;
         public string RomPath;
-        public List<string> StackPaths;
-        public List<string> GfxPaths;
         public Rom Rom;
         public CGRam CGRam;
-        
-        public readonly Dictionary<string, UndoRedo> Stacks = new() {
-            { "test", new UndoRedo(80) }
-        };
+        public Graphics.Gfx Gfx;
+        public Graphics.ExGfx ExGfx;
+        public Graphics.SuperExGfx SuperExGfx;
         
         public class UiData
         {
