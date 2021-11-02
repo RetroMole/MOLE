@@ -13,8 +13,8 @@ namespace Mole.Shared.Graphics
             if (Pointers is null)
             {
                 // Load pointers from ROM
-                var startAddr = rom.SnesToPc(0x0FF937);
-                var ptrBytes = rom.Skip((rom.SnesToPc(rom[startAddr+2]) << 16) | (rom.SnesToPc(rom[startAddr + 1]) << 8) | rom.SnesToPc(rom[startAddr])).Take(0x2D00).ToArray();
+                var startAddr = 0x0FF937;
+                var ptrBytes = rom.Skip((rom[startAddr+2] << 16) | (rom[startAddr + 1] << 8) | rom[startAddr]).Take(0x2D00).ToArray();
                 projData.Progress.MaxProgress = 0xF00;
                 for (var i = 0; i < 0xF00; i++)
                 {

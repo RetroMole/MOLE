@@ -3,8 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mole.Shared
 {
@@ -53,7 +51,7 @@ namespace Mole.Shared
             {
                 for (var j = 0; j <= xs; j++)
                 {
-                    this[(off / 2) + j] = (ushort)((rom[rom.SnesToPc(ptr + 1)] << 8) | rom[rom.SnesToPc(ptr)]);
+                    this[(off / 2) + j] = (ushort)((rom[ptr + 1] << 8) | rom[ptr]);
                     ptr += 2;
                 }
                 off += 32;
@@ -68,10 +66,10 @@ namespace Mole.Shared
             public ushort Y;
             public PalUploadInfo(ref Rom rom, ushort ptr, ushort idx, ushort x, ushort y)
             {
-                Pointer = (ushort)((rom[rom.SnesToPc(ptr + 1)] << 8) | rom[rom.SnesToPc(ptr)]);
-                Index   = (ushort)((rom[rom.SnesToPc(idx + 1)] << 8) | rom[rom.SnesToPc(idx)]);
-                X       = (ushort)((rom[rom.SnesToPc(x + 1)] << 8) | rom[rom.SnesToPc(x)]);
-                Y       = (ushort)((rom[rom.SnesToPc(y + 1)] << 8) | rom[rom.SnesToPc(y)]);
+                Pointer = (ushort)((rom[ptr + 1] << 8) | rom[ptr]);
+                Index   = (ushort)((rom[idx + 1] << 8) | rom[idx]);
+                X       = (ushort)((rom[x + 1] << 8) | rom[x]);
+                Y       = (ushort)((rom[y + 1] << 8) | rom[y]);
             }
         }
 

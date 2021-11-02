@@ -16,14 +16,10 @@ namespace Mole.Shared
         public bool Loaded = false;
 
         /// <summary>
-        /// Indexer and internal ROM representation
+        /// Indexer, range indexer, and internal ROM representation
         /// </summary>
-        public byte this[int index]
-        {
-            get => _rom[index];
-            set => _rom[index] = value;
-        }
-        
+        public byte this[int index] => _rom[SnesToPc(index)];
+        public byte[] Pc => _rom;
         private byte[] _rom;
 
         /// <summary>
@@ -84,7 +80,7 @@ namespace Mole.Shared
 
             // Rely on asar mapping mode guess until we can access the internal header
             Mapping = Asar.GetMapper();
-            InternalHeader = _rom.Skip(SnesToPc(0x00FFC0)).Take(32).ToArray();
+            InternalHeader = this.Skip(0x00FFC0).Take(32).ToArray();
             FastRom = (InternalHeader[0x15] & 0b00010000) != 0;
             Mapping = (InternalHeader[0x15] & 0b00000111) switch
             {
@@ -125,17 +121,13 @@ namespace Mole.Shared
             };
             DevId = InternalHeader[0x1A];
             Version = InternalHeader[0x1B];
-            Checksum = BitConverter.ToUInt16(new byte[] { InternalHeader[0x1C], InternalHeader[0x1D] });
-            ChecksumComplement = BitConverter.ToUInt16(new byte[] { InternalHeader[0x1E], InternalHeader[0x1F] });
+            Checksum = (ushort)((InternalHeader[0x1C] << 8) | InternalHeader[0x1D]);
+            ChecksumComplement = (ushort)((InternalHeader[0x1E] << 8) | InternalHeader[0x1F]);
 
             Loaded = true;
         }
 
-        /// <summary>
-        /// Sa-1 Bank values for address conversion funcs
-        /// </summary>
         private static readonly int[] Sa1Banks = new int[8] { 0, 1 << 20, -1, -1, 2 << 20, 3 << 20, -1, -1 };
-
         /// <summary>
         /// Convert SNES address to PC address using this ROM's MapperType
         /// </summary>
@@ -292,13 +284,13 @@ namespace Mole.Shared
         public bool MoveNext()
         {
             _position++;
-            return _position < _rom.Length;
+            return SnesToPc(_position) < _rom.Length;
         }
         public void Reset() => _position = 0;
-        public object Current { get => _rom[_position]; }
-        byte IEnumerator<byte>.Current { get => _rom[_position]; }
-        public IEnumerator<byte> GetEnumerator() => _rom.OfType<byte>().GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => (IEnumerator<byte>)_rom.GetEnumerator();
+        public object Current { get => this[_position]; }
+        byte IEnumerator<byte>.Current { get => this[_position]; }
+        public IEnumerator<byte> GetEnumerator() => this.OfType<byte>().GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         public void Dispose() {
             GC.SuppressFinalize(this);
         } // TODO: Possible Memory leak, does the enumerator/enumerable stuff need manual disposal?

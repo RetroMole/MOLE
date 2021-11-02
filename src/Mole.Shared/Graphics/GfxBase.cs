@@ -58,7 +58,7 @@ namespace Mole.Shared.Graphics
                     var p = (byte[])ptrBytes;
                     var ptrs = new List<uint>();
                     for (int i = 0; i < p.Length; i += 4)
-                        ptrs.Add(BitConverter.ToUInt32(p.Skip(i).Take(4).ToArray()));
+                        ptrs.Add((uint)((p[i + 2] << 16) | (p[i + 1] << 8) | p[i]));
                     Pointers = ptrs.ToArray();
                 }
                 return false; // Cache loading failed, so we return false, even if the pointers loaded fine
@@ -89,7 +89,7 @@ namespace Mole.Shared.Graphics
             for (int i = 0; i < Pointers.Length; i++)
             {
                 progress = i;
-                try { dgfx[i] = lz2.Decompress(rom.ToArray(), (uint)rom.SnesToPc((int)Pointers[i])); }
+                try { dgfx[i] = lz2.Decompress(rom.Pc, (uint)rom.SnesToPc((int)Pointers[i])); }
                 catch { LoggerEntry.Logger.Warning($"Failed to decompress {Name}{i:X2}"); fails++; }
             }
             LoggerEntry.Logger.Information($"Done! {fails}/{Pointers.Length} Failures occured.");

@@ -18,7 +18,7 @@ namespace Mole.Shared.Graphics
                 for (var i = 0; i < 0x80; i++)
                 {
                     projData.Progress.CurrentProgress = i;
-                    Pointers[i] = (uint)((ptrBytes[(i * 3) + 2] << 16) | (ptrBytes[(i * 3) +1] << 8) | ptrBytes[(i * 3)]);
+                    Pointers[i] = (uint)((ptrBytes[(i * 3) + 2] << 16) | (ptrBytes[(i * 3) + 1] << 8) | ptrBytes[i * 3]);
                 }
             }
             // Load and decompres data
