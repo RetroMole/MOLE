@@ -1,12 +1,10 @@
 ﻿using ImGuiNET;
-using System.Collections.Generic;
 
-namespace Mole.Gui.Widgets
+namespace Mole.Gui
 {
-    public static class ComboWithArrows
+    public static partial class Widgets
     {
-        private static Dictionary<string,int> Combos = new();
-        public static bool New(string ID, string Text, string[] Items, ref int Selected)
+        public static bool ComboWithArrows(string ID, string Text, string[] Items, ref int Selected, ref int Prev)
         {
             ImGuiStylePtr style = ImGui.GetStyle();
             float w = ImGui.CalcItemWidth();
@@ -35,19 +33,7 @@ namespace Mole.Gui.Widgets
             if (ImGui.ArrowButton($"##{ID}r", ImGuiDir.Right))
                 if (Selected < Items.Length - 1) Selected++;
 
-            if (!Combos.ContainsKey(ID))
-            {
-                Combos.Add(ID, Selected);
-                return true;
-            }
-
-            if (Selected != Combos[ID])
-            {
-                Combos[ID] = Selected;
-                return true;
-            }
-            else return false;
-
+            return Prev != Selected;
         }
     }
 }

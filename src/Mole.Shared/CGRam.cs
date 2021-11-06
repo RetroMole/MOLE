@@ -26,6 +26,9 @@ namespace Mole.Shared
         public int CurrentFG;
         public int CurrentBG;
         public int CurrentSpr;
+        public int PrevFG;
+        public int PrevBG;
+        public int PrevSpr;
 
 
 

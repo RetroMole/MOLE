@@ -57,7 +57,7 @@ namespace Mole.Gui.Windows
                     ImGui.PopStyleVar();
 
                     ImGui.NextColumn();
-                    if (Widgets.ComboWithArrows.New("FG", "FG",
+                    if (Widgets.ComboWithArrows("FG", "FG",
                         new string[] {
                             "FG Palette 0",
                             "FG Palette 1",
@@ -68,10 +68,11 @@ namespace Mole.Gui.Windows
                             "FG Palette 6",
                             "FG Palette 7"
                         },
-                        ref data.Project.CGRam.CurrentFG
+                        ref data.Project.CGRam.CurrentFG,
+                        ref data.Project.CGRam.PrevFG
                     )) data.Project.CGRam.GenerateLevelCGRam(ref data.Project.Rom);
 
-                    if (Widgets.ComboWithArrows.New("BG", "BG",
+                    if (Widgets.ComboWithArrows("BG", "BG",
                         new string[] {
                             "BG Palette 0",
                             "BG Palette 1",
@@ -82,10 +83,11 @@ namespace Mole.Gui.Windows
                             "BG Palette 6",
                             "BG Palette 7"
                         },
-                        ref data.Project.CGRam.CurrentBG
+                        ref data.Project.CGRam.CurrentBG,
+                        ref data.Project.CGRam.PrevBG
                     )) data.Project.CGRam.GenerateLevelCGRam(ref data.Project.Rom);
 
-                    if (Widgets.ComboWithArrows.New("Spr", "Sprite",
+                    if (Widgets.ComboWithArrows("Spr", "Sprite",
                         new string[]
                         {
                             "Sprie Palette 0",
@@ -97,7 +99,8 @@ namespace Mole.Gui.Windows
                             "Sprie Palette 6",
                             "Sprie Palette 7",
                         },
-                        ref data.Project.CGRam.CurrentSpr
+                        ref data.Project.CGRam.CurrentSpr,
+                        ref data.Project.CGRam.PrevSpr
                     )) data.Project.CGRam.GenerateLevelCGRam(ref data.Project.Rom);
 
                     ImGui.Columns(1);
