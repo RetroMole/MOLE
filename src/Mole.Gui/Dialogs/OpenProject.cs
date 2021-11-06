@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
 using System.Threading;
@@ -8,12 +7,12 @@ using ImGuiNET;
 using Mole.Shared;
 using Mole.Shared.Util;
 
-namespace Mole.Gui.Windows
+namespace Mole.Gui.Dialogs
 {
     /// <summary>
     /// File Dialog
     /// </summary>
-    public class ProjectDialog : Window
+    public class OpenProject : Window
     {
         private string _path = "";
         public override void Draw(Project.UiData data, List<Window> windows)

@@ -3,23 +3,23 @@ using System.Numerics;
 using ImGuiNET;
 using Mole.Shared.Util;
 
-namespace Mole.Gui.Windows
+namespace Mole.Gui.Dialogs
 {
-    public class LoadingDialog : Window
+    public class Loading : Window
     {
         public override void Draw(Project.UiData data, List<Window> windows)
         {
             if (data.Progress.Loaded
                 || !data.Progress.Working) return;
             
-            if (!ImGui.IsPopupOpen("Loading")) 
-                ImGui.OpenPopup("Loading");
+            if (!ImGui.IsPopupOpen("#DialogLoading")) 
+                ImGui.OpenPopup("#DialogLoading");
 
-            if (ImGui.IsPopupOpen("Loading"))
+            if (ImGui.IsPopupOpen("#DialogLoading"))
             {
                 ImGui.SetWindowSize(new Vector2());
                 ImGui.SetNextWindowPos(ImGui.GetMainViewport().Size / 2, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-                if (ImGui.BeginPopupModal("Loading", ref data.Progress.Working, ImGuiWindowFlags.AlwaysAutoResize))
+                if (ImGui.BeginPopupModal("#DialogLoading", ref data.Progress.Working, ImGuiWindowFlags.AlwaysAutoResize))
                 {
                     if (data.Progress.ShowException) {
                         ImGui.Text("Exception was thrown!");

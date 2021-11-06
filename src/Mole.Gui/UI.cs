@@ -1,7 +1,5 @@
 ﻿using ImGuiNET;
 using System.Collections.Generic;
-using Mole.Gui.Windows;
-using Mole.Shared;
 using Mole.Shared.Util;
 
 namespace Mole.Gui
@@ -9,13 +7,13 @@ namespace Mole.Gui
     public class Ui
     {
         private static readonly List<Window> Windows = new() {
-            new About(),
-            new FileDialog(),
-            new ProjectDialog(),
-            new LoadingDialog(),
-            new RomInfo(),
-            new PalEditor(),
-            new WGfx(),
+            new Windows.About(),
+            new Dialogs.OpenFile(),
+            new Dialogs.OpenProject(),
+            new Dialogs.Loading(),
+            new Windows.RomInfo(),
+            new Windows.PalEditor(),
+            new Windows.GfxEditor()
         };
 
         private static bool _showDemo;
@@ -46,6 +44,7 @@ namespace Mole.Gui
                 if (ImGui.BeginMenu("Debug"))
                 {
                     ImGui.MenuItem("Demo Window", null, ref _showDemo);
+
                     ImGui.EndMenu();
                 }
 
