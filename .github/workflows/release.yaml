@@ -1,0 +1,108 @@
+name: Release
+on: [worflow_dispatch]
+
+jobs:
+  LinuxRelease:
+    if:
+      ${{
+        !(
+          contains(github.event.head_commit.message, '[windows-only]') ||
+          contains(github.event.head_commit.message, '[macos-only]') ||
+          contains(github.event.head_commit.message, '[linux-skip]') ||
+          contains(github.event.head_commit.message, '[ci-skip]')
+        )
+        }}
+    runs-on: ubuntu-latest
+    steps:
+      # Download repo
+      - name: Pull repo
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      # Setup dotnet
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0'
+
+      # Build self-contained release
+      - name: Build self-contained release
+        run: dotnet publish -o ./bin -c rlease -r linux-x64 --self-contained -p:PublishTrimmed=true ./src/Mole.sln
+
+      # Upload build artifacts to github
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: Linux
+          path: ./bin
+
+  WindowsRelease:
+    if:
+      ${{
+        !(
+          contains(github.event.head_commit.message, '[linux-only]') ||
+          contains(github.event.head_commit.message, '[macos-only]') ||
+          contains(github.event.head_commit.message, '[windows-skip]') ||
+          contains(github.event.head_commit.message, '[ci-skip]')
+        )
+        }}
+    runs-on: windows-latest
+    steps:
+      # Download repo
+      - name: Pull repo
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      # Setup dotnet
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0'
+
+      # Build self-contained release
+      - name: Build self-contained release
+        run: dotnet publish -o ./bin -c rlease -r win-x64 --self-contained -p:PublishTrimmed=true ./src/Mole.sln
+
+      # Upload build artifacts to github
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: Windows
+          path: ./bin
+
+  MacOSRelease:
+    if:
+      ${{
+        !(
+          contains(github.event.head_commit.message, '[windows-only]') ||
+          contains(github.event.head_commit.message, '[linux-only]') ||
+          contains(github.event.head_commit.message, '[macos-skip]') ||
+          contains(github.event.head_commit.message, '[ci-skip]')
+        )
+        }}
+    runs-on: macos-latest
+    steps:
+      # Download repo
+      - name: Pull repo
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      # Setup dotnet
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0'
+
+      # Build self-contained release
+      - name: Build self-contained release
+        run: dotnet publish -o ./bin -c rlease -r osx-x64 --self-contained -p:PublishTrimmed=true ./src/Mole.sln
+
+      # Upload build artifacts to github
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: MacOS
+          path: ./bin
