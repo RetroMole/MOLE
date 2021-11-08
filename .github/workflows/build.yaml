@@ -24,11 +24,11 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0.401'    
+          dotnet-version: '6.0'
       
       # Build solution
       - name: Build solution
-        run: dotnet build ./src/Mole.sln -o ./bin
+        run: dotnet build -o ./bin ./src/Mole.sln
       
       # Upload build artifacts to github
       - name: Upload build artifacts
@@ -59,11 +59,11 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0.401'    
+          dotnet-version: '6.0'
       
       # Build solution
       - name: Build solution
-        run: dotnet build ./src/Mole.sln -o ./bin
+        run: dotnet build -o ./bin ./src/Mole.sln
       
       # Upload build artifacts to github
       - name: Upload build artifacts
@@ -94,11 +94,11 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0.401'    
+          dotnet-version: '6.0'
       
       # Build solution
       - name: Build solution
-        run: dotnet build ./src/Mole.sln -o ./bin
+        run: dotnet build ./bin ./src/Mole.sln -o
       
       # Upload build artifacts to github
       - name: Upload build artifacts

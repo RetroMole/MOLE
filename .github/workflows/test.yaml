@@ -28,7 +28,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0.401'
+          dotnet-version: '6.0'
       
       # Run unit tests
       - name: Run unit tests
@@ -57,7 +57,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0.401'
+          dotnet-version: '6.0'
 
       # Run unit tests
       - name: Run unit tests
@@ -87,7 +87,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0.401'
+          dotnet-version: '6.0'
 
       # Run unit tests
       - name: Run unit tests

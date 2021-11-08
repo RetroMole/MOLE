@@ -4,7 +4,7 @@
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AssemblyName>TerraCompress</AssemblyName>
         <RootNamespace>TerraCompress</RootNamespace>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <OutputType>Library</OutputType>
     </PropertyGroup>
 
