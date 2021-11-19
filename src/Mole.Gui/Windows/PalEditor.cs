@@ -9,7 +9,7 @@ namespace Mole.Gui.Windows
     public class PalEditor : Window
     {
         public int PalZoom = 16;
-        public override void Draw(Project.UiData data, List<Window> windows)
+        public override void Draw(Project.UiData data, Dictionary<string, Window> windows)
         {
             if (!ShouldDraw || !data.Progress.Loaded) return;
 
@@ -30,9 +30,9 @@ namespace Mole.Gui.Windows
             {
                 if (ImGui.BeginTabItem("Level Palettes"))
                 {
-                    ImGui.Columns(2);
+                    ImGui.Columns(2,"##PalSeparator",false);
                     ImGui.SetColumnWidth(0, PalZoom * 17);
-                    ImGui.Separator();
+                    ImGui.Dummy(new Vector2(0,0));
                     var drawList = ImGui.GetWindowDrawList();
                     ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(0, sp));
 
@@ -90,14 +90,14 @@ namespace Mole.Gui.Windows
                     if (Widgets.ComboWithArrows("Spr", "Sprite",
                         new string[]
                         {
-                            "Sprie Palette 0",
-                            "Sprie Palette 1",
-                            "Sprie Palette 2",
-                            "Sprie Palette 3",
-                            "Sprie Palette 4",
-                            "Sprie Palette 5",
-                            "Sprie Palette 6",
-                            "Sprie Palette 7",
+                            "Sprite Palette 0",
+                            "Sprite Palette 1",
+                            "Sprite Palette 2",
+                            "Sprite Palette 3",
+                            "Sprite Palette 4",
+                            "Sprite Palette 5",
+                            "Sprite Palette 6",
+                            "Sprite Palette 7",
                         },
                         ref data.Project.CGRam.CurrentSpr,
                         ref data.Project.CGRam.PrevSpr

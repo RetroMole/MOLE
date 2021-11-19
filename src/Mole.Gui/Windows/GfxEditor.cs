@@ -18,7 +18,7 @@ namespace Mole.Gui.Windows
         int CurrGfx = 0;
         int CurrFrmt = 0;
         Pal Pal;
-        public override void Draw(Project.UiData data, List<Window> windows)
+        public override void Draw(Project.UiData data, Dictionary<string, Window> windows)
         {
             if (!ShouldDraw || !data.Progress.Loaded) return;
 
@@ -46,8 +46,6 @@ namespace Mole.Gui.Windows
             //    ImGui.Dummy(new Num.Vector2(sz * 8, sz * 8));
             //}
 
-
-            ImGui.PopStyleVar();
             ImGui.End();
         }
     }

@@ -80,7 +80,7 @@ namespace Mole.Shared
 
             // Rely on asar mapping mode guess until we can access the internal header
             Mapping = Asar.GetMapper();
-            InternalHeader = this.Skip(0x00FFC0).Take(32).ToArray();
+            InternalHeader = this.Skip(SnesToPc(0x00FFC0)).Take(32).ToArray();
             FastRom = (InternalHeader[0x15] & 0b00010000) != 0;
             Mapping = (InternalHeader[0x15] & 0b00000111) switch
             {
@@ -280,19 +280,21 @@ namespace Mole.Shared
         }
         
         //Enumerable/Enumerator implementation
+        //TODO: Figure out a way to get this working with SNES addressing
         int _position = -1;
         public bool MoveNext()
         {
             _position++;
-            return SnesToPc(_position) < _rom.Length;
+            return  _position < _rom.Length;
         }
         public void Reset() => _position = 0;
-        public object Current { get => this[_position]; }
-        byte IEnumerator<byte>.Current { get => this[_position]; }
-        public IEnumerator<byte> GetEnumerator() => this.OfType<byte>().GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public object Current { get => _rom[_position]; }
+        byte IEnumerator<byte>.Current { get => _rom[_position]; }
+        public IEnumerator<byte> GetEnumerator() => _rom.OfType<byte>().GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => (IEnumerator<byte>)_rom.GetEnumerator();
+        // TODO: Possible Memory leak, does the enumerator/enumerable stuff need manual disposal?
         public void Dispose() {
             GC.SuppressFinalize(this);
-        } // TODO: Possible Memory leak, does the enumerator/enumerable stuff need manual disposal?
+        }
     }
 }

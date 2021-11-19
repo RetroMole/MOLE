@@ -1,68 +1,44 @@
-﻿using ImGuiNET;
+﻿using Mole.Shared.Util;
 using System.Collections.Generic;
-using Mole.Shared.Util;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Mole.Gui
 {
-    public class Ui
+    public partial class Ui
     {
-        private static readonly List<Window> Windows = new() {
-            new Windows.About(),
-            new Dialogs.OpenFile(),
-            new Dialogs.OpenProject(),
-            new Dialogs.Loading(),
-            new Windows.RomInfo(),
-            new Windows.PalEditor(),
-            new Windows.GfxEditor()
+        private static readonly Dictionary<string, Window> Windows = new()
+        {
+            { "About", new Windows.About() },
+            //=============Dialogs=============
+            { "OpenFile", new Dialogs.FilePicker("Select ROM file", "/", SearchFilter: ".smc,.sfc|.asm") },
+            { "OpenProject", new Dialogs.FilePicker("Select Project Directory", "/", OnlyFolders: true) },
+            { "OpenProjectFile", new Dialogs.FilePicker("Select Compressed Project File", "/", SearchFilter: ".moleproj") },
+            { "OpenTestMulti", new Dialogs.FilePicker("Test Multiple Selections", "/", MultipleSelections: true, SearchFilter: ".smc,.sfc") },
+            { "Loading", new Dialogs.Loading() },
+            { "Error", new Dialogs.Error() },
+            //=============Editors=============
+            { "RomInfo", new Windows.RomInfo() },
+            { "PalEditor", new Windows.PalEditor() },
+            { "GfxEditor", new Windows.GfxEditor() }
         };
 
         private static bool _showDemo;
         private static readonly Project.UiData Data = new();
-
-        public static void Draw()
+        private static void OpenFileEventHandler(Window window)
         {
-            ImGui.DockSpaceOverViewport(ImGui.GetMainViewport());
-            
-            if (ImGui.BeginMainMenuBar())
+            Windows["Loading"].ShouldDraw = true;
+            var w = window as Dialogs.FilePicker;
+            new Task(() =>
             {
-                if (ImGui.BeginMenu("File"))
-                {
-                    if (ImGui.MenuItem("Open ROM", "Ctrl+N"))
-                        Windows[1].ShouldDraw = true;
-                    if (ImGui.MenuItem("Open Project", "Ctrl+O"))
-                        Windows[2].ShouldDraw = true;
-                    if (ImGui.MenuItem("Save Project", "Ctrl+S")
-                        && Data.Project != null) Data.Project.SaveProject();
-                    if (ImGui.MenuItem("Close Project", "Ctrl+C"))
-                    {
-                        Data.Progress = new Progress();
-                        Data.Project = null;
-                    }
-                    ImGui.EndMenu();
-                }
-
-                if (ImGui.BeginMenu("Debug"))
-                {
-                    ImGui.MenuItem("Demo Window", null, ref _showDemo);
-
-                    ImGui.EndMenu();
-                }
-
-                if (ImGui.BeginMenu("Help"))
-                {
-                    if (ImGui.MenuItem("About"))
-                        Windows[0].ShouldDraw = true;
-
-                    ImGui.EndMenu();
-                }
-                    
-                ImGui.EndMainMenuBar();
-            }
-
-            if (_showDemo) ImGui.ShowDemoWindow(ref _showDemo);
-
-            foreach (var w in Windows)
-                w.Draw(Data, Windows);
+                var dir = string.Join('.', w.SelectedFile.Split('.').SkipLast(1)) + "_moleproj";
+                Data.Project = new Project(Data.Progress,
+                    dir, w.SelectedFile);
+                Windows["RomInfo"].ShouldDraw = true;
+                Windows["PalEditor"].ShouldDraw = true;
+                Windows["GfxEditor"].ShouldDraw = true;
+            }).Start();
         }
     }
 }

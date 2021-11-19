@@ -5,28 +5,30 @@ namespace Mole.Shared.Graphics
 {
     public class Gfx : GfxBase
     {
-        public Gfx(ref Rom rom, ref Project.UiData projData) : base(ref rom, ref projData) { }
+        public Gfx(ref Progress progress, ref Rom rom, string ProjDir) : base(ref progress, ref rom, ProjDir) { }
         // Override LoadFromRom method
-        public new void LoadFromRom(ref Rom rom, ref Project.UiData projData)
+        public override void LoadFromRom(ref Rom rom, ref Progress progress)
         {
             // If pointers were loaded from cache skip this step
             if (Pointers is null)
             {
+                Pointers = new uint[0x34];
                 // Load pointers from ROM
                 var low = rom.Skip(rom.SnesToPc(0x00B992)).Take(0x32).ToArray();
                 var high = rom.Skip(rom.SnesToPc(0x00B9C4)).Take(0x32).ToArray();
                 var bank = rom.Skip(rom.SnesToPc(0x00B9F6)).Take(0x32).ToArray();
-                projData.Progress.MaxProgress = 0x32;
+                progress.MaxProgress = 0x32;
                 for (var i = 0; i < 0x32; i++)
                 {
-                    projData.Progress.CurrentProgress = i;
+                    progress.CurrentProgress = i;
                     Pointers[i] = (uint)((bank[i] << 16) | (high[i] << 8) | low[i]);
                 }
                 Pointers[0x32] = 0x088000;
                 Pointers[0x33] = 0x08BFC0;
             }
+            progress.State = Progress.StateEnum.DecompressingGfx;
             // Load and decompres data
-            base.LoadFromRom(ref rom, ref projData);
+            base.LoadFromRom(ref rom, ref progress);
         }
     }
 }

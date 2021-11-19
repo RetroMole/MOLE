@@ -2,6 +2,7 @@
 using Smallhacker.TerraCompress;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Mole.Shared.Graphics
@@ -9,18 +10,26 @@ namespace Mole.Shared.Graphics
     public class GfxBase
     {
         public uint[] Pointers;
-        public byte[][] Decompressed;
+        public Tuple<byte[], int>[] Decompressed;
+        private int[] DefaultFormats =
+            Enumerable.Repeat(3, 0x27)          // First 0x27 files are 3bpp by default
+            .Append(73)                         // GFX27 is Mode 7 3bpp 
+            .Concat(Enumerable.Repeat(2, 4))    // GFX28-2B are 2bpp
+            .Concat(Enumerable.Repeat(3, 3))    // GFX2C-2E are 3bpp
+            .Append(2)                          // GFX2F  is 2bpp
+            .Concat(Enumerable.Repeat(3, 4))    // GFX30-33 are 3bpp
+            .ToArray();
 
-        public GfxBase(ref Rom rom, ref Project.UiData projData)
+        public GfxBase(ref Progress progress, ref Rom rom, string ProjDir)
         {
-            if (LoadFromCache()) return;
+            if (LoadFromCache(ProjDir)) return; // Try to load from the projects cache
 
-            LoadFromRom(ref rom, ref projData);
+            LoadFromRom(ref rom, ref progress); // If that fails then load from the ROM
         }
 
-        public void SaveCache()
+        public void SaveCache(string dir)
         {
-            var Name = GetType().Name;
+            var Name = Path.Combine(dir, GetType().Name);
 
             // Cache pointers
             var ptrBytes = new List<byte>();
@@ -31,28 +40,30 @@ namespace Mole.Shared.Graphics
                 ptrBytes.Add((byte)((p >> 8) & 0xFF));
                 ptrBytes.Add((byte)(p & 0xFF));
             }
-            Cache.SaveCache(Cache.Type.PointerTable, null, ptrBytes.ToArray(), $"{Name}_ptrs");
+            Cache.SaveCache(Cache.Type.PointerTable, null, ptrBytes.ToArray(), $"{Name}_ptr");
 
             // Cache decompressed data
             var datBytes = new List<byte>();
             foreach (var b in Decompressed)
             {
-                if (b == null) continue;
-                datBytes.Add((byte)((b.Length >> 8) & 0xFF));
-                datBytes.Add((byte)(b.Length & 0xFF));
-                foreach (var bb in b)
+                if (b is null) continue;
+                datBytes.Add((byte)b.Item2);
+                datBytes.Add((byte)((b.Item1.Length >> 8) & 0xFF));
+                datBytes.Add((byte)(b.Item1.Length & 0xFF));
+                foreach (var bb in b.Item1)
                     datBytes.Add(bb);
             }
-            Cache.SaveCache(Cache.Type.Graphics, null, datBytes.ToArray(), $"{Name}_decomp");
+            Cache.SaveCache(Cache.Type.Graphics, null, datBytes.ToArray(), $"{Name}_dat");
         }
-        public bool LoadFromCache()
+        public bool LoadFromCache(string ProjDir)
         {
-            var Name = GetType().Name;
+            if (ProjDir is null) return false;
+            var Name = Path.Combine(ProjDir, GetType().Name);
 
             // Try to load cached file, if this fails we try to atleast load the pointers
-            if (!Cache.TryLoadCache($"{Name}_decomp", out object datBytes))
+            if (!Cache.TryLoadCache($"{Name}_dat", out object datBytes))
             {
-                if (!Cache.TryLoadCache($"{Name}_ptrs", out object ptrBytes))
+                if (Cache.TryLoadCache($"{Name}_ptr", out object ptrBytes))
                 {
                     // Load cached pointers into Pointers array
                     var p = (byte[])ptrBytes;
@@ -66,30 +77,30 @@ namespace Mole.Shared.Graphics
             
             // Load cached data into Decompressed array
             byte[] dat = (byte[])datBytes;
-            var decomp = new List<byte[]>();
+            var decomp = new List<Tuple<byte[], int>>();
             for (int i = 0; i < dat.Length; i++)
             {
-                var len = (dat[i] << 8) | dat[i + 1];
-                i += 2;
-                decomp.Add(dat.Skip(i).Take(len).ToArray());
+                var fmt = dat[i++];
+                var len = (dat[i++] << 8) | dat[i++];
+                decomp.Add(new Tuple<byte[], int>(dat.Skip(i).Take(len).ToArray(),fmt));
                 i += len - 1;
             }
             Decompressed = decomp.ToArray();
             return true; // Cached data loading was successful
         }
-        public void LoadFromRom(ref Rom rom, ref Project.UiData projData) => DecompressGfx(ref rom, ref projData.Progress.CurrentProgress, ref projData.Progress.MaxProgress);
+        public virtual void LoadFromRom(ref Rom rom, ref Progress progress) => DecompressGfx(ref rom, ref progress.CurrentProgress, ref progress.MaxProgress);
         public void DecompressGfx(ref Rom rom, ref int progress, ref int maxProgress)
         {
             var Name = GetType().Name;
             LoggerEntry.Logger.Information($"Decompressing {Name}...");
             Lz2 lz2 = new();
-            byte[][] dgfx = new byte[Pointers.Length][];
+            Tuple<byte[],int>[] dgfx = new Tuple<byte[],int>[Pointers.Length];
             maxProgress = Pointers.Length;
             int fails = 0;
             for (int i = 0; i < Pointers.Length; i++)
             {
                 progress = i;
-                try { dgfx[i] = lz2.Decompress(rom.Pc, (uint)rom.SnesToPc((int)Pointers[i])); }
+                try { dgfx[i] = new Tuple<byte[], int>(lz2.Decompress(rom.Pc, (uint)rom.SnesToPc((int)Pointers[i])), DefaultFormats.ElementAtOrDefault(i) == 0 ? 4 : DefaultFormats[i]); }
                 catch { LoggerEntry.Logger.Warning($"Failed to decompress {Name}{i:X2}"); fails++; }
             }
             LoggerEntry.Logger.Information($"Done! {fails}/{Pointers.Length} Failures occured.");

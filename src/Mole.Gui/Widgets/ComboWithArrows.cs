@@ -10,9 +10,9 @@ namespace Mole.Gui
             float w = ImGui.CalcItemWidth();
             float spacing = style.ItemInnerSpacing.X;
             float button_sz = ImGui.GetFrameHeight();
-            ImGui.PushItemWidth(w - spacing * 2.0f - button_sz * 2.0f);
             ImGui.Text($"{Text}:");
             ImGui.SameLine(0, spacing);
+            ImGui.PushItemWidth(w - spacing * 2.0f - button_sz * 2.0f - Text.Length * 7.0f);
             if (ImGui.BeginCombo($"##{ID}Combo", Items[Selected]))
             {
                 for (byte n = 0; n < Items.Length; n++)
@@ -33,7 +33,9 @@ namespace Mole.Gui
             if (ImGui.ArrowButton($"##{ID}r", ImGuiDir.Right))
                 if (Selected < Items.Length - 1) Selected++;
 
-            return Prev != Selected;
+            var res = Prev != Selected;
+            Prev = Selected;
+            return res;
         }
     }
 }

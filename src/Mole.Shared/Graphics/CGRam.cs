@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Mole.Shared
+namespace Mole.Shared.Graphics
 {
     public class CGRam : IEnumerator<ushort>, IEnumerable<ushort>
     {
@@ -90,13 +90,13 @@ namespace Mole.Shared
             UploadPalette(ref rom, BerrySpr.Pointer, BerrySpr.Index, BerrySpr.X, BerrySpr.Y);
 
             UploadPalette(ref rom,
-                (ushort)(FG.Pointer + rom[rom.SnesToPc(0xABD3) + CurrentFG]),
+                (ushort)(FG.Pointer + rom[0xABD3 + CurrentFG]),
                 FG.Index, FG.X, FG.Y);
             UploadPalette(ref rom,
-                 (ushort)(BG.Pointer + rom[rom.SnesToPc(0xABD3) + CurrentBG]),
+                 (ushort)(BG.Pointer + rom[0xABD3 + CurrentBG]),
                  BG.Index, BG.X, BG.Y);
             UploadPalette(ref rom,
-                 (ushort)(Spr.Pointer + rom[rom.SnesToPc(0xABD3) + CurrentSpr]),
+                 (ushort)(Spr.Pointer + rom[0xABD3 + CurrentSpr]),
                  Spr.Index, Spr.X, Spr.Y);
         }
         public Pal GetPal(int index, int size) => new(this.Skip(index * size).Take(size).ToArray());

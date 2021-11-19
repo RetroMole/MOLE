@@ -10,7 +10,7 @@ namespace Mole.Gui.Windows
     /// </summary>
     public class RomInfo : Window
     {
-        public override void Draw(Project.UiData data, List<Window> windows)
+        public override void Draw(Project.UiData data, Dictionary<string, Window> windows)
         {
             if (!ShouldDraw || !data.Progress.Loaded) return;
             

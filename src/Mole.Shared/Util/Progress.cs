@@ -6,6 +6,8 @@ namespace Mole.Shared.Util
     {
         public enum StateEnum
         {
+            CopyingRom,
+            LoadingRom,
             LoadingLevelPalInfo,
             LoadingTSpecPalInfo,
             LoadingGfx,
@@ -14,8 +16,7 @@ namespace Mole.Shared.Util
             DecompressingGfx,
             DecompressingExGfx,
             DecompressingSuperExGfx,
-            SavingProject,
-            CopyingRom
+            SavingProject
         }
         
         public int CurrentProgress = 0;
