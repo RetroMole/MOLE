@@ -7,33 +7,23 @@ namespace Mole.Gui.Dialogs
 {
     public class Loading : Window
     {
-        public override void Draw(Project.UiData data, List<Window> windows)
+        public override void Draw(Project.UiData data, Dictionary<string,Window> windows)
         {
             if (data.Progress.Loaded
                 || !data.Progress.Working) return;
             
-            if (!ImGui.IsPopupOpen("#DialogLoading")) 
-                ImGui.OpenPopup("#DialogLoading");
+            if (!ImGui.IsPopupOpen("Loading##DialogLoading")) 
+                ImGui.OpenPopup("Loading##DialogLoading");
 
-            if (ImGui.IsPopupOpen("#DialogLoading"))
+            if (ImGui.IsPopupOpen("Loading##DialogLoading"))
             {
-                ImGui.SetWindowSize(new Vector2());
                 ImGui.SetNextWindowPos(ImGui.GetMainViewport().Size / 2, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-                if (ImGui.BeginPopupModal("#DialogLoading", ref data.Progress.Working, ImGuiWindowFlags.AlwaysAutoResize))
+                if (ImGui.BeginPopupModal("Loading##DialogLoading", ref data.Progress.Working, ImGuiWindowFlags.AlwaysAutoResize))
                 {
-                    if (data.Progress.ShowException) {
-                        ImGui.Text("Exception was thrown!");
-                        ImGui.Separator();
-                        ImGui.Text(data.Progress.Exception.ToString());
-                    } else {
-                        ImGui.Text("Project is loading, please wait...");
-                        ImGui.Separator();
-                        ImGui.Text(data.Progress.State.ToString());
-                        ImGui.Text($"Progress: {data.Progress.CurrentProgress} / {data.Progress.MaxProgress}");
-                    }
-                    
-                    ImGui.SetItemDefaultFocus();
-                    ImGui.SameLine();
+                    ImGui.Text("Loading, please wait...");
+                    ImGui.Separator();
+                    ImGui.Text(data.Progress.State.ToString());
+                    ImGui.ProgressBar((float)data.Progress.CurrentProgress / (float)data.Progress.MaxProgress, new Vector2(-1, 0), $"Progress: {data.Progress.CurrentProgress} / {data.Progress.MaxProgress}");
                     ImGui.EndPopup();
                 }
             }
