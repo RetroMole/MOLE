@@ -1,4 +1,3 @@
-[![Lint](https://github.com/Vawlpe/MOLE/actions/workflows/super-linter.yml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/super-linter.yaml)
 [![Build](https://github.com/Vawlpe/MOLE/actions/workflows/build.yaml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/build.yaml)
 [![Test](https://github.com/Vawlpe/MOLE/actions/workflows/test.yaml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/test.yaml)
 [![Asar](https://github.com/Vawlpe/MOLE/actions/workflows/asar.yaml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/asar.yaml)
