@@ -98,7 +98,7 @@ jobs:
       
       # Build solution
       - name: Build solution
-        run: dotnet build ./bin ./src/Mole.sln -o
+        run: dotnet build -o ./bin ./src/Mole.sln
       
       # Upload build artifacts to github
       - name: Upload build artifacts
