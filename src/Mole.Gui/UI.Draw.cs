@@ -20,6 +20,7 @@ namespace Mole.Gui
                         //=============Project=============
                         if (ImGui.BeginMenu("Project..."))
                         {
+                            // TODO: Show replace confirmation prompt
                             if (ImGui.MenuItem("New Project From ROM", "Ctrl+N"))
                             {
                                 Windows["OpenFile"].ShouldDraw = true;
@@ -27,14 +28,20 @@ namespace Mole.Gui
                             }
 
                             if (ImGui.MenuItem("Open Project Folder", "Ctrl+O"))
+                            {
                                 Windows["OpenProject"].ShouldDraw = true;
+                                Windows["OpenProject"].Close += new Action<Window>(OpenProjectEventHandler);
+                            }
 
+                            // TODO: Load Compressed Project File
                             if (ImGui.MenuItem("Open Compressed Project File", "Ctrl+Shift+O"))
                                 Windows["OpenProjectFile"].ShouldDraw = true;
 
+                            // TODO: Show confirmation prompt
                             if (ImGui.MenuItem("Save Project", "Ctrl+Shift+S") && Data.Project != null)
                                 Data.Project.SaveProject();
 
+                            // TODO: Show confirmation prompt
                             if (ImGui.MenuItem("Close Project"))
                             {
                                 Data.Progress = new Progress();

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.IO;
 using System.Security.Cryptography;
 
 namespace Mole.Shared.Util
@@ -38,6 +39,6 @@ namespace Mole.Shared.Util
         }
         public static byte[] LoadCache(string path) => File.ReadAllBytes(path);
         public static void SaveHash(string path) => File.WriteAllBytes($"{path}.sha1", HashAlgorithm.Create("SHA1").ComputeHash(File.ReadAllBytes(path)));
-        public static bool CheckHash(string path) => File.ReadAllBytes($"{path}.sha1") == HashAlgorithm.Create("SHA1").ComputeHash(File.ReadAllBytes(path));
+        public static bool CheckHash(string path) => StructuralComparisons.StructuralEqualityComparer.Equals(File.ReadAllBytes($"{path}.sha1"), HashAlgorithm.Create("SHA1").ComputeHash(File.ReadAllBytes(path)));
     }
 }

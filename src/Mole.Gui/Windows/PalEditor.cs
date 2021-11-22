@@ -102,7 +102,6 @@ namespace Mole.Gui.Windows
                         ref data.Project.CGRam.CurrentSpr,
                         ref data.Project.CGRam.PrevSpr
                     )) data.Project.CGRam.GenerateLevelCGRam(ref data.Project.Rom);
-
                     ImGui.Columns(1);
                     ImGui.EndTabItem();
                 }

@@ -46,6 +46,7 @@ namespace Mole.Shared.Graphics
             FG = new PalUploadInfo(ref rom, 0xAC42, 0xAC59, 0xAC5E, 0xAC63);
             BG = new PalUploadInfo(ref rom, 0xAC94, 0xACAB, 0xACB0, 0xACB5);
             Spr = new PalUploadInfo(ref rom, 0xAC6B, 0xAC82, 0xAC87, 0xAC8C);
+            GenerateLevelCGRam(ref rom);
         }
         public void UploadPalette(ref Rom rom,
             ushort ptr, ushort off, ushort xs, ushort ys)

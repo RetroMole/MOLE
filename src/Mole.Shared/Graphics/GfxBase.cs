@@ -78,12 +78,17 @@ namespace Mole.Shared.Graphics
             // Load cached data into Decompressed array
             byte[] dat = (byte[])datBytes;
             var decomp = new List<Tuple<byte[], int>>();
+            if (dat.Length < 20 ||              // Not Enough Data
+                ((dat[0] << 8) | dat[1]) != 0)  // Type != 0
+                return false;
+
+            dat = dat.Skip(16).ToArray();       // Skip Header
             for (int i = 0; i < dat.Length; i++)
             {
-                var fmt = dat[i++];
-                var len = (dat[i++] << 8) | dat[i++];
-                decomp.Add(new Tuple<byte[], int>(dat.Skip(i).Take(len).ToArray(),fmt));
-                i += len - 1;
+                var fmt = dat[i++];                     // GFX Chunk Format Byte
+                var len = (dat[i++] << 8) | dat[i++];   // GFX Chunk Size
+                decomp.Add(new Tuple<byte[], int>(dat.Skip(i).Take(len).ToArray(),fmt)); // Load a chunk
+                i += len - 1; // Skip to next chunk
             }
             Decompressed = decomp.ToArray();
             return true; // Cached data loading was successful

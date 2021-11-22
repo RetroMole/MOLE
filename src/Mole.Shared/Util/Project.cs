@@ -36,11 +36,11 @@ namespace Mole.Shared.Util
         }
 
         /// <summary>
-        /// Create an instance of Project from scratch
+        /// Initialize project from a ROM file
         /// </summary>
-        /// <param name="progress">Progress</param>
-        /// <param name="dir">Directory</param>
-        /// <param name="romPath">ROM</param>
+        /// <param name="progress">Progress object</param>
+        /// <param name="dir">Directory path</param>
+        /// <param name="romPath">ROM path</param>
         public Project(Progress progress, string dir, string romPath)
         {
             if (!File.Exists(romPath))
@@ -96,10 +96,10 @@ namespace Mole.Shared.Util
         }
 
         /// <summary>
-        /// Initializes project from an existing one
+        /// Initialize project from an existing _moleproj directory
         /// </summary>
-        /// <param name="progress">Progress</param>
-        /// <param name="dir">Directory</param>
+        /// <param name="progress">Progress object</param>
+        /// <param name="dir">Directory path</param>
         public Project(Progress progress, string dir)
         {
             if (!Directory.Exists(dir))
@@ -128,6 +128,17 @@ namespace Mole.Shared.Util
             }).Start();
         }
         
+        /// <summary>
+        /// TODO: Initialize project from a compressed .moleproj file
+        /// </summary>
+        /// <param name="progress">Progress object</param>
+        /// <param name="projPath">Compressed project path</param>
+        /// <param name="cleanRomPath">Clean ROM path</param>
+        public Project(Progress progress, string projPath, string cleanRomPath, object ignoreThis = null)
+        {
+
+        }
+
         /// <summary>
         /// Saves the project
         /// </summary>
