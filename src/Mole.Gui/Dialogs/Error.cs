@@ -16,7 +16,7 @@ namespace Mole.Gui.Dialogs
         public string Message2 =
             "Alternatively, you can opt-in to automatically report these errors in the future.\n" +
             "This implies allowing us to collect your system information, configuration files, and error logs.\n" +
-            "Note that no personal information will NOT be collected,\n" +
+            "Note that personal information of any kind will NOT be collected,\n" +
             "if you'd like to read up on exactly what is being collected, please visit github.com/vawlpe/mole/wiki/Telemetry";
         public bool Unhandled;
         public bool Telemetry;
