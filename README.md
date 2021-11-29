@@ -15,8 +15,7 @@ into a single easy-to-use [**multi-platform**](#how-to-run) and [localized](#loc
 Mole doesn't mean to replace existing system, only encapsulate them, the existing formats and standards will be kept,
 but we shall create better standards on top of the existing ones.
 
-A private roadmap is already available over on a private board in our [Trello workspace](https://trello.com/mole34),
-but we'll move it over and re-define it on the [Wiki](https://github.com/Vawlpe/MOLE/wiki/Roadmap) soon
+A roadmap is already available over on the [Wiki](https://github.com/Vawlpe/MOLE/wiki/Roadmap) ~<3
 ___
 ### Platforms
 - Windows
