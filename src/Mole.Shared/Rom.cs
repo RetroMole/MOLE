@@ -127,6 +127,8 @@ namespace Mole.Shared
             Loaded = true;
         }
 
+        public int Expand(int SizeInBytes) => throw new NotImplementedException($"ROM Expansion to {SizeInBytes / 1048576:0.00}MiB? nah, OwO the only thing i see expanding in size is you~! ;3");
+
         private static readonly int[] Sa1Banks = new int[8] { 0, 1 << 20, -1, -1, 2 << 20, 3 << 20, -1, -1 };
         /// <summary>
         /// Convert SNES address to PC address using this ROM's MapperType
