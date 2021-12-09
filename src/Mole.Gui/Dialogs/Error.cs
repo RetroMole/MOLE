@@ -19,9 +19,11 @@ namespace Mole.Gui.Dialogs
             "Note that personal information of any kind will NOT be collected,\n" +
             "if you'd like to read up on exactly what is being collected, please visit github.com/vawlpe/mole/wiki/Telemetry";
         public bool Unhandled;
-        public bool Telemetry;
+        public bool Telemetry = App.Default.Telemetry;
         public override void Draw(Project.UiData data, Dictionary<string, Window> windows)
         {
+            App.Default.Telemetry = Telemetry;
+            App.Default.Save();
             if (!ShouldDraw)
             {
                 if (ImGui.IsPopupOpen("Error"))
@@ -31,8 +33,7 @@ namespace Mole.Gui.Dialogs
             }
             if (!ImGui.IsPopupOpen("Error"))
                 ImGui.OpenPopup("Error");
-
-            ImGui.SetNextWindowSizeConstraints(new Vector2(500, 375), new Vector2(1000,1000));
+            ImGui.SetNextWindowSize(ImGui.GetMainViewport().Size,ImGuiCond.Always);
             ImGui.SetNextWindowPos(new Vector2(ImGui.GetMainViewport().Size.X/2, ImGui.GetMainViewport().Size.Y/2),ImGuiCond.Always, new Vector2(0.5f,0.5f));
             if (ImGui.BeginPopupModal("Error", ref ShouldDraw, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoMove))
             {
@@ -43,7 +44,7 @@ namespace Mole.Gui.Dialogs
                 ImGui.PopStyleColor();
                 ImGui.Checkbox("Automatically Report Future Problems", ref Telemetry);
 
-                if (ImGui.BeginChildFrame(0, new Vector2(ImGui.GetWindowWidth()-17,ImGui.GetWindowHeight()-180)))
+                if (ImGui.BeginChildFrame(0, new(0,-23), ImGuiWindowFlags.AlwaysAutoResize))
                 {
                     ImGui.PushStyleColor(ImGuiCol.Text, 0xFF0000FF);
                     ImGui.TextWrapped(e.ToString());
@@ -51,7 +52,7 @@ namespace Mole.Gui.Dialogs
                     ImGui.EndChildFrame();
                 }
 
-                ImGui.Button("Open Log Directory");
+                ImGui.Button("Copy log path");
                 ImGui.SameLine();
                 ImGui.Button("Report Error");
                 if (!Unhandled)
@@ -62,7 +63,7 @@ namespace Mole.Gui.Dialogs
                 }
 
                 ImGui.SameLine();
-                ImGui.PushStyleColor(ImGuiCol.Text, 0xFF0000FF);
+                ImGui.PushStyleColor(ImGuiCol.Text, 0xFF3030FF);
                 if (ImGui.Button("Force Exit Mole")) Environment.Exit(Environment.ExitCode);
                 ImGui.PopStyleColor();
 

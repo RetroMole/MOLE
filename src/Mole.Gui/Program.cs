@@ -22,7 +22,7 @@ namespace Mole.Gui
             .WriteTo.Console()
             .WriteTo.File("mole.log")
             .CreateLogger();
-        
+
         /// <summary>
         /// Entry point of Mole.Gui
         /// </summary>
