@@ -18,6 +18,10 @@ namespace Mole.Shared
             get => SnesToRgb8(Snes.Pal[index]);
             set => Snes.Pal[index] = Rgb8ToSnes(value);
         }
+        public int Length
+        {
+            get => Snes.Count();
+        }
 
         /// <summary>
         /// Snes value wrapper
@@ -33,7 +37,8 @@ namespace Mole.Shared
             /// SNES 5-bit BGR indexer
             /// </summary>
             public ushort this[int index] => Pal[index];
-            int _position = -1;
+
+            int _position = 0;
             public bool MoveNext()
             {
                 _position++;
@@ -53,7 +58,7 @@ namespace Mole.Shared
         /// <summary>
         /// SNES 5-bit BGR representation of the palette
         /// </summary>
-        public readonly PalSnes Snes = new();
+        public PalSnes Snes = new();
 
         /// <summary>
         /// 8-bit ABGR representation of palette

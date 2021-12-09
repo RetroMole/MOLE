@@ -10,15 +10,7 @@ namespace Mole.Shared.Graphics
     public class GfxBase
     {
         public uint[] Pointers;
-        public Tuple<byte[], int>[] Decompressed;
-        private int[] DefaultFormats =
-            Enumerable.Repeat(3, 0x27)          // First 0x27 files are 3bpp by default
-            .Append(73)                         // GFX27 is Mode 7 3bpp 
-            .Concat(Enumerable.Repeat(2, 4))    // GFX28-2B are 2bpp
-            .Concat(Enumerable.Repeat(3, 3))    // GFX2C-2E are 3bpp
-            .Append(2)                          // GFX2F  is 2bpp
-            .Concat(Enumerable.Repeat(3, 4))    // GFX30-33 are 3bpp
-            .ToArray();
+        public byte[][] Decompressed;
 
         public GfxBase(ref Progress progress, ref Rom rom, string ProjDir)
         {
@@ -44,14 +36,15 @@ namespace Mole.Shared.Graphics
 
             // Cache decompressed data
             var datBytes = new List<byte>();
-            foreach (var b in Decompressed)
+            //foreach (var b in Decompressed)
+            for (int i = 0; i < Decompressed.Length; i++)
             {
+                var b = Decompressed[i];
                 if (b is null) continue;
-                datBytes.Add((byte)b.Item2);
-                datBytes.Add((byte)((b.Item1.Length >> 8) & 0xFF));
-                datBytes.Add((byte)(b.Item1.Length & 0xFF));
-                foreach (var bb in b.Item1)
-                    datBytes.Add(bb);
+                datBytes.Add(Format(i).Index);
+                datBytes.Add((byte)((b.Length >> 8) & 0xFF));
+                datBytes.Add((byte)(b.Length & 0xFF));
+                datBytes = datBytes.Concat(b).ToList();
             }
             Cache.SaveCache(Cache.Type.Graphics, null, datBytes.ToArray(), $"{Name}_dat");
         }
@@ -77,7 +70,7 @@ namespace Mole.Shared.Graphics
             
             // Load cached data into Decompressed array
             byte[] dat = (byte[])datBytes;
-            var decomp = new List<Tuple<byte[], int>>();
+            var decomp = new List<byte[]>();
             if (dat.Length < 20 ||              // Not Enough Data
                 ((dat[0] << 8) | dat[1]) != 0)  // Type != 0
                 return false;
@@ -87,7 +80,7 @@ namespace Mole.Shared.Graphics
             {
                 var fmt = dat[i++];                     // GFX Chunk Format Byte
                 var len = (dat[i++] << 8) | dat[i++];   // GFX Chunk Size
-                decomp.Add(new Tuple<byte[], int>(dat.Skip(i).Take(len).ToArray(),fmt)); // Load a chunk
+                decomp.Add(dat.Skip(i).Take(len).ToArray()); // Load a chunk
                 i += len - 1; // Skip to next chunk
             }
             Decompressed = decomp.ToArray();
@@ -99,17 +92,19 @@ namespace Mole.Shared.Graphics
             var Name = GetType().Name;
             LoggerEntry.Logger.Information($"Decompressing {Name}...");
             Lz2 lz2 = new();
-            Tuple<byte[],int>[] dgfx = new Tuple<byte[],int>[Pointers.Length];
+            byte[][] dgfx = new byte[Pointers.Length][];
             maxProgress = Pointers.Length;
             int fails = 0;
             for (int i = 0; i < Pointers.Length; i++)
             {
                 progress = i;
-                try { dgfx[i] = new Tuple<byte[], int>(lz2.Decompress(rom.Pc, (uint)rom.SnesToPc((int)Pointers[i])), DefaultFormats.ElementAtOrDefault(i) == 0 ? 4 : DefaultFormats[i]); }
+                try { dgfx[i] = lz2.Decompress(rom.Pc, (uint)rom.SnesToPc((int)Pointers[i])); }
                 catch { LoggerEntry.Logger.Warning($"Failed to decompress {Name}{i:X2}"); fails++; }
             }
             LoggerEntry.Logger.Information($"Done! {fails}/{Pointers.Length} Failures occured.");
             Decompressed = dgfx;
         }
+
+        public FormatBase Format(int idx) => Format(idx);
     }
 }

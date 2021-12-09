@@ -30,5 +30,16 @@ namespace Mole.Shared.Graphics
             // Load and decompres data
             base.LoadFromRom(ref rom, ref progress);
         }
+
+        // Defaults
+        public new FormatBase Format(int idx) => idx switch {
+            int n when n <= 0x26 => Project.Formats[3],                // First 0x26 are 3bpp
+            int n when n == 0x27 => Project.Formats[73],               // 0x27 is Mode7 3bpp
+            int n when n >= 0x28 && n <= 0x2B => Project.Formats[2],   // 0x28-0x2B is 2bpp 
+            int n when n >= 0x2C && n <=0x2E => Project.Formats[3],    // 0x2C-0x2E are 3bpp
+            int n when n == 0x2F => Project.Formats[2],                // 0x2F is 2bpp
+            int n when n >= 0x30 => Project.Formats[3],                // 0x30-0x33 are 3bpp
+            _ => Project.Formats[3]
+        };
     }
 }

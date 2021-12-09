@@ -6,9 +6,10 @@ namespace Mole.Shared.Graphics
 {
     class Snes4BppFormat : FormatBase
     {
-        public new int PalSize = 16;
-        public new int CharSize = 32;
-        public new int ExpectedFileSize = 4096;
+        public override int PalSize => 16;
+        public override int CharSize => 32;
+        public override int ExpectedFileSize => 4096;
+        public override byte Index => 4;
         public override byte[] FromGfxToRaw(byte[][,] CharArray)
         {
             throw new NotImplementedException();
