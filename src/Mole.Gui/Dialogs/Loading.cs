@@ -5,9 +5,9 @@ using Mole.Shared.Util;
 
 namespace Mole.Gui.Dialogs
 {
-    public class Loading : Window
+    public class Loading : WindowBase
     {
-        public override void Draw(Project.UiData data, Dictionary<string,Window> windows)
+        public override void Draw(Project.UiData data, Dictionary<string,WindowBase> windows)
         {
             if (data.Progress.Loaded
                 || !data.Progress.Working) return;

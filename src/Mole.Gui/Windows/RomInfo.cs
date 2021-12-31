@@ -8,9 +8,9 @@ namespace Mole.Gui.Windows
     /// <summary>
     /// ROM information
     /// </summary>
-    public class RomInfo : Window
+    public class RomInfo : WindowBase
     {
-        public override void Draw(Project.UiData data, Dictionary<string, Window> windows)
+        public override void Draw(Project.UiData data, Dictionary<string, WindowBase> windows)
         {
             if (!ShouldDraw || !data.Progress.Loaded) return;
             

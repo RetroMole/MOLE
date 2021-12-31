@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Mole.Shared.Encodings;
 using Mole.Shared.Util;
+using Serilog;
 
 namespace Mole.Shared
 {
@@ -57,7 +58,7 @@ namespace Mole.Shared
         /// <param name="path">ROM Path</param>
         public Rom(string path)
         {
-            LoggerEntry.Logger.Information("Loading ROM from {0}", path);
+            Log.Information("Loading ROM from {0}", path);
             // Load ROM into internal _ROM byte array
             FilePath = path;
 
@@ -92,7 +93,7 @@ namespace Mole.Shared
                 _ => MapperType.InvalidMapper
             };
             if (Mapping != Asar.GetMapper())
-                LoggerEntry.Logger.Warning("Mapping mode mismatch: Asar: {0}, Header: {1}", Asar.GetMapper(), Mapping);
+                Log.Warning("Mapping mode mismatch: Asar: {0}, Header: {1}", Asar.GetMapper(), Mapping);
 
             // Load ROM info from internal header
             Title = new string(new Jisx0201().GetChars(InternalHeader.Take(21).ToArray()));

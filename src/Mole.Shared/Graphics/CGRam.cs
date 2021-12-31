@@ -1,7 +1,9 @@
 ﻿using Mole.Shared.Util;
+using Serilog;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Mole.Shared.Graphics
@@ -35,14 +37,14 @@ namespace Mole.Shared.Graphics
         public CGRam(Progress progress, Rom rom)
         {
             progress.State = Progress.StateEnum.LoadingLevelPalInfo;
-            LoggerEntry.Logger.Information("Loading Level Palette info...");
+            Log.Information("Loading Level Palette info...");
             Layer3 = new PalUploadInfo(ref rom, 0xAC06, 0xAC0B, 0xAC10, 0xAC15);
             ForeGround = new PalUploadInfo(ref rom, 0xAC1D, 0xAC22, 0xAC27, 0xAC2C);
             BerryTile = new PalUploadInfo(ref rom, 0xACBD, 0xACC2, 0xACC7, 0xACCC);
             BerrySpr = new PalUploadInfo(ref rom, 0xACD4, 0xACD9, 0xACDE, 0xACE3);
 
             progress.State = Progress.StateEnum.LoadingTSpecPalInfo;
-            LoggerEntry.Logger.Information("Loading Tileset Specific Palette info");
+            Log.Information("Loading Tileset Specific Palette info");
             FG = new PalUploadInfo(ref rom, 0xAC42, 0xAC59, 0xAC5E, 0xAC63);
             BG = new PalUploadInfo(ref rom, 0xAC94, 0xACAB, 0xACB0, 0xACB5);
             Spr = new PalUploadInfo(ref rom, 0xAC6B, 0xAC82, 0xAC87, 0xAC8C);
@@ -79,7 +81,7 @@ namespace Mole.Shared.Graphics
 
         public void GenerateLevelCGRam(ref Rom rom)
         {
-            LoggerEntry.Logger.Information("Generating Level CGRam...");
+            Log.Information("Generating Level CGRam...");
             _cgram = new ushort[256];
             for (int i = 0; i < 8; i++)
                 this[1 + (i * 16)] = 0x7FDD;

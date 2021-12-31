@@ -1,4 +1,5 @@
 ﻿using Mole.Shared.Util;
+using Serilog;
 using Smallhacker.TerraCompress;
 using System;
 using System.Collections.Generic;
@@ -90,7 +91,7 @@ namespace Mole.Shared.Graphics
         public void DecompressGfx(ref Rom rom, ref int progress, ref int maxProgress)
         {
             var Name = GetType().Name;
-            LoggerEntry.Logger.Information($"Decompressing {Name}...");
+            Log.Information($"Decompressing {Name}...");
             Lz2 lz2 = new();
             byte[][] dgfx = new byte[Pointers.Length][];
             maxProgress = Pointers.Length;
@@ -99,12 +100,12 @@ namespace Mole.Shared.Graphics
             {
                 progress = i;
                 try { dgfx[i] = lz2.Decompress(rom.Pc, (uint)rom.SnesToPc((int)Pointers[i])); }
-                catch { LoggerEntry.Logger.Warning($"Failed to decompress {Name}{i:X2}"); fails++; }
+                catch { Log.Warning($"Failed to decompress {Name}{i:X2}"); fails++; }
             }
-            LoggerEntry.Logger.Information($"Done! {fails}/{Pointers.Length} Failures occured.");
+            Log.Information($"Done! {fails}/{Pointers.Length} Failures occured.");
             Decompressed = dgfx;
         }
 
-        public FormatBase Format(int idx) => Format(idx);
+        public virtual FormatBase Format(int idx) => Project.Formats[3];
     }
 }

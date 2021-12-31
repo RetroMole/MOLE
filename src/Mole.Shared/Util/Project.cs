@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace Mole.Shared.Util
 {
@@ -46,7 +46,7 @@ namespace Mole.Shared.Util
             if (!File.Exists(romPath))
                 throw new IOException("ROM doesn't exist!");
 
-            new Thread(() =>
+            new Task(() =>
             {
                 progress.Working = true;
 
@@ -104,7 +104,7 @@ namespace Mole.Shared.Util
         {
             if (!Directory.Exists(dir))
                 throw new IOException("Directory doesn't exist!");
-            new Thread(() =>
+            new Task(() =>
             {
                 _root = dir;
                 progress.Working = true;

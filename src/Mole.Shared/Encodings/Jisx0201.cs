@@ -40,7 +40,7 @@ namespace Mole.Shared.Encodings
         {
             for (var i = 0; i < byteCount; i++)
             {
-                chars[charIndex + i] = _conversionArray[bytes[byteIndex + i]];
+                chars[charIndex + i] = GetChar(bytes[byteIndex + i]);
             }
 
             return byteCount;
@@ -53,8 +53,7 @@ namespace Mole.Shared.Encodings
                 if (_conversionArray[i] == c)
                     return (byte)i;
             }
-
-            throw new Exception("Invalid character");
+            throw new ArgumentException("Invalid character");
         }
 
         private char GetChar(byte b) => _conversionArray[b];

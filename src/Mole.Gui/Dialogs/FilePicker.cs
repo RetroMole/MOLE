@@ -8,7 +8,7 @@ using System.Numerics;
 
 namespace Mole.Gui.Dialogs
 {
-	public class FilePicker : Window
+	public class FilePicker : WindowBase
 	{
 		public string WindowTitle;
 		public string RootFolder;
@@ -48,62 +48,67 @@ namespace Mole.Gui.Dialogs
 				AllowedExtensions.AddRange(SearchFilter.Split('|', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()).ToList());
 			}
 		}
-
-		public override void Draw(Project.UiData data, Dictionary<string,Window> windows)
+		public override void Draw(Project.UiData data, Dictionary<string,WindowBase> windows)
 		{
+			// Deal with opening the window
 			if (!ShouldDraw) return;
 			if (!ImGui.IsPopupOpen($"{WindowTitle}##DialogFilePicker"))
 				ImGui.OpenPopup($"{WindowTitle}##DialogFilePicker");
 
-			if (ImGui.IsPopupOpen($"{WindowTitle}##DialogFilePicker"))
+			if (!ImGui.IsPopupOpen($"{WindowTitle}##DialogFilePicker"))
 			{
-				ImGui.SetNextWindowSize(new Vector2(600, 500));
-				if (ImGui.BeginPopupModal($"{WindowTitle}##DialogFilePicker", ref ShouldDraw, ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.MenuBar))
-				{
-					//============Menu Bar=============
-					if (ImGui.BeginMenuBar())
-					{
-						if (ImGui.BeginMenu("File"))
-						{
-							if (ImGui.MenuItem("Import System Bookmarks")) { }
-							ImGui.EndMenu();
-						}
-						if (ImGui.BeginMenu("View"))
-						{
-							if (ImGui.MenuItem("Bookmarks And History", "", ShowBookmarksAndHistory))
-								ShowBookmarksAndHistory = !ShowBookmarksAndHistory;
-
-							ImGui.EndMenu();
-						}
-						ImGui.EndMenuBar();
-					}
-
-					//===========Path Entry============
-					ImGui.SameLine(); ImGui.Text("Path:");
-					ImGui.PushItemWidth(-5);
-					ImGui.SameLine(); ImGui.InputText("##Path", ref CurrentFolder, 500);
-					ImGui.PopItemWidth();
-
-					//=======Bookmarks & History=======
-					if (ShowBookmarksAndHistory)
-					{
-						ImGui.Columns(2, "##FilePicker", false);
-						ImGui.SetColumnWidth(0, 300);
-						ImGui.SetColumnWidth(1, 300);
-						DrawBookmarks();
-						DrawHistory();
-						ImGui.NextColumn();
-					}
-
-					//==============Files==============
-					DrawFiles();
-					DrawButtons();
-					ImGui.Columns(1);
-					ImGui.EndPopup();
-				}
+				return;
 			}
+			ImGui.SetNextWindowSize(new Vector2(600, 500));
+			if (!ImGui.BeginPopupModal($"{WindowTitle}##DialogFilePicker", ref ShouldDraw, ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.MenuBar))
+			{
+				return;
+			}
+				
+			//============Menu Bar=============
+			if (ImGui.BeginMenuBar())
+			{
+				if (ImGui.BeginMenu("File"))
+				{
+					if (ImGui.MenuItem("Import System Bookmarks")) { }
+					ImGui.EndMenu();
+				}
+				if (ImGui.BeginMenu("View"))
+				{
+					if (ImGui.MenuItem("Bookmarks And History", "", ShowBookmarksAndHistory))
+						ShowBookmarksAndHistory = !ShowBookmarksAndHistory;
+						ImGui.EndMenu();
+				}
+				ImGui.EndMenuBar();
+			}
+
+			//===========Path Entry============
+			ImGui.SameLine(); ImGui.Text("Path:");
+			ImGui.PushItemWidth(-5);
+			ImGui.SameLine(); ImGui.InputText("##Path", ref CurrentFolder, 500);
+			ImGui.PopItemWidth();
+
+			//=======Bookmarks & History=======
+			if (ShowBookmarksAndHistory)
+			{
+				ImGui.Columns(2, "##FilePicker", false);
+				ImGui.SetColumnWidth(0, 300);
+				ImGui.SetColumnWidth(1, 300);
+				DrawBookmarks();
+				DrawHistory();
+				ImGui.NextColumn();
+			}
+
+			//==============Files==============
+			DrawFiles();
+			DrawButtons();
+			ImGui.Columns(1);
+			ImGui.EndPopup();
 		}
 
+		/// <summary>
+		/// Draw File/Folder Entires
+		/// </summary>
 		private void DrawFiles()
         {
 			if (ImGui.ListBoxHeader("##Files", new Vector2(-1, -25)))
@@ -111,6 +116,7 @@ namespace Mole.Gui.Dialogs
 				var di = new DirectoryInfo(CurrentFolder is null or "" ? "/" : CurrentFolder);
 				if (di.Exists)
 				{
+					// Force an extra entry at the beggining to go up the folder hierarchy if possible
 					if (di.Parent != null && CurrentFolder != RootFolder)
 					{
 						ImGui.PushStyleColor(ImGuiCol.Text, 0xFF00FFFF);
@@ -123,6 +129,7 @@ namespace Mole.Gui.Dialogs
 					var fileSystemEntries = GetFileSystemEntries(di.FullName);
 					foreach (var fse in fileSystemEntries)
 					{
+						// Draw Directory entry
 						if (Directory.Exists(fse))
 						{
 							var name = Path.GetFileName(fse);
@@ -135,23 +142,27 @@ namespace Mole.Gui.Dialogs
 							}
 							ImGui.PopStyleColor();
 						}
+						// Draw File entry (handle multi-selection)
 						else if (MultipleSelections)
 						{
 							var name = Path.GetFileName(fse);
 							bool isSelected = SelectedFiles.Contains(fse);
 							if (ImGui.Selectable(name, isSelected, ImGuiSelectableFlags.DontClosePopups))
 							{
+								// Ctrl+Click to toggle selection
 								if (ImGui.GetIO().KeyCtrl)
 								{
-									if (SelectedFiles.Contains(fse)) SelectedFiles.Remove(fse);
-									else SelectedFiles.Add(fse);
+									if (SelectedFiles.Contains(fse)) SelectedFiles.Remove(fse); // remove selection
+									else SelectedFiles.Add(fse); // add selection
 								}
+								// Shift+Click to select a range of entries (bit broken rn
 								else if (ImGui.GetIO().KeyShift && SelectedFiles.Any())
 								{
 									SelectedFiles.AddRange(fileSystemEntries
 										.Skip(fileSystemEntries.IndexOf(SelectedFiles[0]))
 										.Take(fileSystemEntries.IndexOf(fse) - fileSystemEntries.IndexOf(SelectedFiles[0]) + 1));
 								}
+								// Click to select a single file
 								else
 								{
 									SelectedFiles.Clear();
@@ -159,6 +170,7 @@ namespace Mole.Gui.Dialogs
 								}
 							}
 						}
+						// Draw File entry
 						else
 						{
 							var name = Path.GetFileName(fse);
@@ -175,7 +187,10 @@ namespace Mole.Gui.Dialogs
 			}
 		}
 
-		private void DrawBookmarks()
+		/// <summary>
+		/// Draw Bookmarked/Favorite entries
+		/// </summary>
+		private static void DrawBookmarks()
         {
 			ImGui.Text("Bookmarks"); ImGui.SameLine();
 			ImGui.Button("Add Bookmark"); ImGui.SameLine(); ImGui.Button("Clear Bookmarks");
@@ -189,7 +204,10 @@ namespace Mole.Gui.Dialogs
 			}
 		}
 
-		private void DrawHistory()
+		/// <summary>
+		/// Draw Recent/History entries
+		/// </summary>
+		private static void DrawHistory()
 		{
 			ImGui.Text("Recent"); ImGui.SameLine(); ImGui.Button("Clear History");
 			if (ImGui.ListBoxHeader("##Recent", new Vector2(-1,-1)))

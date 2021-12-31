@@ -4,11 +4,12 @@ using Mole.Shared.Util;
 
 namespace Mole.Gui
 {
-    public abstract class Window
+    public abstract class WindowBase
     {
-        public bool ShouldDraw = false;
-        public event Action<Window> Close;
-        protected virtual void OnClose(Window w) => Close?.Invoke(w);
-        public abstract void Draw(Project.UiData data, Dictionary<string, Window> windows);
+        protected bool ShouldDraw = false;
+        public event Action<WindowBase> Close;
+        protected virtual void OnClose(WindowBase w) => Close?.Invoke(w);
+        public abstract void Draw(Project.UiData data, Dictionary<string, WindowBase> windows);
+        public void Open() { ShouldDraw = true; }
     }
 }

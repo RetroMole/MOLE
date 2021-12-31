@@ -33,10 +33,10 @@ namespace Smallhacker.TerraCompress
 
             if (data == null)
             {
-                throw new Exception("Data is null.");
+                throw new ArgumentException("Data is null.");
             }
 
-            List<byte> output = new List<byte>();
+            List<byte> output = new();
             int position = 0;
             int length = data.Length;
 
@@ -219,11 +219,11 @@ namespace Smallhacker.TerraCompress
         {
             if (compressedData == null)
             {
-                throw new Exception("Compressed data is null.");
+                throw new ArgumentException("Compressed data is null.");
             }
             try
             {
-                List<byte> output = new List<byte>();
+                List<byte> output = new();
                 uint position = start;
 
                 while (true)
@@ -310,7 +310,7 @@ namespace Smallhacker.TerraCompress
         {
             if (length < 1 || length >= 1024)
             {
-                throw new Exception("Internal error: Length assertion failed.");
+                throw new ArgumentException("Internal error: Length assertion failed.");
             }
             if (length > 32)
             {

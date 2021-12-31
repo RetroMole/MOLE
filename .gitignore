@@ -1,5 +1,6 @@
-# Local Test files
-test
+# NDepend stuff
+NDependOut/
+*.ndproj
 # Thumbnails
 Thumbs.db
 # Shortcuts

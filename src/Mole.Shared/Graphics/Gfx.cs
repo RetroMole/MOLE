@@ -32,7 +32,7 @@ namespace Mole.Shared.Graphics
         }
 
         // Defaults
-        public new FormatBase Format(int idx) => idx switch {
+        public override FormatBase Format(int idx) => idx switch {
             int n when n <= 0x26 => Project.Formats[3],                // First 0x26 are 3bpp
             int n when n == 0x27 => Project.Formats[73],               // 0x27 is Mode7 3bpp
             int n when n >= 0x28 && n <= 0x2B => Project.Formats[2],   // 0x28-0x2B is 2bpp 

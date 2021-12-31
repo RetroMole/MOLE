@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace Mole.Gui.Dialogs
 {
-    public class Error : Window
+    public class Error : WindowBase
     {
         public Exception e = new();
         public string Message =
@@ -18,12 +18,19 @@ namespace Mole.Gui.Dialogs
             "This implies allowing us to collect your system information, configuration files, and error logs.\n" +
             "Note that personal information of any kind will NOT be collected,\n" +
             "if you'd like to read up on exactly what is being collected, please visit github.com/vawlpe/mole/wiki/Telemetry";
+        public string MessageAlt =
+            "Thank you for opting in to automatically report errors!\n" +
+            "We've sent your system information, configuration files, and error logs to our automated reporting systems.\n" +
+            "If you wish to opt out again you may disable the checkbox bellow or go to Settings > IO > Telemetry and disable it there.";
         public bool Unhandled;
-        public bool Telemetry = App.Default.Telemetry;
-        public override void Draw(Project.UiData data, Dictionary<string, Window> windows)
+        public bool Telemetry = false; //App.Default.Telemetry;
+        public override void Draw(Project.UiData data, Dictionary<string, WindowBase> windows)
         {
-            App.Default.Telemetry = Telemetry;
-            App.Default.Save();
+            // Sync settings every frame
+            //App.Default.Telemetry = Telemetry;
+            //App.Default.Save();
+
+            // Make sure popup opens and closes correctly
             if (!ShouldDraw)
             {
                 if (ImGui.IsPopupOpen("Error"))
@@ -33,15 +40,24 @@ namespace Mole.Gui.Dialogs
             }
             if (!ImGui.IsPopupOpen("Error"))
                 ImGui.OpenPopup("Error");
+
+            //==========Error Window===========
             ImGui.SetNextWindowSize(ImGui.GetMainViewport().Size,ImGuiCond.Always);
             ImGui.SetNextWindowPos(new Vector2(ImGui.GetMainViewport().Size.X/2, ImGui.GetMainViewport().Size.Y/2),ImGuiCond.Always, new Vector2(0.5f,0.5f));
             if (ImGui.BeginPopupModal("Error", ref ShouldDraw, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoMove))
             {
-                ImGui.TextWrapped(Message);
+                if (!Telemetry)
+                {
+                    ImGui.TextWrapped(Message);
+                    ImGui.PushStyleColor(ImGuiCol.Text, 0xFF0095FF);
+                    ImGui.TextWrapped(Message2);
+                    ImGui.PopStyleColor();
+                }
+                else
+                {
+                    ImGui.TextWrapped(MessageAlt);
+                }
 
-                ImGui.PushStyleColor(ImGuiCol.Text, 0xFF0095FF);
-                ImGui.TextWrapped(Message2);
-                ImGui.PopStyleColor();
                 ImGui.Checkbox("Automatically Report Future Problems", ref Telemetry);
 
                 if (ImGui.BeginChildFrame(0, new(0,-23), ImGuiWindowFlags.AlwaysAutoResize))

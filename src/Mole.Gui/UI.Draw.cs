@@ -1,15 +1,18 @@
 ﻿using ImGuiNET;
+using Mole.Shared;
 using Mole.Shared.Util;
+using Serilog;
 using System;
 
 namespace Mole.Gui
 {
-    public partial class Ui
+    public static partial class Ui
     {
-        public static void Draw()
+        public static void Draw(ref IRenderer r)
         {
             try
             {
+                renderer = r;
                 ImGui.DockSpaceOverViewport(ImGui.GetMainViewport());
                 //==========Main Menu Bar==========
                 if (ImGui.BeginMainMenuBar())
@@ -23,19 +26,19 @@ namespace Mole.Gui
                             // TODO: Show replace confirmation prompt
                             if (ImGui.MenuItem("New Project From ROM", "Ctrl+N"))
                             {
-                                Windows["OpenFile"].ShouldDraw = true;
-                                Windows["OpenFile"].Close += new Action<Window>(OpenFileEventHandler);
+                                Windows["OpenFile"].Open();
+                                Windows["OpenFile"].Close += new Action<WindowBase>(OpenFileEventHandler);
                             }
 
                             if (ImGui.MenuItem("Open Project Folder", "Ctrl+O"))
                             {
-                                Windows["OpenProject"].ShouldDraw = true;
-                                Windows["OpenProject"].Close += new Action<Window>(OpenProjectEventHandler);
+                                Windows["OpenProject"].Open();
+                                Windows["OpenProject"].Close += new Action<WindowBase>(OpenProjectEventHandler);
                             }
 
                             // TODO: Load Compressed Project File
                             if (ImGui.MenuItem("Open Compressed Project File", "Ctrl+Shift+O"))
-                                Windows["OpenProjectFile"].ShouldDraw = true;
+                                Windows["OpenProjectFile"].Open();
 
                             // TODO: Show confirmation prompt
                             if (ImGui.MenuItem("Save Project", "Ctrl+Shift+S") && Data.Project != null)
@@ -109,8 +112,7 @@ namespace Mole.Gui
                     //==============Debug==============
                     if (ImGui.BeginMenu("Debug"))
                     {
-                        ImGui.MenuItem("Demo Window", null, ref _showDemo);
-                        ImGui.MenuItem("Test Filepicker", null, ref Windows["OpenTestMulti"].ShouldDraw);
+                        ImGui.MenuItem("Demo Window", null, ref _ShowDemo);
                         ImGui.EndMenu();
                     }
 
@@ -118,7 +120,7 @@ namespace Mole.Gui
                     if (ImGui.BeginMenu("Help"))
                     {
                         if (ImGui.MenuItem("About"))
-                            Windows["About"].ShouldDraw = true;
+                            Windows["About"].Open();
 
                         ImGui.EndMenu();
                     }
@@ -127,8 +129,8 @@ namespace Mole.Gui
                 }
 
                 //===========Demo Window===========
-                if (_showDemo)
-                    ImGui.ShowDemoWindow(ref _showDemo);
+                if (_ShowDemo)
+                    ImGui.ShowDemoWindow(ref _ShowDemo);
 
                 //==========Draw Windows===========
                 foreach (var w in Windows.Values)
@@ -137,12 +139,13 @@ namespace Mole.Gui
             //==========Error Handler==========
             catch (Exception e)
             {
+                Log.Error(e, "");
                 var w = (Windows["Error"] as Dialogs.Error);
                 if (w.e is null)
                 {
                     w.e = e;
                     w.Unhandled = true;
-                    w.ShouldDraw = true;
+                    w.Open();
                     w.Draw(Data, Windows);
                 }
             }
