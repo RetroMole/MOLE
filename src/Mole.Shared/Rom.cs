@@ -1,35 +1,26 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Text;
+using Mole.Shared.Encodings;
 using Mole.Shared.Util;
+using Serilog;
 
 namespace Mole.Shared
 {
     /// <summary>
     /// ROM info and direct operations
     /// </summary>
-    [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
-    [SuppressMessage("ReSharper", "PositionalPropertyUsedProblem")]
-    [SuppressMessage("ReSharper", "MemberInitializerValueIgnored")]
     public class Rom : IEnumerator<byte>, IEnumerable<byte>
     {
-        /// <summary>
-        /// UndoRedo system required for ROM operations
-        /// </summary>
-        private UndoRedo Ur { get; } = new();
+        public bool Loaded = false;
 
         /// <summary>
-        /// Indexer and internal ROM representation
+        /// Indexer, range indexer, and internal ROM representation
         /// </summary>
-        public byte this[int index]
-        {
-            get => _rom[index];
-            set => _rom[index] = value;
-        }
+        public byte this[int index] => _rom[SnesToPc(index)];
+        public byte[] Pc => _rom;
         private byte[] _rom;
 
         /// <summary>
@@ -38,18 +29,16 @@ namespace Mole.Shared
         public string FilePath
         {
             get => _filePath;
-            set
+            private init
             {
                 _filePath = value;
                 FileName = Path.GetFileName(_filePath);
             }
-
         }
-        private string _filePath;
+        
+        private readonly string _filePath;
         public string FileName;
-
         public byte[] Header;
-
         public byte[] InternalHeader;
         public string Title;
         public bool FastRom; 
@@ -69,7 +58,7 @@ namespace Mole.Shared
         /// <param name="path">ROM Path</param>
         public Rom(string path)
         {
-            LoggerEntry.Logger.Information("Loading ROM from {0}", path);
+            Log.Information("Loading ROM from {0}", path);
             // Load ROM into internal _ROM byte array
             FilePath = path;
 
@@ -88,11 +77,11 @@ namespace Mole.Shared
             // Patch the ROM with an empty patch so it is opened in asar
             // (workaround for not exposing OpenROM and CloseROM in lib asar)
             // This also fixes broken checksums
-            Asar.Patch(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ASM Patches/empty.asm"), ref _rom);
+            Asar.Patch(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Patches/empty.asm"), ref _rom);
 
             // Rely on asar mapping mode guess until we can access the internal header
             Mapping = Asar.GetMapper();
-            InternalHeader = _rom.Skip(SnesToPc(0x00FFC0)).Take(32).ToArray();
+            InternalHeader = this.Skip(SnesToPc(0x00FFC0)).Take(32).ToArray();
             FastRom = (InternalHeader[0x15] & 0b00010000) != 0;
             Mapping = (InternalHeader[0x15] & 0b00000111) switch
             {
@@ -104,10 +93,10 @@ namespace Mole.Shared
                 _ => MapperType.InvalidMapper
             };
             if (Mapping != Asar.GetMapper())
-                LoggerEntry.Logger.Warning("Mapping mode mismatch: Asar: {0}, Header: {1}", Asar.GetMapper(), Mapping);
+                Log.Warning("Mapping mode mismatch: Asar: {0}, Header: {1}", Asar.GetMapper(), Mapping);
 
             // Load ROM info from internal header
-            Title = new String(new Jisx0201Encoding().GetChars(InternalHeader.Take(21).ToArray()));
+            Title = new string(new Jisx0201().GetChars(InternalHeader.Take(21).ToArray()));
             RomSize = Math.Pow(2,InternalHeader[0x17]);
             SramSize = Math.Pow(2,InternalHeader[0x18]);
             Region = (InternalHeader[0x19] & 0b00000111) switch
@@ -133,73 +122,15 @@ namespace Mole.Shared
             };
             DevId = InternalHeader[0x1A];
             Version = InternalHeader[0x1B];
-            Checksum = BitConverter.ToUInt16(new byte[] { InternalHeader[0x1C], InternalHeader[0x1D] });
-            ChecksumComplement = BitConverter.ToUInt16(new byte[] { InternalHeader[0x1E], InternalHeader[0x1F] });
+            Checksum = (ushort)((InternalHeader[0x1C] << 8) | InternalHeader[0x1D]);
+            ChecksumComplement = (ushort)((InternalHeader[0x1E] << 8) | InternalHeader[0x1F]);
+
+            Loaded = true;
         }
 
-        /// <summary>
-        /// Undoable write operation
-        /// </summary>
-        /// <param name="bytes">Data to be written</param>
-        /// <param name="pcAddr">PC Address to write to</param>
-        /// <param name="undoEntry">Determines wether this should add an Undo entry</param>
-        public void HexWrite(byte[] bytes, uint pcAddr, bool undoEntry)
-        {
-            byte[] undo = Array.Empty<byte>();
-            Ur.Do
-            (
-                () =>
-                {
-                    undo = _rom.Skip((int)pcAddr).Take(bytes.Length).ToArray();
-                    bytes.CopyTo(_rom, pcAddr);
-                },
-                () =>
-                {
-                    HexWrite(undo, pcAddr, false);
-                },
-                undoEntry
-            );
-        }
+        public int Expand(int SizeInBytes) => throw new NotImplementedException($"ROM Expansion to {SizeInBytes / 1048576:0.00}MiB? nah, OwO the only thing i see expanding in size is you~! ;3");
 
-        /// <summary>
-        /// Insert Asar patch from path
-        /// </summary>
-        /// <param name="patch">Path to patch</param>
-        /// <param name="undoEntry">Determines wether this should add an Undo entry</param>
-        public void Patch(string patch, bool undoEntry)
-        {
-            Asarwrittenblock[] diff;
-            Ur.Do
-            (
-                () =>
-                {
-                    Asar.Patch(patch, ref _rom);
-                    diff = Asar.GetWrittenBlocks();
-                },
-                () =>
-                {
-                    // TODO: Undo Asar patch
-                },
-                undoEntry
-            );
-        }
-
-        /// <summary>
-        /// Save ROM Changes
-        /// </summary>
-        public void Save(bool keepHeader = false)
-        {
-            Ur.RedoStack.Clear();
-            Ur.BackupStack.Clear();
-            File.WriteAllBytes(String.Format("TEST_{0}-{1:yyyy-MM-dd-HH-mm}.{2}", FileName, DateTime.UtcNow, keepHeader ? ".smc" : ".sfc"), keepHeader ? Header.Concat(_rom).ToArray() : _rom);
-
-        }
-
-        /// <summary>
-        /// Sa-1 Bank values for address conversion funcs
-        /// </summary>
-        public static readonly int[] Sa1Banks = new int[8] { 0 << 20, 1 << 20, -1, -1, 2 << 20, 3 << 20, -1, -1 };
-
+        private static readonly int[] Sa1Banks = new int[8] { 0, 1 << 20, -1, -1, 2 << 20, 3 << 20, -1, -1 };
         /// <summary>
         /// Convert SNES address to PC address using this ROM's MapperType
         /// </summary>
@@ -211,22 +142,22 @@ namespace Mole.Shared
             switch (Mapping)
             {
                 case MapperType.LoRom:
-                    // randomdude999: The low pages ($0000-$7FFF) of banks 70-7D are used
+                    // The low pages ($0000-$7FFF) of banks 70-7D are used
                     // for SRAM, the high pages are available for ROM data though
-                    if ((addr & 0xFE0000) == 0x7E0000 ||//wram
-                        (addr & 0x408000) == 0x000000 ||//hardware regs, ram mirrors, other strange junk
-                        (addr & 0x708000) == 0x700000)//sram (low parts of banks 70-7D)
+                    if ((addr & 0xFE0000) == 0x7E0000 || // WRAM
+                        (addr & 0x408000) == 0x000000 || // hardware regs, ram mirrors, other strange junk
+                        (addr & 0x708000) == 0x700000) // sram (low parts of banks 70-7D)
                         return -1;
                     addr = (((addr & 0x7F0000) >> 1) | (addr & 0x7FFF));
                     return addr;
                 case MapperType.HiRom:
-                    if ((addr & 0xFE0000) == 0x7E0000 ||//wram
-                    (addr & 0x408000) == 0x000000)//hardware regs, ram mirrors, other strange junk
+                    if ((addr & 0xFE0000) == 0x7E0000 || // WRAM
+                    (addr & 0x408000) == 0x000000) //hardware regs, ram mirrors, other strange junk
                         return -1;
                     return addr & 0x3FFFFF;
                 case MapperType.ExLoRom:
-                    if ((addr & 0xF00000) == 0x700000 ||//wram, sram
-                    (addr & 0x408000) == 0x000000)//area that shouldn't be used in lorom
+                    if ((addr & 0xF00000) == 0x700000 || // WRAM, SRAM
+                    (addr & 0x408000) == 0x000000) //area that shouldn't be used in lorom
                         return -1;
                     if ((addr & 0x800000) != 0)
                     {
@@ -238,17 +169,17 @@ namespace Mole.Shared
                     }
                     return addr;
                 case MapperType.ExHiRom:
-                    if ((addr & 0xFE0000) == 0x7E0000 ||//wram
-                    (addr & 0x408000) == 0x000000)//hardware regs, ram mirrors, other strange junk
+                    if ((addr & 0xFE0000) == 0x7E0000 || // VRAM
+                    (addr & 0x408000) == 0x000000) // hardware regs, ram mirrors, other strange junk
                         return -1;
                     if ((addr & 0xC00000) != 0xC00000)
                         return (addr & 0x3FFFFF) | 0x400000;
                     return addr & 0x3FFFFF;
                 case MapperType.SfxRom:
                     // Asar emulates GSU1, because apparently emulators don't support the extra ROM data from GSU2
-                    if ((addr & 0x600000) == 0x600000 ||//wram, sram, open bus
-                    (addr & 0x408000) == 0x000000 ||//hardware regs, ram mirrors, rom mirrors, other strange junk
-                    (addr & 0x800000) == 0x800000)//fastrom isn't valid either in superfx
+                    if ((addr & 0x600000) == 0x600000 || //Wram, sram, open bus
+                    (addr & 0x408000) == 0x000000 || // hardware regs, ram mirrors, rom mirrors, other strange junk
+                    (addr & 0x800000) == 0x800000) // FastROM isn't valid either in superfx
                         return -1;
                     if ((addr & 0x400000) != 0)
                         return addr & 0x3FFFFF;
@@ -264,20 +195,19 @@ namespace Mole.Shared
                     }
                     return -1;
                 case MapperType.BigSa1Rom:
-                    if ((addr & 0xC00000) == 0xC00000)//hirom
+                    if ((addr & 0xC00000) == 0xC00000) // hirom
                     {
                         return (addr & 0x3FFFFF) | 0x400000;
                     }
-                    if ((addr & 0xC00000) == 0x000000 || (addr & 0xC00000) == 0x800000)//lorom
+                    if ((addr & 0xC00000) == 0x000000 || (addr & 0xC00000) == 0x800000) // lorom
                     {
                         if ((addr & 0x008000) == 0x000000) return -1;
                         return (addr & 0x800000) >> 2 | (addr & 0x3F0000) >> 1 | (addr & 0x7FFF);
                     }
                     return -1;
-                case MapperType.NoRom:
+                default:
                     return addr;
             }
-            return -1;
         }
 
         /// <summary>
@@ -347,30 +277,27 @@ namespace Mole.Shared
                     if (addr >= 0x800000) return -1;
                     if ((addr & 0x400000) != 0) return addr;
                     return addr | 0xC00000;
-
-                case MapperType.NoRom:
                 default:
                     return addr;
-
             }
         }
-
-
+        
         //Enumerable/Enumerator implementation
+        //TODO: Figure out a way to get this working with SNES addressing
         int _position = -1;
         public bool MoveNext()
         {
             _position++;
-            return (_position < _rom.Length);
+            return  _position < _rom.Length;
         }
         public void Reset() => _position = 0;
         public object Current { get => _rom[_position]; }
         byte IEnumerator<byte>.Current { get => _rom[_position]; }
         public IEnumerator<byte> GetEnumerator() => _rom.OfType<byte>().GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => (IEnumerator<byte>)_rom.GetEnumerator();
+        // TODO: Possible Memory leak, does the enumerator/enumerable stuff need manual disposal?
         public void Dispose() {
-            Asar.Close();
             GC.SuppressFinalize(this);
-        } // TODO: Possible Memory leak, does the enumerator/enumerable stuff need manual disposal?
+        }
     }
 }

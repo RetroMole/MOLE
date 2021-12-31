@@ -1,14 +1,20 @@
-[![GitHub Super-Linter](https://github.com/Vawlpe/MOLE/actions/workflows/super-linter.yml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/super-linter.yaml)
-[![Build Status](https://github.com/Vawlpe/MOLE/actions/workflows/build.yaml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/build.yaml)
+[![Build](https://github.com/Vawlpe/MOLE/actions/workflows/build.yaml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/build.yaml)
 [![Test](https://github.com/Vawlpe/MOLE/actions/workflows/test.yaml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/test.yaml)
 [![Asar](https://github.com/Vawlpe/MOLE/actions/workflows/asar.yaml/badge.svg)](https://github.com/Vawlpe/MOLE/actions/workflows/asar.yaml)
 
-[![License](https://badgen.net/github/license/Vawlpe/MOLE)](./LICENSE.md)
+[![License](https://badgen.net/github/license/Vawlpe/MOLE)](https://github.com/Vawlpe/MOLE/blob/master/LICENSE.md)
 [![Latest commit](https://img.shields.io/github/last-commit/Vawlpe/MOLE)](https://github.com/Vawlpe/MOLE/commits/)
-[![Version](https://badge.fury.io/gh/Vawlpe%2FMOLE.svg)](https://github.com/Vawlpe/MOLE)
-[![Discord](https://img.shields.io/discord/729355207862911027?label=Discord)](https://discord.gg/hAGM9UPv4q)
+[![Version](https://badge.fury.io/gh/Vawlpe%2FMOLE.svg)](https://github.com/Vawlpe/MOLE/tags)
 
-**MOLE** is being designed as an **OpenSource**  editor for **Super Mario World** with the intent to bring many of the features from existing SMW ROMHacking tools/patches such as **Lunar Magic**, **Asar**, **YYCHR**, and [many others](#compatibility) into a single easy-to-use [**multi-platform**](#how-to-run) and [localized](#localizationtranslation) tool.
+
+[![Discord](https://img.shields.io/discord/729355207862911027?label=Discord)](https://discord.gg/hAGM9UPv4q)
+[![Trello](https://img.shields.io/badge/Trello-workspace-blue)](https://trello.com/mole34)
+
+**MOLE** is being designed as an **OpenSource**  editor for **Super Mario World**.
+With the intent to bring many of the features from existing SMW ROMHacking tools/patches such as **Lunar Magic**, **Asar**, **YYCHR**, and [many others](#compatibility),
+into a single easy-to-use [**multi-platform**](#how-to-run) and [localized](#localizationtranslation) tool.
+Mole doesn't mean to replace existing system, only encapsulate them, the existing formats and standards will be kept,
+but we shall create better standards on top of the existing ones.
 ___
 ### Platforms
 - Windows
@@ -16,40 +22,63 @@ ___
 - MacOS
 ___
 ### How to run
-Releases are not available yet, but you can compile it yourself.
+Releases are not available yet, but you can [build Mole yourself](#how-to-build), or try out the [build artifacts](https://github.com/Vawlpe/MOLE/actions/workflows/build.yaml) of any commit
 ___
 ### How to Build
-1) Clone repository
-2) Open `src/` directory as solution
-3) Compile `Mole.Gui` project
-4) Done!
+Requirements: .NET 6
+1. Clone repository (`git clone --recursive https://github.com/Vawlpe/MOLE.git`)
+2. Build solution (`dotnet build ./src/Mole.sln`) **or** open `./src/Mole.sln` in your prefered IDE and use the built-in `Build` option
+3. Done! you can now run Mole from `./src/Mole.Gui/bin/Debug/net6.0/Mole.EntryPoint` (or any other specified output directory)
 ___
 ### Localization/Translation
-This is not yet done.
+WIP
 ___
 ### Project Structure
 ```
+.github
+├── dependabot.yml
+│   └── Automatically check and update dependencies
+├── workflows
+│   ├── asar.yaml
+│   │   └── Automatically build and commit asar native dependencies from submodule clone in deps
+│   ├── build.yaml
+│   │   └── Automatically build Mole and upload artifacts
+│   └── test.yaml
+│      └── Run unit tests on Mole after build.yaml runs
+deps
+├── TerraCompress
+│   └── Modified clone of Smallhacker/TerraCompress
+├── asar
+│   ├── Asar
+│   │   └── Submodule clone of RPGHacker/asar at specific commit (Used by asar.yaml workflow to build libasar native dependencies)
+│   └── Auto-built libasar native dependencies (.dll, .so, .dylib)
+├── cimgui
+│   └── Pre-build native UI framework dependency
 res
-└── Resources
-    
+├── Resources such as images, icons, localization files, etc...
+│
 src
 ├── Mole.Shared
-│   └── Shared MOLE library, backend
+│   └── Shared MOLE library, containing all the actual ROM editing code
 ├── Mole.Monogame/
-│   └── GUI renderer relying on MonoGame Engine (OpenGL), uses ImGui UI
-├── Mole.Veldrid/
-│   └── GUI renderer relying on Veldrid, uses ImGui UI
-└── Mole.Gui/
-    └── ImGui UI stuff, entry point
+│   └── GUI renderer relying on MonoGame Engine (OpenGL)
+├── Mole.Gui/
+│   └── Actual GUI code using ImGui.Net
+├── Mole.EntryPoint/
+│   └── Entry point for Mole, parses cli arguments, initializes logger, scans for available renderers to dynamically load and runs the UI
+├── Mole.BaseRenderer/
+│   └── Base interface for the dynamically loaded renderers
+└── Mole.MonogameRenderer/
+    └── Example renderer that implements IRenderer from Mole.BaseRenderer using Monogame DesktopGL
 ```
 ___
 ### Compatibility
 MOLE intends to be compatible with both clean ROMs, as well as most modern SMW ROMhacking tools, ROM variants, and patches. This includes:
 #### ROM Versions:
 - North American (NTSC U)
-- SA-1 (NTSC U only, using the SA-1 Kit patch) <sup>See [#35](../../issues/35)</sup>
-- Japanese (NTSC J)<sup>Only basic compatibility, see [#20](/../../issues/20)</sup>
-- All Stars + World<sup>Only basic compatibility, see [#21](/../../issues/20)</sup>
+- SA-1 (NTSC U only, using the SA-1 Pack) <sup>See [#35](https://github.com/Vawlpe/MOLE/issues/35)</sup>
+- Japanese (NTSC J)<sup>Only basic compatibility, see [#20](https://github.com/Vawlpe/MOLE/issues/20)</sup>
+- All Stars + World<sup>Only basic compatibility, see [#21](https://github.com/Vawlpe/MOLE/issues/21)</sup>
 #### Tools:
 |  | To MOLE | From MOLE | File formats |
 |:---:|:---:|:---:|:---:|
@@ -61,11 +90,11 @@ MOLE intends to be compatible with both clean ROMs, as well as most modern SMW R
 | GPS | ✅ Full WIP | ⚠️ Partial WIP<br>Most tools expect the ROM to have a copier header and a .smc file extension | ROM (.smc, .sfc), Block code (.asm, routines/.asm), Config info (list.txt) |
 | UberASM | ✅ Full WIP | ⚠️ Partial WIP<br>Most tools expect the ROM to have a copier header and a .smc file extension | ROM (.smc, .sfc), Patch (.asm), Config info (list.txt) |
 ___
-### More information on SMW ROM Hacking and MOLE
-You can find a lot of useful information about MOLE, SMW ROM Hacking, and SNES development in general, in the [Useful Links](../../wiki/useful-links) Section of the [MOLE Wiki](../../wiki)
+### Resources
+You can [get started with MOLE now](https://github.com/Vawlpe/MOLE/wiki/Getting-Started) or find a lot of useful information about MOLE, SMW ROM Hacking, and SNES development in general, in the [Useful Links](https://github.com/Vawlpe/MOLE/wiki/Useful-Links) Section of the [MOLE Wiki](https://github.com/Vawlpe/MOLE/wiki)
 ___
 ### License
-[GNU General Public License v3.0](/LICENSE.md)
+[GNU General Public License v3.0](https://github.com/Vawlpe/MOLE/blob/master/LICENSE.md)
 
 MOLE is an open source Super Mario World ROM editor and is in no way affiliated with Nintendo.
 Copyright (C) 2021 Vawlpe

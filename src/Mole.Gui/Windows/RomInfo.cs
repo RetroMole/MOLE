@@ -1,67 +1,36 @@
+using System.Collections.Generic;
 using System.Numerics;
 using ImGuiNET;
-using Mole.Shared;
+using Mole.Shared.Util;
 
 namespace Mole.Gui.Windows
 {
     /// <summary>
     /// ROM information
     /// </summary>
-    public static class RomInfo
+    public class RomInfo : WindowBase
     {
-        public static void Main(Rom rom, Gfx gfx)
+        public override void Draw(Project.UiData data, Dictionary<string, WindowBase> windows)
         {
-             ImGui.SetNextWindowSize(new Vector2(420, 69), ImGuiCond.FirstUseEver);
-                ImGui.Begin("ROM Info");
-                
-                ImGui.Text("You will see ROM information here");
-                ImGui.Separator();
-
-                if (rom != null)
-                {
-                    ImGui.Text($"ROM FileName: {rom.FileName}");
-                    ImGui.Text($"ROM Path: {rom.FilePath}");
-                    ImGui.Text($"Copier Header: 0x{(rom.Header != null ? rom.Header.Length : "None"):X2}");
-
-                    ImGui.Separator();
-                    ImGui.Text("Internal ROM Header:");
-                    ImGui.Text($"  ROM Title: \"{rom.Title}\"");
-                    ImGui.Text($"  Mapping Mode: {(rom.FastRom ? "FastROM" : "SlowROM")}, {rom.Mapping}");
-                    ImGui.Text($"  ROM Size: {rom.RomSize}kb");
-                    ImGui.Text($"  SRAM Size: {rom.SramSize}kb");
-                    ImGui.Text($"  Region: {rom.Region}");
-                    ImGui.Text($"  Developer ID: {rom.DevId:X2}");
-                    ImGui.Text($"  Version: {rom.Version}");
-                    ImGui.Text($"  Checksum: {rom.Checksum:X4}");
-                    ImGui.Text($"  Checksum Complement: {rom.ChecksumComplement:X4}");
-
-                    ImGui.Separator();
-                    if (ImGui.CollapsingHeader("GFX Pointers:"))
-                    {
-                        for (int i = 0; i < 0x34; i++)
-                        {
-                            ImGui.Text($"  GFX{i:X2} @ ${gfx.GfxPointers[i]:X6}");
-                        }
-                    }
-
-                    if (ImGui.CollapsingHeader("ExGFX Pointers:"))
-                    {
-                        for (int i = 0; i < 0x80; i++)
-                        {
-                            ImGui.Text($"  ExGFX{(i + 0x80):X2} @ ${gfx.ExGfxPointers[i]:X6}");
-                        }
-                    }
-                    
-                    if (ImGui.CollapsingHeader("SuperExGFX Pointers:"))
-                    {
-                        for (int i = 0; i < 0xF00; i++)
-                        {
-                            ImGui.Text($"  ExGFX{i + 0x100:X2} @ ${gfx.SuperExGfxPointers[i]:X6}");
-                        }
-                    }
-                }
-
-                ImGui.End();
+            if (!ShouldDraw || !data.Progress.Loaded) return;
+            
+            ImGui.SetNextWindowSize(new Vector2(420, 69), ImGuiCond.FirstUseEver);
+            ImGui.Begin("ROM Info");
+            ImGui.Text($"ROM Filename: {data.Project.Rom.FileName}"); 
+            ImGui.Text($"ROM Path: {data.Project.Rom.FilePath}");
+            ImGui.Text($"Copier Header Size: {(data.Project.Rom.Header != null ? data.Project.Rom.Header.Length : "None"):X2}");
+            ImGui.Separator(); 
+            ImGui.Text("Internal ROM Header:");
+            ImGui.Text($"  ROM Title: \"{data.Project.Rom.Title}\""); 
+            ImGui.Text($"  Mapping Mode: {(data.Project.Rom.FastRom ? "FastROM" : "SlowROM")}, {data.Project.Rom.Mapping}");
+            ImGui.Text($"  ROM Size: {data.Project.Rom.RomSize}kb"); 
+            ImGui.Text($"  SRAM Size: {data.Project.Rom.SramSize}kb");
+            ImGui.Text($"  Region: {data.Project.Rom.Region}");
+            ImGui.Text($"  Developer ID: {data.Project.Rom.DevId:X2}");
+            ImGui.Text($"  Version: {data.Project.Rom.Version}");
+            ImGui.Text($"  Checksum: {data.Project.Rom.Checksum:X4}");
+            ImGui.Text($"  Checksum Complement: {data.Project.Rom.ChecksumComplement:X4}");
+            ImGui.End();
         }
     }
 }

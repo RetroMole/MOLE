@@ -1,4 +1,3 @@
-
 [submodule "deps/asar/Asar"]
 	path = deps/asar/Asar
 	url = https://github.com/RPGHacker/asar.git

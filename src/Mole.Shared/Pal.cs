@@ -1,4 +1,9 @@
-﻿namespace Mole.Shared
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Mole.Shared
 {
     /// <summary>
     /// Palette class, holds information about a SNES Palette and allows for conversion to and from 8-bit RGB
@@ -13,11 +18,15 @@
             get => SnesToRgb8(Snes.Pal[index]);
             set => Snes.Pal[index] = Rgb8ToSnes(value);
         }
+        public int Length
+        {
+            get => Snes.Count();
+        }
 
         /// <summary>
-        /// big-bwain wrapper
+        /// Snes value wrapper
         /// </summary>
-        public class PalSnes
+        public class PalSnes : IEnumerator<ushort>, IEnumerable<ushort>
         {
             /// <summary>
             /// Internal Palette representation, an array of SNES 5-bit BGR colors
@@ -25,14 +34,36 @@
             public ushort[] Pal;
 
             /// <summary>
-            /// SNES 5-bit BGR representation of the palette
+            /// SNES 5-bit BGR indexer
             /// </summary>
             public ushort this[int index] => Pal[index];
+
+            int _position = 0;
+            public bool MoveNext()
+            {
+                _position++;
+                return (_position < Pal.Length);
+            }
+            public void Reset() => _position = 0;
+            public object Current { get => Pal[_position]; }
+            ushort IEnumerator<ushort>.Current { get => Pal[_position]; }
+            public IEnumerator<ushort> GetEnumerator() => Pal.OfType<ushort>().GetEnumerator();
+            IEnumerator IEnumerable.GetEnumerator() => (IEnumerator<ushort>)Pal.GetEnumerator();
+            public void Dispose()
+            {
+                GC.SuppressFinalize(this);
+            } // TODO: Possible Memory leak, does the enumerator/enumerable stuff need manual disposal?
         }
+
         /// <summary>
         /// SNES 5-bit BGR representation of the palette
         /// </summary>
         public PalSnes Snes = new();
+
+        /// <summary>
+        /// 8-bit ABGR representation of palette
+        /// </summary>
+        public uint[] ABGR => Snes.Select(c => SnesToABGR(c)).ToArray();
 
         /// <summary>
         /// Default Constructor
@@ -82,6 +113,20 @@
             uint r = (uint)(bgr & 0x1F) * 255 / 31;
 
             return (r << 16) | (g << 8) | b;
+        }
+
+        /// <summary>
+        /// Converts SNES colors 8-bit ABGR
+        /// </summary>
+        /// <param name="bgr">SNES 5-bit BGR value</param>
+        /// <returns>8-bit ABGR value</returns>
+        public static uint SnesToABGR(ushort bgr)
+        {
+            uint b = (uint)((bgr >> 10) & 0x1F) * 255 / 31;
+            uint g = (uint)((bgr >> 5) & 0x1F) * 255 / 31;
+            uint r = (uint)(bgr & 0x1F) * 255 / 31;
+
+            return 0xFF000000 | (b << 16) | (g << 8) | r;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Serilog;
 
 #pragma warning disable CA1401 // P/Invokes should not be visible
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -13,7 +14,6 @@ namespace Mole.Shared.Util
     /// <summary>
     /// Contains various functions to apply patches.
     /// </summary>
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static unsafe class Asar
     {
         public const string DllPath = "libasar";
@@ -156,7 +156,7 @@ namespace Mole.Shared.Util
         {
             try {
                 if (ApiVersion() < ExpectedApiVersion || (ApiVersion() / 100) > (ExpectedApiVersion / 100)) {
-                    LoggerEntry.Logger.Fatal("Asar expected ApiVersion is not same as the library one!");
+                    Log.Fatal("Asar expected ApiVersion is not same as the library one!");
                     return false;
                 }
                 return AsarInit();

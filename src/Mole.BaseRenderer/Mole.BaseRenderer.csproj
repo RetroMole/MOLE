@@ -8,12 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="ImGui.NET" Version="1.78.0" />
-    <PackageReference Include="Serilog" Version="2.11.0-dev-01377" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Mole.BaseRenderer\Mole.BaseRenderer.csproj" />
-    <ProjectReference Include="..\Mole.Shared\Mole.Shared.csproj" />
   </ItemGroup>
 
 </Project>

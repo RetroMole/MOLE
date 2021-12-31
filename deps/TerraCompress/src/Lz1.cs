@@ -6,7 +6,7 @@ namespace Smallhacker.TerraCompress
     /// <summary>
     /// Modified Lz2 class to do Lz1 instead
     /// </summary>
-    public class Lz1
+    public class Lz1 : ICompressor, IDecompressor
     {
         private const byte DirectCopy = 0;
         private const byte ByteFill = 1;
@@ -25,16 +25,107 @@ namespace Smallhacker.TerraCompress
                 4   // Repeat
             };
 
+        // Evaluate Byte Fill
+        public static void EvalByteFill(ref byte[] data, ref int position, ref int[] byteCount, ref byte currentByte)
+        {
+            byteCount[ByteFill] = 1;
+            {
+                for (int i = position; i < data.Length; i++)
+                {
+                    if (data[i] != currentByte)
+                    {
+                        break;
+                    }
+                    byteCount[ByteFill]++;
+                }
+            }
+        }
+
+        // Evalue Word Fill
+        public static void EvalWordFill(ref byte[] data, ref int position, ref int[] byteCount, ref byte currentByte, ref byte nextByte)
+        {
+            byteCount[WordFill] = 1;
+            {
+                if (position < data.Length)
+                {
+                    byteCount[WordFill]++;
+                    nextByte = data[position];
+                    int oddEven = 0;
+                    for (int i = position + 1; i < data.Length; i++, oddEven++)
+                    {
+                        byte currentOddEvenByte = (oddEven & 1) == 0 ? currentByte : nextByte;
+                        if (data[i] != currentOddEvenByte)
+                        {
+                            break;
+                        }
+                        byteCount[WordFill]++;
+                    }
+                }
+            }
+        }
+
+        // Evaluate Increasing Fill
+        public static void EvalIncFill(ref byte[] data, ref int position, ref int[] byteCount, ref byte currentByte)
+        {
+            byteCount[IncreaseFill] = 1;
+            {
+                byte increaseByte = (byte)(currentByte + 1);
+                for (int i = position; i < data.Length; i++)
+                {
+                    if (data[i] != increaseByte++)
+                    {
+                        break;
+                    }
+                    byteCount[IncreaseFill]++;
+                }
+            }
+        }
+
+        // Evaluate Repeat
+        public static void EvalRepeat(ref byte[] data, ref int position, ref int[] byteCount, ref ushort repeatAddress)
+        {
+            byteCount[Repeat] = 0;
+            {
+                //Slow O(n^2) brute force algorithm for now
+                int maxAddressInt = Math.Min(0xFFFF, position - 2);
+                if (maxAddressInt >= 0)
+                {
+                    ushort maxAddress = (ushort)maxAddressInt;
+                    for (int start = 0; start <= maxAddress; start++)
+                    {
+                        int chunkSize = 0;
+
+                        for (int pos = position - 1; pos < data.Length && chunkSize < 1023; pos++)
+                        {
+                            if (data[pos] != data[start + chunkSize])
+                            {
+                                break;
+                            }
+                            chunkSize++;
+                        }
+
+                        if (chunkSize > byteCount[Repeat])
+                        {
+                            repeatAddress = (ushort)start;
+                            byteCount[Repeat] = chunkSize;
+                        }
+
+                    }
+
+                }
+            }
+        }
+
         public byte[] Compress(byte[] data)
         {
             // Greedy implementation
 
             if (data == null)
             {
-                throw new Exception("Data is null.");
+                throw new ArgumentException("Data is null.");
             }
 
-            List<byte> output = new List<byte>();
+            List<byte> output = new();
             int position = 0;
             int length = data.Length;
 
@@ -48,83 +139,10 @@ namespace Smallhacker.TerraCompress
 
                 int[] byteCount = new int[Repeat+1];
 
-                // Evaluate Byte Fill
-                byteCount[ByteFill] = 1;
-                {
-                    for (int i = position; i < length; i++)
-                    {
-                        if (data[i] != currentByte)
-                        {
-                            break;
-                        }
-                        byteCount[ByteFill]++;
-                    }
-                }
-
-                // Evaluate Word Fill
-                byteCount[WordFill] = 1;
-                {
-                    if (position < length)
-                    {
-                        byteCount[WordFill]++;
-                        nextByte = data[position];
-                        int oddEven = 0;
-                        for (int i = position + 1; i < length; i++, oddEven++)
-                        {
-                            byte currentOddEvenByte = (oddEven & 1) == 0 ? currentByte : nextByte;
-                            if (data[i] != currentOddEvenByte)
-                            {
-                                break;
-                            }
-                            byteCount[WordFill]++;
-                        }
-                    }
-                }
-
-                // Evaluate Increasing Fill
-                byteCount[IncreaseFill] = 1;
-                {
-                    byte increaseByte = (byte)(currentByte + 1);
-                    for (int i = position; i < length; i++)
-                    {
-                        if (data[i] != increaseByte++)
-                        {
-                            break;
-                        }
-                        byteCount[IncreaseFill]++;
-                    }
-                }
-
-                // Evaluate Repeat
-                byteCount[Repeat] = 0;
-                {
-                    //Slow O(n^2) brute force algorithm for now
-                    int maxAddressInt = Math.Min(0xFFFF, position - 2);
-                    if (maxAddressInt >= 0) {
-                        ushort maxAddress = (ushort)maxAddressInt;
-                        for (int start = 0; start <= maxAddress; start++)
-                        {
-                            int chunkSize = 0;
-
-                            for (int pos = position - 1; pos < length && chunkSize < 1023; pos++)
-                            {
-                                if (data[pos] != data[start + chunkSize])
-                                {
-                                    break;
-                                }
-                                chunkSize++;
-                            }
-
-                            if (chunkSize > byteCount[Repeat])
-                            {
-                                repeatAddress = (ushort)start;
-                                byteCount[Repeat] = chunkSize;
-                            }
-
-                        }
-
-                    }
-                }
+                EvalByteFill(ref data, ref position, ref byteCount, ref currentByte);
+                EvalWordFill(ref data, ref position, ref byteCount, ref currentByte, ref nextByte);
+                EvalIncFill(ref data, ref position, ref byteCount, ref currentByte);
+                EvalRepeat(ref data, ref position, ref byteCount, ref repeatAddress);
 
                 // Choose next command
                 byte nextCommand = DirectCopy; // Default command unless anything better is found
@@ -217,11 +235,11 @@ namespace Smallhacker.TerraCompress
         {
             if (compressedData == null)
             {
-                throw new Exception("Compressed data is null.");
+                throw new ArgumentException("Compressed data is null.");
             }
             try
             {
-                List<byte> output = new List<byte>();
+                List<byte> output = new();
                 uint position = start;
 
                 while (true)
@@ -307,7 +325,7 @@ namespace Smallhacker.TerraCompress
         {
             if (length < 1 || length >= 1024)
             {
-                throw new Exception("Internal error: Length assertion failed.");
+                throw new ArgumentException("Internal error: Length assertion failed.");
             }
             if (length > 32)
             {

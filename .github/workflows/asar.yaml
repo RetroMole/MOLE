@@ -31,7 +31,7 @@ jobs:
         with:
           name: AsarLinux
           path: ./deps/asar/Asar/out/asar/libasar.so
-          retention-days: 30
+          retention-days: 10
   
   BuildAsarWindows:
     runs-on: windows-latest
@@ -64,7 +64,7 @@ jobs:
         with:
           name: AsarWindows
           path: ./deps/asar/Asar/out/asar/Debug/libasar.dll
-          retention-days: 30
+          retention-days: 10
           
   BuildAsarMacOS:
     runs-on: macos-latest
@@ -93,7 +93,7 @@ jobs:
         with:
           name: AsarMacOS
           path: ./deps/asar/Asar/out/asar/libasar.dylib
-          retention-days: 30
+          retention-days: 10
 
   PushUpdatedAsarDeps:
     runs-on: ubuntu-latest

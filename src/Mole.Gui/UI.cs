@@ -1,73 +1,58 @@
 ﻿using ImGuiNET;
-using System;
+using Mole.Shared.Util;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Mole.Gui.Windows;
-using Mole.Shared;
-using Num = System.Numerics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Mole.Gui
 {
-    [SuppressMessage("ReSharper", "PositionalPropertyUsedProblem")]
-    public class Ui
+    public static partial class Ui
     {
-        private static ImGuiViewportPtr _viewport;
-        private static ImGuiIOPtr _io;
-        private static readonly List<Delegate> Windows = new()
-        {
-            new Action(() => WGfx.Main(_gfx)),
-            new Action(() => RomInfo.Main(_rom, _gfx)),
-            new Action(() => About.Main(_showAbout)),
-            new Action(() => FileDialog.Main(_filediag, ref _rom, ref _gfx, ref _filediag, ref _path))
-        };
-
-        private static bool _showFps = true;
-        private static bool _showMousePos = true;
-        private static bool _showAbout = false;
-        private static bool _showDemo = false;
-        private static Rom _rom;
-        private static Gfx _gfx;
-        private static string _path = "";
-        private static bool _filediag;
-
-        public static void Draw()
-        {
-            _io = ImGui.GetIO();
-            _viewport = ImGui.GetMainViewport();
-            
-            // Top Bar
+        public static IRenderer renderer;
+        private static readonly Dictionary<string, WindowBase> Windows = new()
             {
-                if (ImGui.BeginMainMenuBar())
-                {
-                    if (ImGui.BeginMenu("File"))
-                    {
-                        if (ImGui.MenuItem("Open ROM", "Ctrl+O"))
-                            _filediag = true;
-                        ImGui.EndMenu();
-                    }
+                { "About", new Windows.About() },
+                //=============Dialogs=============
+                { "OpenFile", new Dialogs.FilePicker("Select ROM file", "/", SearchFilter: ".smc,.sfc|.asm") },
+                { "OpenProject", new Dialogs.FilePicker("Select Project Directory", "/", OnlyFolders: true) },
+                { "OpenProjectFile", new Dialogs.FilePicker("Select Compressed Project File", "/", SearchFilter: ".moleproj") },
+                { "Loading", new Dialogs.Loading() },
+                { "Error", new Dialogs.Error() },
+                //=============Editors=============
+                { "RomInfo", new Windows.RomInfo() },
+                { "PalEditor", new Windows.PalEditor() },
+                { "GfxEditor", new Windows.GfxEditor() }
+            };
 
-                    if (ImGui.BeginMenu("Debug"))
-                    {
-                        ImGui.MenuItem("FPS", null, ref _showFps);
-                        ImGui.MenuItem("Mouse Pos", null, ref _showMousePos);
-                        ImGui.MenuItem("Demo Window", null, ref _showDemo);
-                        ImGui.EndMenu();
-                    }
-
-                    if (ImGui.BeginMenu("Help"))
-                    {
-                        ImGui.MenuItem("About", null, ref _showAbout);
-                        ImGui.EndMenu();
-                    }
-                    
-                    ImGui.EndMainMenuBar();
-                }
-            }
-
-            if (_showDemo) ImGui.ShowDemoWindow(ref _showDemo);
-
-            foreach (var w in Windows)
-                w.DynamicInvoke();
+        private static bool _ShowDemo;
+        private static Project.UiData Data = new();
+        private static void OpenFileEventHandler(WindowBase window)
+        {
+            Windows["Loading"].Open();
+            var w = window as Dialogs.FilePicker;
+            new Task(() =>
+            {
+                var dir = string.Join('.', w.SelectedFile.Split('.').SkipLast(1)) + "_moleproj";
+                Data.Project = new(Data.Progress,
+                    dir, w.SelectedFile);
+                Windows["RomInfo"].Open();
+                Windows["PalEditor"].Open();
+                Windows["GfxEditor"].Open();
+            }).Start();
+        }
+        private static void OpenProjectEventHandler(WindowBase window)
+        {
+            Windows["Loading"].Open();
+            var w = window as Dialogs.FilePicker;
+            new Task(() =>
+            {
+                var dir = w.CurrentFolder;
+                Data.Project = new(Data.Progress, dir);
+                Windows["RomInfo"].Open();
+                Windows["PalEditor"].Open();
+                Windows["GfxEditor"].Open();
+            }).Start();
         }
     }
 }
