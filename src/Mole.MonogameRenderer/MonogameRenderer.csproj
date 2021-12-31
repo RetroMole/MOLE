@@ -19,7 +19,7 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Delete Files="$(ProjectDir)..\Mole.EntryPoint\bin\Debug\net6.0\Renderers\$(TargetFileName)" Condition="Exists('$(ProjectDir)..\Mole.EntryPoint\bin\Debug\net6.0\Renderers\$(TargetFileName)')"/>
     <Copy SourceFiles="$(TargetPath)"
-          DestinationFolder="$(ProjectDir)..\Mole.EntryPoint\bin\Debug\net6.0\Renderers\$"
+          DestinationFolder="$(ProjectDir)..\Mole.EntryPoint\bin\Debug\net6.0\Renderers\"
           SkipUnchangedFiles="true"
           OverwriteReadOnlyFiles="true"
           />

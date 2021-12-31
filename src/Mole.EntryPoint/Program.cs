@@ -8,9 +8,9 @@ namespace Mole
 {
     public static class Program
     {
-        public static RenderManager renderManager = new();
-        public static Options options = new();
-        public class Options
+        private static readonly RenderManager RenderManager = new();
+        private static Options Opts = new();
+        private class Options
         {
             [Option("loglevel", Required = false, Default = LogEventLevel.Information, HelpText = "Specifies the verbosity of Mole's logging output\nValues: Verbose, Debug, Information, Warning, Error, Fatal")]
             public LogEventLevel LogLevel { get; set; }
@@ -21,23 +21,23 @@ namespace Mole
         {
             // Parse CLI Arguments
             Parser.Default.ParseArguments<Options>(args)    // Parse arguments
-            .WithParsed(o => { options = o; })              // If successful set options to the parsed results
+            .WithParsed(o => { Opts = o; })              // If successful set options to the parsed results
             .WithNotParsed(errs => { if (errs.IsHelp() || errs.IsVersion()) { Environment.Exit(0); } }); // Check for help and version args and just exit Mole
 
             // Setup Logger
             Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()          // Log to console
             .WriteTo.File("mole.log")   // Log to file
-            .MinimumLevel.ControlledBy(new LoggingLevelSwitch(options.LogLevel)) // Set minimum logging level to output
+            .MinimumLevel.ControlledBy(new LoggingLevelSwitch(Opts.LogLevel)) // Set minimum logging level to output
             .CreateLogger();
 
             Log.Information("Mole v{0} Starting...", Assembly.GetExecutingAssembly().GetName().Version);
 
             // Load available renderers
-            renderManager.LoadAvailableRenderers();
+            RenderManager.LoadAvailableRenderers();
 
             // RUN UI
-            renderManager.RunRenderer(options.Renderer);
+            RenderManager.RunRenderer(Opts.Renderer);
 
             // Dispose of Logger
             Log.CloseAndFlush();

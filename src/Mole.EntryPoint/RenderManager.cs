@@ -38,7 +38,7 @@ namespace Mole
                 // Try registering all types that implement IRenderer to AvailableRenderers dictionary
                 Log.Information("Searching for renderers in assembly: {0}", f.FullName);
                 var Renderers = asm.GetTypes().Where(x => x.GetInterfaces().Contains(typeof(IRenderer))).ToArray();
-                if (Renderers.Count() == 0) Log.Information("No renderers found in assembly: {0}", f.FullName);
+                if (Renderers.Length == 0) Log.Information("No renderers found in assembly: {0}", f.FullName);
                 foreach (var t in Renderers)
                 {
                     Log.Information("Found renderer \"{0}\" in assembly: {1}", t.Name, f.FullName);

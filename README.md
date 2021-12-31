@@ -14,8 +14,6 @@ With the intent to bring many of the features from existing SMW ROMHacking tools
 into a single easy-to-use [**multi-platform**](#how-to-run) and [localized](#localizationtranslation) tool.
 Mole doesn't mean to replace existing system, only encapsulate them, the existing formats and standards will be kept,
 but we shall create better standards on top of the existing ones.
-
-A roadmap is already available over on the [Wiki](https://github.com/Vawlpe/MOLE/wiki/Roadmap) ~<3
 ___
 ### Platforms
 - Windows
@@ -26,10 +24,10 @@ ___
 Releases are not available yet, but you can [build Mole yourself](#how-to-build), or try out the [build artifacts](https://github.com/Vawlpe/MOLE/actions/workflows/build.yaml) of any commit
 ___
 ### How to Build
-Requirements: .NET 5
+Requirements: .NET 6
 1. Clone repository (`git clone --recursive https://github.com/Vawlpe/MOLE.git`)
-2. Build solution (`dotnet build ./src/Mole.sln`) **or** open `./src/Mole.sln` in your prefere  d IDE and use the built-in `Build` option
-3. Done! you can now run Mole from `./src/Mole.Gui/bin/Debug/net5.0/Mole.Gui` (or any other specified output directory)
+2. Build solution (`dotnet build ./src/Mole.sln`) **or** open `./src/Mole.sln` in your prefered IDE and use the built-in `Build` option
+3. Done! you can now run Mole from `./src/Mole.Gui/bin/Debug/net6.0/Mole.EntryPoint` (or any other specified output directory)
 ___
 ### Localization/Translation
 WIP
@@ -44,10 +42,8 @@ ___
 │   │   └── Automatically build and commit asar native dependencies from submodule clone in deps
 │   ├── build.yaml
 │   │   └── Automatically build Mole and upload artifacts
-│   ├── test.yaml
-│   │  └── Run unit tests on Mole after build.yaml runs
-│   └── super-linter.yml
-│      └── Lint the codebase to make sure it's in-line with our code quality standards
+│   └── test.yaml
+│      └── Run unit tests on Mole after build.yaml runs
 deps
 ├── TerraCompress
 │   └── Modified clone of Smallhacker/TerraCompress
@@ -62,13 +58,17 @@ res
 │
 src
 ├── Mole.Shared
-│   └── Shared MOLE library, backend
+│   └── Shared MOLE library, containing all the actual ROM editing code
 ├── Mole.Monogame/
 │   └── GUI renderer relying on MonoGame Engine (OpenGL)
-├── Mole.Veldrid/
-│   └── GUI renderer using Veldrid (OpenGL, OpenGL ES, DirectX 11, Vulkan, Metal)
-└── Mole.Gui/
-    └── Actual GUI code using ImGui.Net to be passed on to one of the GUI renderers, also the entrypoint of the program
+├── Mole.Gui/
+│   └── Actual GUI code using ImGui.Net
+├── Mole.EntryPoint/
+│   └── Entry point for Mole, parses cli arguments, initializes logger, scans for available renderers to dynamically load and runs the UI
+├── Mole.BaseRenderer/
+│   └── Base interface for the dynamically loaded renderers
+└── Mole.MonogameRenderer/
+    └── Example renderer that implements IRenderer from Mole.BaseRenderer using Monogame DesktopGL
 ```
 ___
 ### Compatibility
