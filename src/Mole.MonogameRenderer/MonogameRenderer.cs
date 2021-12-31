@@ -1,74 +1,108 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using ImGuiNET;
+﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Runtime.InteropServices;
+using Num = System.Numerics;
 
-#pragma warning disable IDE0044 // Add readonly modifier
-namespace Mole.MonoGame
+namespace Mole
 {
-    /// <summary>
-    /// ImGui renderer for use with XNA-likes (FNA & MonoGame)
-    /// </summary>
-    public class ImGuiRenderer
+    public class MonogameRenderer : Game, IRenderer
     {
-        private Game _game;
-
-        // Graphics
-        private GraphicsDevice _graphicsDevice;
-
-        private BasicEffect _effect;
-        private RasterizerState _rasterizerState;
-
-        private byte[] _vertexData;
-        private VertexBuffer _vertexBuffer;
-        private int _vertexBufferSize;
-
-        private byte[] _indexData;
-        private IndexBuffer _indexBuffer;
-        private int _indexBufferSize;
-
-        // Textures
-        private Dictionary<IntPtr, Texture2D> _loadedTextures;
-
-        private int _textureId;
-        private IntPtr? _fontTextureId;
-
-        // Input
-        private int _scrollWheelValue;
-
-        private List<int> _keys = new();
-
-        public ImGuiRenderer(Game game)
+        // Main Loop
+        private double delta = 0;
+        private Num.Vector3 _clearColor = new(114f / 255f, 144f / 255f, 154f / 255f);
+        public static GraphicsDeviceManager _graphics;
+        public Action DrawCallback = () => { };
+        public MonogameRenderer() : base()
+        {
+            _graphics = new GraphicsDeviceManager(this)
+            {
+                PreferredBackBufferWidth = 1024,
+                PreferredBackBufferHeight = 768,
+                PreferMultiSampling = true
+            };
+            IsMouseVisible = true;
+        }
+        public void Start(Action callback)
+        {
+            DrawCallback = callback;
+            Run();
+        }
+        protected override void Initialize()
         {
             var context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
-
-            _game = game ?? throw new ArgumentNullException(nameof(game));
-            _graphicsDevice = game.GraphicsDevice;
-
-            _loadedTextures = new Dictionary<IntPtr, Texture2D>();
 
             _rasterizerState = new RasterizerState()
             {
                 CullMode = CullMode.None,
                 DepthBias = 0,
                 FillMode = FillMode.Solid,
-                MultiSampleAntiAlias = false,
+                MultiSampleAntiAlias = true,
                 ScissorTestEnable = true,
                 SlopeScaleDepthBias = 0
             };
+            GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+            RebuildFontAtlas();
+
+            ImGui.GetIO().ConfigFlags |=
+                ImGuiConfigFlags.DockingEnable |
+                ImGuiConfigFlags.ViewportsEnable |
+                ImGuiConfigFlags.DpiEnableScaleViewports |
+                ImGuiConfigFlags.DpiEnableScaleFonts |
+                ImGuiConfigFlags.NavEnableKeyboard;
+
+            Window.AllowUserResizing = true;
+            Window.Title = "Mole [MonoGame:OpenGL]";
 
             SetupInput();
+            base.Initialize();
+        }
+        protected override void Draw(GameTime gameTime)
+        {
+            delta = gameTime.ElapsedGameTime.TotalSeconds;
+            DrawCallback();
+            base.Draw(gameTime);
+        }
+        public void BeforeLayout()
+        {
+            GraphicsDevice.Clear(new Color(_clearColor.X, _clearColor.Y, _clearColor.Z));
+            ImGui.GetIO().DeltaTime = (float)delta;
+            UpdateInput();
+            unsafe { ImGui.NewFrame(); }
+        }
+        public void AfterLayout()
+        {
+            ImGui.Render();
+            unsafe { RenderDrawData(ImGui.GetDrawData()); }
         }
 
-        #region ImGuiRenderer
 
-        /// <summary>
-        /// Creates a texture and loads the font data from ImGui. Should be called when the <see cref="GraphicsDevice" /> is initialized but before any rendering is done
-        /// </summary>
+
+        // Textures
+        public Dictionary<IntPtr, object> Textures { get; set; } = new();
+        public IntPtr? FontTextureID { get; set; }
+        public IntPtr BindTexture(uint[,] data)
+        {
+            var ID = new IntPtr(Textures.Count);
+            var texture = new Texture2D(GraphicsDevice, data.GetLength(0), data.GetLength(1), false, SurfaceFormat.Color);
+            texture.SetData(data.Cast<uint>().ToArray());
+            Textures.Add(ID, texture);
+            ImGui.GetBackgroundDrawList().AddImage(ID, new(0, 0), new(0, 0));
+            return ID;
+        }
+        public void UnbindTexture(IntPtr ID) => Textures.Remove(ID);
+        public void UpdateTexture(IntPtr ID, uint[,] data)
+        {
+            if (!Textures.ContainsKey(ID))
+                throw new KeyNotFoundException($"Texture ID {ID} could not be found, make sure to bind your textures using IRenderer.BindTexture(object data)");
+
+            var texture = new Texture2D(GraphicsDevice, data.GetLength(0), data.GetLength(1), false, SurfaceFormat.Color);
+            texture.SetData(data.Cast<uint>().ToArray());
+            Textures[ID] = texture;
+            ImGui.GetBackgroundDrawList().AddImage(ID, new(0, 0), new(0, 0));
+        }
         public virtual unsafe void RebuildFontAtlas()
         {
             // Get font texture from ImGui
@@ -80,70 +114,28 @@ namespace Mole.MonoGame
             unsafe { Marshal.Copy(new IntPtr(pixelData), pixels, 0, pixels.Length); }
 
             // Create and register the texture as an XNA texture
-            var tex2d = new Texture2D(_graphicsDevice, width, height, false, SurfaceFormat.Color);
+            var tex2d = new Texture2D(GraphicsDevice, width, height, false, SurfaceFormat.Color);
             tex2d.SetData(pixels);
 
             // Should a texture already have been build previously, unbind it first so it can be deallocated
-            if (_fontTextureId.HasValue) UnbindTexture(_fontTextureId.Value);
+            if (FontTextureID.HasValue) UnbindTexture(FontTextureID.Value);
 
             // Bind the new texture to an ImGui-friendly id
-            _fontTextureId = BindTexture(tex2d);
+            FontTextureID = new IntPtr(Textures.Count);
+            Textures.Add((IntPtr)FontTextureID, tex2d);
+
 
             // Let ImGui know where to find the texture
-            io.Fonts.SetTexID(_fontTextureId.Value);
+            io.Fonts.SetTexID(FontTextureID.Value);
             io.Fonts.ClearTexData(); // Clears CPU side texture data
         }
 
-        /// <summary>
-        /// Creates a pointer to a texture, which can be passed through ImGui calls such as <see cref="ImGui.Image" />. That pointer is then used by ImGui to let us know what texture to draw
-        /// </summary>
-        public virtual IntPtr BindTexture(Texture2D texture)
-        {
-            var id = new IntPtr(_textureId++);
 
-            _loadedTextures.Add(id, texture);
 
-            return id;
-        }
-
-        /// <summary>
-        /// Removes a previously created texture pointer, releasing its reference and allowing it to be deallocated
-        /// </summary>
-        public virtual void UnbindTexture(IntPtr textureId)
-        {
-            _loadedTextures.Remove(textureId);
-        }
-
-        /// <summary>
-        /// Sets up ImGui for a new frame, should be called at frame start
-        /// </summary>
-        public virtual void BeforeLayout(GameTime gameTime)
-        {
-            ImGui.GetIO().DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            UpdateInput();
-
-            ImGui.NewFrame();
-        }
-
-        /// <summary>
-        /// Asks ImGui for the generated geometry data and sends it to the graphics pipeline, should be called after the UI is drawn using ImGui.** calls
-        /// </summary>
-        public virtual void AfterLayout()
-        {
-            ImGui.Render();
-
-            unsafe { RenderDrawData(ImGui.GetDrawData()); }
-        }
-
-        #endregion ImGuiRenderer
-
-        #region Setup & Update
-
-        /// <summary>
-        /// Maps ImGui keys to XNA keys. We use this later on to tell ImGui what keys were pressed
-        /// </summary>
-        protected virtual void SetupInput()
+        // IO
+        private int _scrollWheelValue;
+        private List<int> _keys = new();
+        public void SetupInput()
         {
             var io = ImGui.GetIO();
 
@@ -169,7 +161,7 @@ namespace Mole.MonoGame
             _keys.Add(io.KeyMap[(int)ImGuiKey.Z] = (int)Keys.Z);
 
             // MonoGame-specific //////////////////////
-            _game.Window.TextInput += (s, a) =>
+            Window.TextInput += (s, a) =>
             {
                 if (a.Character == '\t') return;
 
@@ -188,30 +180,7 @@ namespace Mole.MonoGame
 
             ImGui.GetIO().Fonts.AddFontDefault();
         }
-
-        /// <summary>
-        /// Updates the <see cref="Effect" /> to the current matrices and texture
-        /// </summary>
-        protected virtual Effect UpdateEffect(Texture2D texture)
-        {
-            _effect ??= new BasicEffect(_graphicsDevice);
-
-            var io = ImGui.GetIO();
-
-            _effect.World = Matrix.Identity;
-            _effect.View = Matrix.Identity;
-            _effect.Projection = Matrix.CreateOrthographicOffCenter(0f, io.DisplaySize.X, io.DisplaySize.Y, 0f, -1f, 1f);
-            _effect.TextureEnabled = true;
-            _effect.Texture = texture;
-            _effect.VertexColorEnabled = true;
-
-            return _effect;
-        }
-
-        /// <summary>
-        /// Sends XNA input state to ImGui
-        /// </summary>
-        protected virtual void UpdateInput()
+        public void UpdateInput()
         {
             var io = ImGui.GetIO();
 
@@ -228,10 +197,10 @@ namespace Mole.MonoGame
             io.KeyAlt = keyboard.IsKeyDown(Keys.LeftAlt) || keyboard.IsKeyDown(Keys.RightAlt);
             io.KeySuper = keyboard.IsKeyDown(Keys.LeftWindows) || keyboard.IsKeyDown(Keys.RightWindows);
 
-            io.DisplaySize = new System.Numerics.Vector2(_graphicsDevice.PresentationParameters.BackBufferWidth, _graphicsDevice.PresentationParameters.BackBufferHeight);
-            io.DisplayFramebufferScale = new System.Numerics.Vector2(1f, 1f);
+            io.DisplaySize = new(GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight);
+            io.DisplayFramebufferScale = new(1f, 1f);
 
-            io.MousePos = new System.Numerics.Vector2(mouse.X, mouse.Y);
+            io.MousePos = new(mouse.X, mouse.Y);
 
             io.MouseDown[0] = mouse.LeftButton == ButtonState.Pressed;
             io.MouseDown[1] = mouse.RightButton == ButtonState.Pressed;
@@ -242,39 +211,42 @@ namespace Mole.MonoGame
             _scrollWheelValue = mouse.ScrollWheelValue;
         }
 
-        #endregion Setup & Update
 
-        #region Internals
 
-        /// <summary>
-        /// Gets the geometry as set up by ImGui and sends it to the graphics device
-        /// </summary>
-        private void RenderDrawData(ImDrawDataPtr drawData)
+        // Rendering
+        private BasicEffect _effect;
+        private RasterizerState _rasterizerState;
+        private byte[] _vertexData;
+        private VertexBuffer _vertexBuffer;
+        private int _vertexBufferSize;
+        private byte[] _indexData;
+        private IndexBuffer _indexBuffer;
+        private int _indexBufferSize;
+        public void RenderDrawData(ImDrawDataPtr drawData)
         {
             // Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, vertex/texcoord/color pointers
-            var lastViewport = _graphicsDevice.Viewport;
-            var lastScissorBox = _graphicsDevice.ScissorRectangle;
+            var lastViewport = GraphicsDevice.Viewport;
+            var lastScissorBox = GraphicsDevice.ScissorRectangle;
 
-            _graphicsDevice.BlendFactor = Color.White;
-            _graphicsDevice.BlendState = BlendState.NonPremultiplied;
-            _graphicsDevice.RasterizerState = _rasterizerState;
-            _graphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
+            GraphicsDevice.BlendFactor = Color.White;
+            GraphicsDevice.BlendState = BlendState.NonPremultiplied;
+            GraphicsDevice.RasterizerState = _rasterizerState;
+            GraphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
 
             // Handle cases of screen coordinates != from framebuffer coordinates (e.g. retina displays)
             drawData.ScaleClipRects(ImGui.GetIO().DisplayFramebufferScale);
 
             // Setup projection
-            _graphicsDevice.Viewport = new Viewport(0, 0, _graphicsDevice.PresentationParameters.BackBufferWidth, _graphicsDevice.PresentationParameters.BackBufferHeight);
+            GraphicsDevice.Viewport = new Viewport(0, 0, GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight);
 
             UpdateBuffers(drawData);
 
             RenderCommandLists(drawData);
 
             // Restore modified state
-            _graphicsDevice.Viewport = lastViewport;
-            _graphicsDevice.ScissorRectangle = lastScissorBox;
+            GraphicsDevice.Viewport = lastViewport;
+            GraphicsDevice.ScissorRectangle = lastScissorBox;
         }
-
         private unsafe void UpdateBuffers(ImDrawDataPtr drawData)
         {
             if (drawData.TotalVtxCount == 0)
@@ -288,7 +260,7 @@ namespace Mole.MonoGame
                 _vertexBuffer?.Dispose();
 
                 _vertexBufferSize = (int)(drawData.TotalVtxCount * 1.5f);
-                _vertexBuffer = new VertexBuffer(_graphicsDevice, DrawVertDeclaration.Declaration, _vertexBufferSize, BufferUsage.None);
+                _vertexBuffer = new VertexBuffer(GraphicsDevice, DrawVertDeclaration.Declaration, _vertexBufferSize, BufferUsage.None);
                 _vertexData = new byte[_vertexBufferSize * DrawVertDeclaration.Size];
             }
 
@@ -297,7 +269,7 @@ namespace Mole.MonoGame
                 _indexBuffer?.Dispose();
 
                 _indexBufferSize = (int)(drawData.TotalIdxCount * 1.5f);
-                _indexBuffer = new IndexBuffer(_graphicsDevice, IndexElementSize.SixteenBits, _indexBufferSize, BufferUsage.None);
+                _indexBuffer = new IndexBuffer(GraphicsDevice, IndexElementSize.SixteenBits, _indexBufferSize, BufferUsage.None);
                 _indexData = new byte[_indexBufferSize * sizeof(ushort)];
             }
 
@@ -324,11 +296,10 @@ namespace Mole.MonoGame
             _vertexBuffer.SetData(_vertexData, 0, drawData.TotalVtxCount * DrawVertDeclaration.Size);
             _indexBuffer.SetData(_indexData, 0, drawData.TotalIdxCount * sizeof(ushort));
         }
-
         private unsafe void RenderCommandLists(ImDrawDataPtr drawData)
         {
-            _graphicsDevice.SetVertexBuffer(_vertexBuffer);
-            _graphicsDevice.Indices = _indexBuffer;
+            GraphicsDevice.SetVertexBuffer(_vertexBuffer);
+            GraphicsDevice.Indices = _indexBuffer;
 
             int vtxOffset = 0;
             int idxOffset = 0;
@@ -341,26 +312,26 @@ namespace Mole.MonoGame
                 {
                     ImDrawCmdPtr drawCmd = cmdList.CmdBuffer[cmdi];
 
-                    if (!_loadedTextures.ContainsKey(drawCmd.TextureId))
+                    if (!Textures.ContainsKey(drawCmd.TextureId))
                     {
                         throw new InvalidOperationException($"Could not find a texture with id '{drawCmd.TextureId}', please check your bindings");
                     }
 
-                    _graphicsDevice.ScissorRectangle = new Rectangle(
+                    GraphicsDevice.ScissorRectangle = new Rectangle(
                         (int)drawCmd.ClipRect.X,
                         (int)drawCmd.ClipRect.Y,
                         (int)(drawCmd.ClipRect.Z - drawCmd.ClipRect.X),
                         (int)(drawCmd.ClipRect.W - drawCmd.ClipRect.Y)
                     );
 
-                    var effect = UpdateEffect(_loadedTextures[drawCmd.TextureId]);
+                    var effect = UpdateEffect((Texture2D)Textures[drawCmd.TextureId]);
 
                     foreach (var pass in effect.CurrentTechnique.Passes)
                     {
                         pass.Apply();
 
-#pragma warning disable CS0618 // // FNA does not expose an alternative method.
-                        _graphicsDevice.DrawIndexedPrimitives(
+                    #pragma warning disable CS0618 // // FNA does not expose an alternative method.
+                        GraphicsDevice.DrawIndexedPrimitives(
                             primitiveType: PrimitiveType.TriangleList,
                             baseVertex: vtxOffset,
                             minVertexIndex: 0,
@@ -368,7 +339,7 @@ namespace Mole.MonoGame
                             startIndex: idxOffset,
                             primitiveCount: (int)drawCmd.ElemCount / 3
                         );
-#pragma warning restore CS0618
+                    #pragma warning restore CS0618
                     }
 
                     idxOffset += (int)drawCmd.ElemCount;
@@ -376,9 +347,22 @@ namespace Mole.MonoGame
 
                 vtxOffset += cmdList.VtxBuffer.Size;
             }
-        }
 
-        #endregion Internals
+        }
+        protected virtual Effect UpdateEffect(Texture2D texture)
+        {
+            _effect ??= new BasicEffect(GraphicsDevice);
+
+            var io = ImGui.GetIO();
+
+            _effect.World = Matrix.Identity;
+            _effect.View = Matrix.Identity;
+            _effect.Projection = Matrix.CreateOrthographicOffCenter(0f, io.DisplaySize.X, io.DisplaySize.Y, 0f, -1f, 1f);
+            _effect.TextureEnabled = true;
+            _effect.Texture = texture;
+            _effect.VertexColorEnabled = true;
+
+            return _effect;
+        }
     }
 }
-#pragma warning restore IDE0044 // Add readonly modifier

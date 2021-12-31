@@ -1,7 +1,7 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Mole.MonoGame
+namespace Mole
 {
     public static class DrawVertDeclaration
     {
