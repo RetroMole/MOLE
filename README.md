@@ -6,6 +6,7 @@
 [![Latest commit](https://img.shields.io/github/last-commit/Vawlpe/MOLE)](https://github.com/Vawlpe/MOLE/commits/)
 [![Version](https://badge.fury.io/gh/Vawlpe%2FMOLE.svg)](https://github.com/Vawlpe/MOLE/tags)
 
+
 [![Discord](https://img.shields.io/discord/729355207862911027?label=Discord)](https://discord.gg/hAGM9UPv4q)
 [![Trello](https://img.shields.io/badge/Trello-workspace-blue)](https://trello.com/mole34)
 
