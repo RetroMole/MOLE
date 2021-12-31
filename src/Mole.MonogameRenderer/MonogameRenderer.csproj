@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -17,7 +17,12 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy $(TargetPath) $(SolutionDir)Mole.EntryPoint\bin\Debug\net6.0\Renderers\$(TargetFileName)" />
+    <Delete Files="$(ProjectDir)..\Mole.EntryPoint\bin\Debug\net6.0\Renderers\$(TargetFileName)" Condition="Exists('$(ProjectDir)..\Mole.EntryPoint\bin\Debug\net6.0\Renderers\$(TargetFileName)')"/>
+    <Copy SourceFiles="$(TargetPath)"
+          DestinationFolder="$(ProjectDir)..\Mole.EntryPoint\bin\Debug\net6.0\Renderers\$"
+          SkipUnchangedFiles="true"
+          OverwriteReadOnlyFiles="true"
+          />
   </Target>
 
 </Project>
