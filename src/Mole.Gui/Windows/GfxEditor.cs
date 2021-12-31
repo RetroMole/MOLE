@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text.RegularExpressions;
@@ -11,47 +12,62 @@ namespace Mole.Gui.Windows
     /// <summary>
     /// Shows wGFX
     /// </summary>
-    public class GfxEditor : Window
+    public class GfxEditor : WindowBase
     {
-        int PrevPal, CurrPal, CurrGfx, PrevGfx = 0;
-        int CurrFmt;
-        int PrevFmt;
+        int PrevPal, CurrPal, CurrGfx, PrevGfx, CurrFmt, PrevFmt = 0; // Values for combos
+
+        Shared.Graphics.FormatBase Fmt = Project.Formats[3]; // Default to 3bpp
         Pal Pal = new(new uint[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
-        byte[,] RenderableData = new byte[128,128];
+        Shared.Graphics.GfxBase Gfx;
+
+        uint[,] RenderableData = new uint[128,128];
+        IntPtr? RenderTexture;
         bool IsSExGFXOpen = true;
         Vector2 sz = new(4,4);
 
-        public override void Draw(Project.UiData data, Dictionary<string, Window> windows)
+        public override void Draw(Project.UiData data, Dictionary<string, WindowBase> windows)
         {
             if (!ShouldDraw || !data.Progress.Loaded) return;
 
             ImGui.SetNextWindowSize(new(600, 900), ImGuiCond.FirstUseEver);
-            if (ImGui.Begin("GFX Editor"))
+            if (ImGui.Begin("GFX Editor",ImGuiWindowFlags.MenuBar))
             {
-                Draw_MenuBar(data, windows);
+                Draw_MenuBar();
                 if (ImGui.BeginTabBar("##GFXTypeTabs"))
                 {
                     if (ImGui.BeginTabItem("GFX"))
                     {
                         IsSExGFXOpen = true;
-                        Draw_GFX(data, windows);
-                        Draw_Shared(data, windows);
+                        Gfx = data.Project.Gfx;
+                        ImGui.Columns(2, "GfxEditorLayout", false);
+                        Draw_Render();
+                        ImGui.NextColumn();
+                        Draw_Combos(data, windows);
+                        ImGui.Columns(1);
                         ImGui.EndTabItem();
                     }
                     if (ImGui.BeginTabItem("ExGFX"))
                     {
                         IsSExGFXOpen = true;
-                        Draw_ExGFX(data, windows);
-                        Draw_Shared(data, windows);
+                        Gfx = data.Project.ExGfx;
+                        ImGui.Columns(2, "GfxEditorLayout", false);
+                        Draw_Render();
+                        ImGui.NextColumn();
+                        Draw_Combos(data, windows);
+                        ImGui.Columns(1);
                         ImGui.EndTabItem();
                     }
                     if (ImGui.BeginTabItem("SuperExGfx",ref IsSExGFXOpen))
                     {
                         if (data.Project.SuperExGfxSupported)
                         {
-                            Draw_SuperExGFX(data, windows);
-                            Draw_Shared(data, windows);
-                            ImGui.EndTabItem();
+                            Gfx = data.Project.SuperExGfx;
+                            ImGui.Separator();
+                            ImGui.Columns(2, "GfxEditorLayout", false);
+                            Draw_Render();
+                            ImGui.NextColumn();
+                            Draw_Combos(data, windows);
+                            ImGui.Columns(1);
                         }
                         else
                         {
@@ -76,98 +92,76 @@ namespace Mole.Gui.Windows
                                 ImGui.EndPopup();
                             }
                         }
+                        ImGui.EndTabItem();
                     }
                     ImGui.EndTabBar();
                 }
-
                 ImGui.End();
             }
         }
+        public void Draw_Render()
+        {
+            ImGui.SetColumnWidth(0, 132 * sz.X);
+            if (RenderTexture.HasValue)
+                ImGui.Image((IntPtr)RenderTexture, new Vector2(128,128) * sz);
+        }
 
-        public void Draw_MenuBar(Project.UiData data, Dictionary<string, Window> windows)
+        public void Draw_MenuBar()
         {
             if (ImGui.BeginMenuBar())
             {
-                ImGui.MenuItem("OwO");
+                if(ImGui.BeginMenu("OwO"))
+                {
+                    ImGui.MenuItem("UwU");
+                    ImGui.EndMenu();
+                }
                 ImGui.EndMenuBar();
             }
         }
 
-        public void Draw_Shared(Project.UiData data, Dictionary<string, Window> windows)
+        public void Draw_Combos(Project.UiData data, Dictionary<string, WindowBase> windows)
         {
             Widgets.ComboWithArrows("##PalComboGfx", "Palette",
                 Enumerable.Range(0, Pal.Length).Select(x => $"Palette {x:X2}").ToArray(),
                 ref CurrPal, ref PrevPal
             );
-            Widgets.ComboWithArrows("##FormatComboGfx", "Format",
+
+            if (Widgets.ComboWithArrows("##FormatComboGfx", "Format",
                 Project.Formats.Values.Select(
                     x => Regex.Replace(
                         x.GetType().Name, "([0-9]?[A-Z])", " $1", RegexOptions.Compiled
                     ).Trim()
                 ).ToArray(),
                 ref CurrFmt, ref PrevFmt
-            );
-
-            // DRAW GFX
-            var drawlist = ImGui.GetWindowDrawList();
-            for (int i = 0; i < RenderableData.GetLength(0); i++)
+            ))
             {
-                for (int j = 0; j < RenderableData.GetLength(1); j++)
+                Fmt = CurrFmt switch
                 {
-                    var cursor = ImGui.GetCursorScreenPos();
-                    drawlist.AddRectFilled(
-                        cursor + (sz * new Vector2(i, j)),
-                        cursor + (sz * new Vector2(i, j)) + sz,
-                        Pal.ABGR[RenderableData[i, j]]
-                    );
-                }
+                    0 => Project.Formats[2],
+                    2 => Project.Formats[4],
+                    3 => Project.Formats[8],
+                    4 => Project.Formats[73],
+                    1 or _ => Project.Formats[3]
+                };
             }
-            ImGui.Dummy(sz * new Vector2(RenderableData.GetLength(0), RenderableData.GetLength(1)));
-        }
 
-        public void Draw_GFX(Project.UiData data, Dictionary<string, Window> windows)
-        {
             if (Widgets.ComboWithArrows("##GFXFileCombo", "GFX",
                 data.Project.Gfx.Decompressed.Select((x, i) => $"GFX{i:X2}").ToArray(),
                 ref CurrGfx, ref PrevGfx
             ))
             {
-                Update_RenderableData(data.Project.Gfx.Format(CurrGfx).FromRawToGfx(data.Project.Gfx.Decompressed[CurrGfx]));
+                Fmt = Gfx.Format(CurrGfx);
             }
 
-            Pal = data.Project.CGRam.GetPal(CurrPal, data.Project.Gfx.Format(CurrGfx).PalSize);
-        }
-
-        public void Draw_ExGFX(Project.UiData data, Dictionary<string, Window> windows)
-        {
-            if (Widgets.ComboWithArrows("##ExGFXFileCombo", "GFX",
-                data.Project.ExGfx.Decompressed.Select((x, i) => $"GFX{i+0x80:X2}").ToArray(),
-                ref CurrGfx, ref PrevGfx
-            ))
-            {
-                Update_RenderableData(data.Project.ExGfx.Format(CurrGfx).FromRawToGfx(data.Project.ExGfx.Decompressed[CurrGfx]));
-            }
-
-            Pal = data.Project.CGRam.GetPal(CurrPal, data.Project.ExGfx.Format(CurrGfx).PalSize);
-        }
-
-        public void Draw_SuperExGFX(Project.UiData data, Dictionary<string, Window> windows)
-        {
-            if (Widgets.ComboWithArrows("##ExGFXFileCombo", "GFX",
-                data.Project.SuperExGfx.Decompressed.Select((x, i) => $"GFX{i + 0x100:X2}").ToArray(),
-                ref CurrGfx, ref PrevGfx
-            ))
-            {
-                Update_RenderableData(data.Project.SuperExGfx.Format(CurrGfx).FromRawToGfx(data.Project.SuperExGfx.Decompressed[CurrGfx]));
-            }
-
-            Pal = data.Project.CGRam.GetPal(CurrPal, data.Project.SuperExGfx.Format(CurrGfx).PalSize);
+            if (CurrPal >= Fmt.PalSize)
+                CurrPal = Fmt.PalSize - 1;
+            try { Update_RenderableData(Fmt.FromRawToGfx(Gfx.Decompressed[CurrGfx])); } catch { }
+            Pal = data.Project.CGRam.GetPal(CurrPal, Fmt.PalSize);
         }
 
         public void Update_RenderableData(byte[][,] chunks)
         {
-            RenderableData = new byte[128, 128];
-
+            RenderableData = new uint[128, 128];
             int x = 0;
             int y = 0;
             // Loop over chunks
@@ -185,13 +179,19 @@ namespace Mole.Gui.Windows
                             x += 8;
                         }
 
-                        RenderableData[y, x] = chunks[i][k, j];
+                        RenderableData[x, y] = Pal.ABGR[chunks[i][k, j]];
+
                         x++;
                     }
                     x -= 8;
                     y++;
                 }
             }
+
+            if (!RenderTexture.HasValue)
+                RenderTexture = Ui.renderer.BindTexture(RenderableData);
+            else
+                Ui.renderer.UpdateTexture((IntPtr)RenderTexture, RenderableData);
         }
     }
 }

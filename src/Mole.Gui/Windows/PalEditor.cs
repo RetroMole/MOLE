@@ -3,28 +3,30 @@ using System.Numerics;
 using ImGuiNET;
 using Mole.Shared;
 using Mole.Shared.Util;
+using Serilog;
 
 namespace Mole.Gui.Windows
 {
-    public class PalEditor : Window
+    public class PalEditor : WindowBase
     {
         public int PalZoom = 16;
-        public override void Draw(Project.UiData data, Dictionary<string, Window> windows)
+        public IntPtr? TextureID;
+        public uint[,] TextureData = new uint[16,16];
+        public Vector3 col = new();
+        public override void Draw(Project.UiData data, Dictionary<string, WindowBase> windows)
         {
             if (!ShouldDraw || !data.Progress.Loaded) return;
 
             ImGui.SetNextWindowSize(new Vector2(420, 69), ImGuiCond.FirstUseEver);
             ImGui.Begin("Palette Editor");
 
-            if (ImGui.Button("Save")) LoggerEntry.Logger.Information("Save pal");
-            ImGui.SameLine(); if (ImGui.Button("Reload")) LoggerEntry.Logger.Information("Reload pal");
-            ImGui.SameLine(); if (ImGui.Button("Undo")) LoggerEntry.Logger.Information("Undo pal");
-            ImGui.SameLine(); if (ImGui.Button("Redo")) LoggerEntry.Logger.Information("Redo pal");
+            if (ImGui.Button("Save")) Log.Information("Save pal");
+            ImGui.SameLine(); if (ImGui.Button("Reload")) Log.Information("Reload pal");
+            ImGui.SameLine(); if (ImGui.Button("Undo")) Log.Information("Undo pal");
+            ImGui.SameLine(); if (ImGui.Button("Redo")) Log.Information("Redo pal");
             ImGui.SameLine(); if (ImGui.Button("-")) PalZoom -= PalZoom > 8 ? 4 : 0;
             ImGui.SameLine(); ImGui.Text($"x{PalZoom / 4}");
             ImGui.SameLine(); if (ImGui.Button("+")) PalZoom += PalZoom < 64 ? 4 : 0;
-
-            var sp = PalZoom / 4;
 
             if (ImGui.BeginTabBar("Palette Editor"))
             {
@@ -32,29 +34,26 @@ namespace Mole.Gui.Windows
                 {
                     ImGui.Columns(2,"##PalSeparator",false);
                     ImGui.SetColumnWidth(0, PalZoom * 17);
-                    ImGui.Dummy(new Vector2(0,0));
-                    var drawList = ImGui.GetWindowDrawList();
-                    ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(0, sp));
 
-                    for (int r = 0; r < 16; r++)
+                    TextureData = new uint[16, 16];
+                    for (int i = 0; i < TextureData.Length; i++)
                     {
-                        for (int c = 0; c < 16; c++)
-                        {
-                            var p = ImGui.GetCursorScreenPos();
-                            var x = p.X + (c * PalZoom);
-                            var y = p.Y + (r * PalZoom);
-
-                            drawList.AddRectFilled(
-                                new Vector2(x, y),
-                                new Vector2(x + PalZoom, y + PalZoom),
-                                Pal.SnesToABGR(data.Project.CGRam[(r * 16) + c])
-                            );
-                            if (c != 15) ImGui.SameLine();
-                        }
+                        TextureData[i / 16, i % 16] = data.Project.CGRam.GetPal(0, 256).ABGR[i];
                     }
 
-                    ImGui.Dummy(new Vector2(PalZoom * 16, PalZoom * 16f));
-                    ImGui.PopStyleVar();
+                    if (!TextureID.HasValue)
+                        TextureID = Ui.renderer.BindTexture(TextureData);
+                    else
+                        Ui.renderer.UpdateTexture((IntPtr)TextureID,TextureData);
+
+                    var pos = ImGui.GetCursorScreenPos();
+                    ImGui.Image((IntPtr)TextureID, new Vector2(16, 16) * PalZoom);
+                    if (ImGui.IsItemClicked())
+                    {
+                        int x = (int)((ImGui.GetIO().MousePos.X - pos.X) / PalZoom);
+                        int y = (int)((ImGui.GetIO().MousePos.Y - pos.Y) / PalZoom);
+                        col = new Vector3(TextureData[y, x] & 0xFF, (TextureData[y, x] >> 8) & 0xFF, (TextureData[y, x] >> 16) & 0xFF);
+                    }
 
                     ImGui.NextColumn();
                     if (Widgets.ComboWithArrows("FG", "FG",
@@ -102,6 +101,11 @@ namespace Mole.Gui.Windows
                         ref data.Project.CGRam.CurrentSpr,
                         ref data.Project.CGRam.PrevSpr
                     )) data.Project.CGRam.GenerateLevelCGRam(ref data.Project.Rom);
+                    ImGui.Text("Color:"); ImGui.SameLine();
+                    ImGui.PushItemWidth(ImGui.CalcItemWidth() - ImGui.GetStyle().ItemInnerSpacing.X * 2.0f - ImGui.GetFrameHeight() * 2.0f - 6 * 7.0f);
+                    ImGui.ColorEdit3("Color", ref col);
+                    ImGui.PopItemWidth();
+
                     ImGui.Columns(1);
                     ImGui.EndTabItem();
                 }
