@@ -111,7 +111,7 @@ namespace Mole.Gui.Dialogs
 		/// </summary>
 		private void DrawFiles()
         {
-			if (ImGui.ListBoxHeader("##Files", new Vector2(-1, -25)))
+			if (ImGui.BeginListBox("##Files", new Vector2(-1, -25)))
 			{
 				var di = new DirectoryInfo(CurrentFolder is null or "" ? "/" : CurrentFolder);
 				if (di.Exists)
@@ -183,7 +183,7 @@ namespace Mole.Gui.Dialogs
 						}
 					}
 				}
-				ImGui.ListBoxFooter();
+				ImGui.EndListBox();
 			}
 		}
 
@@ -194,13 +194,13 @@ namespace Mole.Gui.Dialogs
         {
 			ImGui.Text("Bookmarks"); ImGui.SameLine();
 			ImGui.Button("Add Bookmark"); ImGui.SameLine(); ImGui.Button("Clear Bookmarks");
-			if (ImGui.ListBoxHeader("##Bookmarks", new Vector2(-1, 185)))
+			if (ImGui.BeginListBox("##Bookmarks", new Vector2(-1, 185)))
 			{
 				ImGui.Selectable("Test#1", false, ImGuiSelectableFlags.None, new Vector2(ImGui.GetWindowContentRegionMax().X - 25, 0)); ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - 15); ImGui.Button("X");
 				ImGui.Selectable("Test#2", false, ImGuiSelectableFlags.None, new Vector2(ImGui.GetWindowContentRegionMax().X - 25, 0)); ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - 15); ImGui.Button("X");
 				ImGui.Selectable("Test#3", false, ImGuiSelectableFlags.None, new Vector2(ImGui.GetWindowContentRegionMax().X - 25, 0)); ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - 15); ImGui.Button("X");
 				ImGui.Selectable("Test#4", false, ImGuiSelectableFlags.None, new Vector2(ImGui.GetWindowContentRegionMax().X - 25, 0)); ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - 15); ImGui.Button("X");
-				ImGui.ListBoxFooter();
+				ImGui.EndListBox();
 			}
 		}
 
@@ -210,7 +210,7 @@ namespace Mole.Gui.Dialogs
 		private static void DrawHistory()
 		{
 			ImGui.Text("Recent"); ImGui.SameLine(); ImGui.Button("Clear History");
-			if (ImGui.ListBoxHeader("##Recent", new Vector2(-1,-1)))
+			if (ImGui.BeginListBox("##Recent", new Vector2(-1,-1)))
 			{
 				ImGui.Selectable("Test#1", false, ImGuiSelectableFlags.None, new Vector2(ImGui.GetWindowContentRegionMax().X - 25, 0)); ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - 15); ImGui.Button("X");
 				ImGui.Selectable("Test#2", false, ImGuiSelectableFlags.None, new Vector2(ImGui.GetWindowContentRegionMax().X - 25, 0)); ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - 15); ImGui.Button("X");
@@ -222,7 +222,7 @@ namespace Mole.Gui.Dialogs
 				ImGui.Selectable("Test#8", false, ImGuiSelectableFlags.None, new Vector2(ImGui.GetWindowContentRegionMax().X - 25, 0)); ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - 15); ImGui.Button("X");
 				ImGui.Selectable("Test#9", false, ImGuiSelectableFlags.None, new Vector2(ImGui.GetWindowContentRegionMax().X - 25, 0)); ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - 15); ImGui.Button("X");
 				ImGui.Selectable("Test#A", false, ImGuiSelectableFlags.None, new Vector2(ImGui.GetWindowContentRegionMax().X - 25, 0)); ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - 15); ImGui.Button("X");
-				ImGui.ListBoxFooter();
+				ImGui.EndListBox();
 			}
 		}
 
