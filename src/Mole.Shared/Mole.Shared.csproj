@@ -35,5 +35,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\deps\TerraCompress\src\TerraCompress.csproj" />
   </ItemGroup>
-
 </Project>

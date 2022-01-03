@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
+    <RootNamespace>Mole</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,4 +20,45 @@
     <ProjectReference Include="..\Mole.Gui\Mole.Gui.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Asar -->
+    <Content Include="..\..\deps\asar\libasar.so" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>libasar.so</Link>
+    </Content>
+    <Content Include="..\..\deps\asar\libasar.dylib" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>libasar.dylib</Link>
+    </Content>
+    <Content Include="..\..\deps\asar\libasar.dll" Condition="'$(OS)' == 'Windows_NT'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>libasar.dll</Link>
+    </Content>
+
+    <!-- ImGui -->
+    <Content Include="..\..\deps\cimgui\linux-x64\cimgui.so" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>libcimgui.so</Link>
+    </Content>
+    <Content Include="..\..\deps\cimgui\osx-x64\cimgui.dylib" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>cimgui.dylib</Link>
+    </Content>
+    <Content Include="..\..\deps\cimgui\win-x64\cimgui.dll" Condition="'$(OS)' == 'Windows_NT'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>cimgui.dll</Link>
+    </Content>
+
+    <!-- Icon -->
+    <Content Include="..\..\res\Icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Icon.png</Link>
+    </Content>
+    <EmbeddedResource Include="..\..\res\Icon.ico">
+      <LogicalName>Icon.ico</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\res\Icon.bmp">
+      <LogicalName>Icon.bmp</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>
