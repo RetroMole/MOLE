@@ -1,8 +1,14 @@
+# Signing
+*.snk
+!*pub*.snk
+
 # NDepend stuff
 NDependOut/
 *.ndproj
+
 # Thumbnails
 Thumbs.db
+
 # Shortcuts
 *.lnk
 

@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetroMole.Core", "RetroMole.Shared\RetroMole.Core.csproj", "{096EE03C-77F1-479A-8595-95CCB8D02D27}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetroMole.Launch", "RetroMole.Launch\RetroMole.Launch.csproj", "{D7F8A331-B71E-4718-A03D-736BE48D5953}"
+	ProjectSection(ProjectDependencies) = postProject
+		{096EE03C-77F1-479A-8595-95CCB8D02D27} = {096EE03C-77F1-479A-8595-95CCB8D02D27}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetroMole.Gui.Widgets", "RetroMole.Gui.Widgets\RetroMole.Gui.Widgets.csproj", "{596F7BDC-5FAF-4CA5-AA62-34C3678B96F1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetroMole.Gui", "RetroMole.Gui\RetroMole.Gui.csproj", "{A9406F00-1117-4BE3-AED0-F72DF76FBCC7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Patches", "Patches", "{32A9A97F-6BA9-4DAB-BE5F-569A1DB575A0}"
+	ProjectSection(SolutionItems) = preProject
+		Patches\empty.asm = Patches\empty.asm
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Renderers", "Renderers", "{5FFFD3D4-DDF2-43D3-BA02-5F311B23CD82}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonogameXNA-Renderer", "Renderers\MonogameXNA-Renderer\src\MonogameXNA-Renderer.csproj", "{0D9E50D5-2FD5-4801-B800-DC6AEF0272F6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{096EE03C-77F1-479A-8595-95CCB8D02D27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{096EE03C-77F1-479A-8595-95CCB8D02D27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{096EE03C-77F1-479A-8595-95CCB8D02D27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{096EE03C-77F1-479A-8595-95CCB8D02D27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7F8A331-B71E-4718-A03D-736BE48D5953}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7F8A331-B71E-4718-A03D-736BE48D5953}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7F8A331-B71E-4718-A03D-736BE48D5953}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7F8A331-B71E-4718-A03D-736BE48D5953}.Release|Any CPU.Build.0 = Release|Any CPU
+		{596F7BDC-5FAF-4CA5-AA62-34C3678B96F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{596F7BDC-5FAF-4CA5-AA62-34C3678B96F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{596F7BDC-5FAF-4CA5-AA62-34C3678B96F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{596F7BDC-5FAF-4CA5-AA62-34C3678B96F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9406F00-1117-4BE3-AED0-F72DF76FBCC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9406F00-1117-4BE3-AED0-F72DF76FBCC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9406F00-1117-4BE3-AED0-F72DF76FBCC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9406F00-1117-4BE3-AED0-F72DF76FBCC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D9E50D5-2FD5-4801-B800-DC6AEF0272F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D9E50D5-2FD5-4801-B800-DC6AEF0272F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D9E50D5-2FD5-4801-B800-DC6AEF0272F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D9E50D5-2FD5-4801-B800-DC6AEF0272F6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0D9E50D5-2FD5-4801-B800-DC6AEF0272F6} = {5FFFD3D4-DDF2-43D3-BA02-5F311B23CD82}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DE240124-DD52-4455-8B29-85C5E1FEA4C6}
+	EndGlobalSection
+EndGlobal

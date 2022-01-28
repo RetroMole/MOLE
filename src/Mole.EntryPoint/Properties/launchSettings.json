@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "Mole.EntryPoint": {
-      "commandName": "Project",
-      "commandLineArgs": "--loglevel=Debug",
-      "nativeDebugging": false
-    }
-  }
-}
