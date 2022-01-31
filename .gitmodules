@@ -1,3 +1,6 @@
 [submodule "src/Renderers/MonogameXNA-Renderer"]
 	path = src/Renderers/MonogameXNA-Renderer
 	url = https://github.com/RetroMole/MonogameXNA-Renderer.git
+[submodule "src/Asar/asar"]
+	path = src/Asar/asar
+	url = https://github.com/RetroMole/asar.git

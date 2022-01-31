@@ -1,6 +1,4 @@
-# Signing
-*.snk
-!*pub*.snk
+/src/Asar/CMake-out/
 
 # NDepend stuff
 NDependOut/

@@ -4,9 +4,6 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>C:\Users\high\source\repos\Mole\RetroMole\src\IdentityKey.snk</AssemblyOriginatorKeyFile>
-    <DelaySign>False</DelaySign>
   </PropertyGroup>
 
   <ItemGroup>

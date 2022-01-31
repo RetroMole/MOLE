@@ -2,6 +2,7 @@
 using System.Reflection;
 using CommandLine;
 using RetroMole.Core;
+using RetroMole.Core.Assemblers;
 using Serilog;
 using Serilog.Core;
 
@@ -25,6 +26,13 @@ namespace RetroMole.Launch
             .WriteTo.File("RetroMole_CORE.log")   // Log to file
             .MinimumLevel.ControlledBy(new LoggingLevelSwitch(CLIOpts.LogLevel)) // Set minimum logging level to output
             .CreateLogger();
+
+            // Initialize Asar
+            Log.Information("Initializing Asar...");
+            if (Asar.Init())
+                Log.Information("Successfully initialized Asar {0}", Asar.Ver2Str(Asar.Version()));
+            else
+                Log.Warning("Could not initialize Asar");
 
             Log.Information("RetroMole v{0} Starting...", Assembly.GetExecutingAssembly().GetName().Version);
 

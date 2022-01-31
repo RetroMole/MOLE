@@ -11,12 +11,11 @@ namespace RetroMole.Core.Utility
             asm = null;
             try
             {
-                AssemblyName assemblyName = AssemblyName.GetAssemblyName(AssemblyPath);
-                if (!Enumerable.SequenceEqual(assemblyName.GetPublicKeyToken(), PublicKeyToken))
-                    Log.Warning("Assembly @ \"{0}\" PublicKeyToken mismatched!!", AssemblyPath);
-                
-                // Load anyway for now cuz i can't get the public key tokens to match lmfao fml ;_;
-                asm = Assembly.LoadFile(AssemblyPath);
+                AssemblyName an = AssemblyName.GetAssemblyName(AssemblyPath);
+                if (an.GetPublicKey() is not null)
+                    asm = Assembly.LoadFrom(AssemblyPath);
+                else
+                    throw new FileLoadException("Assembly public key was null", AssemblyPath);
             }
             catch
             {

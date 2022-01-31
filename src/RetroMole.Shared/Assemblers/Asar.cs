@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Serilog;
 
-#pragma warning disable CA1401 // P/Invokes should not be visible
 #pragma warning disable CS0618 // Type or member is obsolete
 
 namespace RetroMole.Core.Assemblers
@@ -16,7 +15,7 @@ namespace RetroMole.Core.Assemblers
     /// </summary>
     public static unsafe class Asar
     {
-        public const string DllPath = "libasar";
+        public const string DllPath = "asar";
         public const int ExpectedApiVersion = 303;
 
         /// <summary>
