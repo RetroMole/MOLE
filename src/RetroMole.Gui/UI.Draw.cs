@@ -1,5 +1,5 @@
 ﻿using ImGuiNET;
-using RetroMole.Core;
+using RetroMole.Core.Interfaces;
 using RetroMole.Core.Utility;
 using Serilog;
 
@@ -79,6 +79,8 @@ namespace RetroMole.Gui
                     if (ImGui.BeginMenu("Debug"))
                     {
                         ImGui.MenuItem("Demo Window", null, ref _ShowDemo);
+                        if (ImGui.MenuItem("Asar Test"))
+                            Windows["AsarTest"].Open();
                         ImGui.EndMenu();
                     }
 
@@ -106,14 +108,14 @@ namespace RetroMole.Gui
             catch (Exception e)
             {
                 Log.Error(e, "");
-                var w = (Windows["Error"] as Dialogs.Error);
-                if (w.e is null)
-                {
-                    w.e = e;
-                    w.Unhandled = true;
-                    w.Open();
-                    w.Draw(Data, Windows);
-                }
+                //var w = (Windows["Error"] as Dialogs.Error);
+                //if (w.e is null)
+                //{
+                //    w.e = e;
+                //    w.Unhandled = true;
+                //    w.Open();
+                //    w.Draw(Data, Windows);
+                //}
             }
         }
     }

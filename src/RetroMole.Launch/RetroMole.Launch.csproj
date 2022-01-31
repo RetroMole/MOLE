@@ -23,8 +23,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Patches\**">
+    <None Include="..\Patches\**"
+          CopyToOutputDirectory="PreserveNewest"
+          LinkBase="Patches\" visible ="false"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Asar\CMake-out\asar\asar.vcxproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Content</OutputItemType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </ProjectReference>
   </ItemGroup>
 </Project>

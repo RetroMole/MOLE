@@ -12,10 +12,10 @@ namespace RetroMole.Core.Utility
             try
             {
                 AssemblyName an = AssemblyName.GetAssemblyName(AssemblyPath);
-                if (an.GetPublicKey() is not null)
+                //if (an.GetPublicKey() is not null)
                     asm = Assembly.LoadFrom(AssemblyPath);
-                else
-                    throw new FileLoadException("Assembly public key was null", AssemblyPath);
+                //else
+                //    throw new FileLoadException("Assembly public key was null", AssemblyPath);
             }
             catch
             {

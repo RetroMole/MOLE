@@ -1,4 +1,4 @@
-﻿using RetroMole.Core;
+﻿using RetroMole.Core.Interfaces;
 using RetroMole.Core.Utility;
 using RetroMole.Gui;
 using Serilog;

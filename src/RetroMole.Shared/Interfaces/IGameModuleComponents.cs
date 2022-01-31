@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RetroMole.Core
+namespace RetroMole.Core.Interfaces
 {
-    public interface IGameModule
+    public interface IGameModuleComponent
     {
     }
 }

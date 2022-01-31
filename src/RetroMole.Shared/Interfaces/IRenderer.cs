@@ -1,6 +1,6 @@
 ﻿using ImGuiNET;
 
-namespace RetroMole.Core
+namespace RetroMole.Core.Interfaces
 {
     public interface IRenderer
     {

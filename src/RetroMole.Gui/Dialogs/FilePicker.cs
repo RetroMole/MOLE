@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using RetroMole.Core.Interfaces;
 using RetroMole.Core.Utility;
 using System.Numerics;
 
@@ -7,9 +8,9 @@ namespace RetroMole.Gui.Dialogs
     public class FilePicker : WindowBase
     {
         public string WindowTitle;
-        public string RootFolder;
-        public string CurrentFolder;
-        public string SelectedFile;
+        public string RootFolder = "";
+        public string CurrentFolder = "";
+        public string SelectedFile = "";
         public List<string> SelectedFiles;
         public List<List<string>> AllowedExtensions;
         public int CurrentExtensions;
@@ -51,10 +52,6 @@ namespace RetroMole.Gui.Dialogs
             if (!ImGui.IsPopupOpen($"{WindowTitle}##DialogFilePicker"))
                 ImGui.OpenPopup($"{WindowTitle}##DialogFilePicker");
 
-            if (!ImGui.IsPopupOpen($"{WindowTitle}##DialogFilePicker"))
-            {
-                return;
-            }
             ImGui.SetNextWindowSize(new Vector2(600, 500));
             if (!ImGui.BeginPopupModal($"{WindowTitle}##DialogFilePicker", ref ShouldDraw, ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.MenuBar))
             {

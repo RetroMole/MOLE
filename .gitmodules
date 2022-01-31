@@ -4,3 +4,6 @@
 [submodule "src/Asar/asar"]
 	path = src/Asar/asar
 	url = https://github.com/RetroMole/asar.git
+[submodule "src/GameModules/SMB1-SMB2LL-GameModule"]
+	path = src/GameModules/SMB1-SMB2LL-GameModule
+	url = https://github.com/RetroMole/SMB1-SMB2LL-GameModule.git

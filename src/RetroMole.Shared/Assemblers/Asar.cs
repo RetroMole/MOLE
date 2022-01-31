@@ -157,7 +157,7 @@ namespace RetroMole.Core.Assemblers
             {
                 if (ApiVersion() < ExpectedApiVersion || (ApiVersion() / 100) > (ExpectedApiVersion / 100))
                 {
-                    Log.Fatal("Asar expected ApiVersion is not same as the library one!");
+                    Log.Error("[ASAR] Expected ApiVersion mismatch!");
                     return false;
                 }
                 return AsarInit();
@@ -280,6 +280,33 @@ namespace RetroMole.Core.Assemblers
                 {
                     Marshal.FreeCoTaskMem(define.name);
                     Marshal.FreeCoTaskMem(define.contents);
+                }
+
+                if (GetPrints().Length > 0)
+                {
+                    Log.Information("[ASAR] Prints:");
+                    foreach (string p in GetPrints())
+                    {
+                        Log.Information("[ASAR]: {0}", p);
+                    }
+                }
+
+                if (GetWarnings().Length > 0)
+                {
+                    Log.Information("[ASAR] Warnings:");
+                    foreach (Asarerror w in GetWarnings())
+                    {
+                        Log.Warning("[ASAR]: {0}", w.Fullerrdata);
+                    }
+                }
+
+                if (GetErrors().Length > 0)
+                {
+                    Log.Information("[ASAR] Errors:");
+                    foreach (Asarerror e in GetErrors())
+                    {
+                        Log.Error("[ASAR]: {0}", e.Fullerrdata);
+                    }
                 }
             }
         }

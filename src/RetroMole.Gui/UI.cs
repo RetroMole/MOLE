@@ -1,4 +1,5 @@
 ﻿using RetroMole.Core;
+using RetroMole.Core.Interfaces;
 using RetroMole.Core.Utility;
 using Serilog;
 
@@ -10,6 +11,7 @@ namespace RetroMole.Gui
         public static readonly Dictionary<string, WindowBase> Windows = new()
             {
                 { "About", new Windows.About() },
+                { "AsarTest", new Windows.AsarTest() },
                 //=============Dialogs=============
                 { "OpenFile", new Dialogs.FilePicker("Select ROM file", "/", SearchFilter: ".smc,.sfc|.asm") },
                 { "OpenProject", new Dialogs.FilePicker("Select Project Directory", "/", OnlyFolders: true) },
@@ -71,9 +73,6 @@ namespace RetroMole.Gui
                 Log.Information("Opening extracted project");
                 var dir = foldername;
                 Data.Project = new(Data.Progress, dir);
-                Windows["RomInfo"].Open();
-                Windows["PalEditor"].Open();
-                Windows["GfxEditor"].Open();
             }).Start();
         }
     }

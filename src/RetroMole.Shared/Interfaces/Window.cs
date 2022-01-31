@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using RetroMole.Core.Utility;
 
-namespace RetroMole.Gui
+namespace RetroMole.Core.Interfaces
 {
     public abstract class WindowBase
     {

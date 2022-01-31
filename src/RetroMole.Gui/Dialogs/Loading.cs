@@ -1,5 +1,6 @@
 using System.Numerics;
 using ImGuiNET;
+using RetroMole.Core.Interfaces;
 using RetroMole.Core.Utility;
 
 namespace RetroMole.Gui.Dialogs
