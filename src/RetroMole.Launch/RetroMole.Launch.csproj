@@ -15,17 +15,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Renderers\MonogameXNA-Renderer\src\MonogameXNA-Renderer.csproj">
-      <DestinationSubDirectory>Renderers\</DestinationSubDirectory>
-    </ProjectReference>
     <ProjectReference Include="..\RetroMole.Gui\RetroMole.Gui.csproj" />
     <ProjectReference Include="..\RetroMole.Shared\RetroMole.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\Patches\**"
-          CopyToOutputDirectory="PreserveNewest"
-          LinkBase="Patches\" visible ="false"/>
+    <ProjectReference Include="..\Renderers\MonogameXNA-Renderer\src\MonogameXNA-Renderer.csproj">
+      <DestinationSubDirectory>Renderers\</DestinationSubDirectory>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+
+    <ProjectReference Include="..\GameModules\SMB1-SMB2LL-GameModule\src\SMB1-SMB2LL-GameModule\SMB1-SMB2LL-GameModule.csproj" >
+      <DestinationSubDirectory>GameModules\</DestinationSubDirectory>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\Patches\**" CopyToOutputDirectory="PreserveNewest" LinkBase="Patches\" visible="false" />
   </ItemGroup>
 
   <ItemGroup>

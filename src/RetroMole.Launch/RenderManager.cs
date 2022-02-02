@@ -38,19 +38,19 @@ namespace RetroMole.Launch
             if (Program.CLIOpts.File != string.Empty)
             {
                 (Ui.Windows["OpenFile"] as Gui.Dialogs.FilePicker).SelectedFile = Path.GetFullPath(Program.CLIOpts.File);
-                Ui.OpenFileEventHandler(Ui.Windows["OpenFile"]);
+                Events.Ui.OpenFileEventHandler(Ui.Windows["OpenFile"]);
             }
             else if (Program.CLIOpts.Proj != string.Empty)
             {
                 if (Program.CLIOpts.Proj.EndsWith(".moleproj"))
                 {
                     (Ui.Windows["OpenProjectFile"] as Gui.Dialogs.FilePicker).SelectedFile = Path.GetFullPath(Program.CLIOpts.Proj);
-                    Ui.OpenProjectFileEventHandler(Ui.Windows["OpenProjectFile"]);
+                    Events.Ui.OpenProjectFileEventHandler(Ui.Windows["OpenProjectFile"]);
                 }
                 else if (Program.CLIOpts.Proj.EndsWith("_moleproj"))
                 {
                     (Ui.Windows["OpenProject"] as Gui.Dialogs.FilePicker).CurrentFolder = Path.GetFullPath(Program.CLIOpts.Proj);
-                    Ui.OpenProjectEventHandler(Ui.Windows["OpenProject"]);
+                    Events.Ui.OpenProjectEventHandler(Ui.Windows["OpenProject"]);
                 }
             }
             r.Start(() => {

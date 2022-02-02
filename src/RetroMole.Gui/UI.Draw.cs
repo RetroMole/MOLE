@@ -22,24 +22,23 @@ namespace RetroMole.Gui
                         //=============Project=============
                         if (ImGui.BeginMenu("Project..."))
                         {
-                            // TODO: Show replace confirmation prompt
+                            // TODO: Show confirmation prompt
                             if (ImGui.MenuItem("New Project From ROM", "Ctrl+N"))
                             {
                                 Windows["OpenFile"].Open();
-                                Windows["OpenFile"].Close += new Action<WindowBase>(OpenFileEventHandler);
+                                Windows["OpenFile"].Close += new Action<WindowBase>(Events.Ui.OpenFileEventHandler);
                             }
 
                             if (ImGui.MenuItem("Open Project Folder", "Ctrl+O"))
                             {
                                 Windows["OpenProject"].Open();
-                                Windows["OpenProject"].Close += new Action<WindowBase>(OpenProjectEventHandler);
+                                Windows["OpenProject"].Close += new Action<WindowBase>(Events.Ui.OpenProjectEventHandler);
                             }
 
-                            // TODO: Load Compressed Project File
                             if (ImGui.MenuItem("Open Compressed Project File", "Ctrl+Shift+O"))
                             {
                                 Windows["OpenProjectFile"].Open();
-                                Windows["OpenProjectFile"].Close += new Action<WindowBase>(OpenProjectFileEventHandler);
+                                Windows["OpenProjectFile"].Close += new Action<WindowBase>(Events.Ui.OpenProjectFileEventHandler);
                             }
 
                             // TODO: Show confirmation prompt
@@ -90,6 +89,12 @@ namespace RetroMole.Gui
                         if (ImGui.MenuItem("About"))
                             Windows["About"].Open();
 
+                        ImGui.EndMenu();
+                    }
+
+                    if (ImGui.BeginMenu("Extra"))
+                    {
+                        Events.Ui.TriggerMenuBar();
                         ImGui.EndMenu();
                     }
 

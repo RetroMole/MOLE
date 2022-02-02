@@ -11,8 +11,9 @@ namespace RetroMole.Launch
     public static class Program
     {
         internal static CLI CLIOpts = new();
-        internal static byte[] PublicKeyToken = new byte[] { 0xb5, 0xb0, 0xb7, 0xb0, 0x18, 0x3f, 0xe3, 0xfd};
+        internal static byte[] PublicKeyToken = new byte[] { };
         internal static RenderManager RMngr = new();
+        internal static ModuleManager GMMngr = new();
         public static void Main(string[] args)
         {
             // Parse CLI Arguments
@@ -39,7 +40,10 @@ namespace RetroMole.Launch
             // Load available renderers
             RMngr.LoadAssemblies(Path.Combine(Assembly.GetEntryAssembly().Location.Split('\\').SkipLast(1).Append("Renderers").ToArray()), PublicKeyToken);
 
-            // RUN UI
+            // Load available modules
+            GMMngr.LoadAssemblies(Path.Combine(Assembly.GetEntryAssembly().Location.Split('\\').SkipLast(1).Append("GameModules").ToArray()), PublicKeyToken);
+
+            // Run Renderer
             RMngr.RunRenderer(CLIOpts.Renderer);
 
             // Dispose of Logger
