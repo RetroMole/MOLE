@@ -7,11 +7,11 @@ namespace RetroMole.Gui
 {
     public static partial class Ui
     {
-        public static void Draw(ref IRenderer r)
+        public static void Draw(ref RenderManager r)
         {
             try
             {
-                renderer = r;
+                Rmngr = r;
                 ImGui.DockSpaceOverViewport(ImGui.GetMainViewport());
                 //==========Main Menu Bar==========
                 if (ImGui.BeginMainMenuBar())

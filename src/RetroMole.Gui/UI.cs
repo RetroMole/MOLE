@@ -5,7 +5,8 @@ namespace RetroMole.Gui
 {
     public static partial class Ui
     {
-        public static IRenderer renderer;
+        public static RenderManager Rmngr;
+        public static ModuleManager GMmngr;
         public static readonly Dictionary<string, WindowBase> Windows = new()
             {
                 { "About", new Windows.About() },

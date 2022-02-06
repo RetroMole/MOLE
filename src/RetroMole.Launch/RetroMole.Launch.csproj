@@ -26,21 +26,25 @@
   </ItemGroup>
 
   <ItemGroup>
-
-    <ProjectReference Include="..\GameModules\SMB1-SMB2LL-GameModule\src\SMB1-SMB2LL-GameModule\SMB1-SMB2LL-GameModule.csproj" >
+    <ProjectReference Include="..\GameModules\SMB1-SMB2LL-GameModule\src\SMB1-SMB2LL-GameModule\SMB1-SMB2LL-GameModule.csproj">
       <DestinationSubDirectory>GameModules\</DestinationSubDirectory>
     </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\Patches\**" CopyToOutputDirectory="PreserveNewest" LinkBase="Patches\" visible="false" />
+    <ProjectReference Include="..\Plugins\LibretroEmu-Plugin\src\LibretroEmu-Plugin.csproj">
+      <DestinationSubDirectory>Plugins\</DestinationSubDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="..\Assets\**" CopyToOutputDirectory="PreserveNewest" LinkBase="Assets\" visible="false" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Asar\CMake-out\asar\asar.vcxproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <OutputItemType>Content</OutputItemType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </ProjectReference>
+    <!-- Asar CMake-out project is usually only avaliable on Windows-->
+    <ProjectReference Include="..\Asar\CMake-Out\asar\asar.vcxproj" Condition="'$(OS)' == 'Windows_NT'" />
+    <!--TODO: Linux Alternative-->
+    <!--TODO: OSX Alternative-->
   </ItemGroup>
 </Project>

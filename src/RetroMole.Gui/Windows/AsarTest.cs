@@ -16,7 +16,7 @@ namespace RetroMole.Gui.Windows
         byte[] romdat;
         public AsarTest()
         {
-            PatchesPath = Path.Combine(Assembly.GetEntryAssembly().Location.Split('\\').SkipLast(1).Append("Patches").ToArray());
+            PatchesPath = Path.Combine(Assembly.GetEntryAssembly().Location.Split('\\').SkipLast(1).Append("Assets").ToArray());
             Patches = Directory.GetFiles(PatchesPath).Select(s => s.Split('\\').Last()).ToArray();
         }
         public override void Draw(Project.UiData data, Dictionary<string, WindowBase> windows)

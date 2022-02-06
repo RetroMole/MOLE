@@ -1,8 +1,7 @@
 ﻿using RetroMole.Core.Interfaces;
-using RetroMole.Core.Utility;
 using Serilog;
 
-namespace RetroMole.Launch
+namespace RetroMole.Core.Utility
 {
     public class ModuleManager : DynamicAssemblyLoader
     {
@@ -26,14 +25,6 @@ namespace RetroMole.Launch
                 {
                     AvailableModules.Add(t.Key, t.Value);
                 }
-            }
-
-            // Loop over modules and initialize
-            foreach (var m in AvailableModules)
-            {
-                m.Value.HookEvents();
-                foreach (var w in m.Value.Windows)
-                    Gui.Ui.Windows.Add($"{m.Key}|{w.Key}", w.Value);
             }
         }
     }

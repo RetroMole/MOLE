@@ -1,8 +1,8 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using CommandLine;
-using RetroMole.Core;
 using RetroMole.Core.Assemblers;
+using RetroMole.Core.Utility;
+using RetroMole.Gui;
 using Serilog;
 using Serilog.Core;
 
@@ -42,12 +42,35 @@ namespace RetroMole.Launch
 
             // Load available modules
             GMMngr.LoadAssemblies(Path.Combine(Assembly.GetEntryAssembly().Location.Split('\\').SkipLast(1).Append("GameModules").ToArray()), PublicKeyToken);
+            LoadModules();
 
             // Run Renderer
-            RMngr.RunRenderer(CLIOpts.Renderer);
+            RunRenderer(CLIOpts.Renderer);
 
             // Dispose of Logger
             Log.CloseAndFlush();
+        }
+
+        public static void RunRenderer(string Renderer)
+        {
+            Log.Information("Initializing \"{0}\" renderer", Renderer);
+            Ui.Rmngr = RMngr;
+            RMngr.AvailableRenderers[Renderer].Start(() => {
+                RMngr.AvailableRenderers[Renderer].BeforeLayout();
+                Ui.Draw(ref RMngr);
+                RMngr.AvailableRenderers[Renderer].AfterLayout();
+            });
+        }
+
+        public static void LoadModules()
+        {
+            // Loop over modules and initialize
+            foreach (var m in GMMngr.AvailableModules)
+            {
+                m.Value.HookEvents();
+                foreach (var w in m.Value.Windows)
+                    Ui.Windows.Add($"{m.Key}|{w.Key}", w.Value);
+            }
         }
     }
 }

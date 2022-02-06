@@ -7,3 +7,6 @@
 [submodule "src/GameModules/SMB1-SMB2LL-GameModule"]
 	path = src/GameModules/SMB1-SMB2LL-GameModule
 	url = https://github.com/RetroMole/SMB1-SMB2LL-GameModule.git
+[submodule "src/Plugins/LibretroEmu-Plugin"]
+	path = src/Plugins/LibretroEmu-Plugin
+	url = https://github.com/RetroMole/LibretroEmu-Plugin.git
