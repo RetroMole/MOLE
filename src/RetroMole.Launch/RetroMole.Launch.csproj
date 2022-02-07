@@ -43,7 +43,12 @@
 
   <ItemGroup>
     <!-- Asar CMake-out project is usually only avaliable on Windows-->
-    <ProjectReference Include="..\Asar\CMake-Out\asar\asar.vcxproj" Condition="'$(OS)' == 'Windows_NT'" />
+    <ProjectReference Include="..\Asar\CMake-Out\asar\asar.vcxproj" Condition="'$(OS)' == 'Windows_NT'">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Content</OutputItemType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </ProjectReference>
+    
     <!--TODO: Linux Alternative-->
     <!--TODO: OSX Alternative-->
   </ItemGroup>

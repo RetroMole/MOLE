@@ -26,19 +26,19 @@ namespace RetroMole.Gui
                             if (ImGui.MenuItem("New Project From ROM", "Ctrl+N"))
                             {
                                 Windows["OpenFile"].Open();
-                                Windows["OpenFile"].Close += new Action<WindowBase>(Events.Ui.OpenFileEventHandler);
+                                Windows["OpenFile"].OnClose += new Action<WindowBase>(OpenFileEventHandler);
                             }
 
                             if (ImGui.MenuItem("Open Project Folder", "Ctrl+O"))
                             {
                                 Windows["OpenProject"].Open();
-                                Windows["OpenProject"].Close += new Action<WindowBase>(Events.Ui.OpenProjectEventHandler);
+                                Windows["OpenProject"].OnClose += new Action<WindowBase>(OpenProjectEventHandler);
                             }
 
                             if (ImGui.MenuItem("Open Compressed Project File", "Ctrl+Shift+O"))
                             {
                                 Windows["OpenProjectFile"].Open();
-                                Windows["OpenProjectFile"].Close += new Action<WindowBase>(Events.Ui.OpenProjectFileEventHandler);
+                                Windows["OpenProjectFile"].OnClose += new Action<WindowBase>(OpenProjectFileEventHandler);
                             }
 
                             // TODO: Show confirmation prompt

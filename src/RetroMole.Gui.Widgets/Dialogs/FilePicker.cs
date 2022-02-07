@@ -229,7 +229,7 @@ namespace RetroMole.Gui.Dialogs
             {
                 SelectedFile = null;
                 ShouldDraw = false;
-                OnClose(this);
+                TriggerClose();
             }
 
             if (OnlyFolders)
@@ -239,7 +239,7 @@ namespace RetroMole.Gui.Dialogs
                 {
                     SelectedFile = CurrentFolder;
                     ShouldDraw = false;
-                    OnClose(this);
+                    TriggerClose();
                 }
             }
             else if (SelectedFile is not null || SelectedFiles?.Any() is true)
@@ -248,7 +248,7 @@ namespace RetroMole.Gui.Dialogs
                 if (ImGui.Button("Open"))
                 {
                     ShouldDraw = false;
-                    OnClose(this);
+                    TriggerClose();
                 }
             }
             if (AllowedExtensions is not null)
