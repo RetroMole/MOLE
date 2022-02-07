@@ -50,20 +50,25 @@ namespace RetroMole.Gui.Windows
         {
             foreach (var r in Ui.Rmngr.AvailableRenderers)
             {
-                if (ImGui.BeginChildFrame((uint)r.Key.GetHashCode(), new(750,69)))
-                {
-                    ImGui.Text(r.Value.Name);
-                    ImGui.SameLine();
-                    ImGui.Text($"v{r.Value.Version}");
-                    ImGui.SameLine();
-                    ImGui.Button("On/Off");
-                    ImGui.TextWrapped(r.Value.Description);
-                    ImGui.Button($"(GH) {string.Join('/', r.Value.Repo.Split('/').TakeLast(3))}");
-                    ImGui.SameLine();
-                    ImGui.Button($"(C) {r.Value.License}");
-                    ImGui.SameLine(); ImGui.Button("?"); ImGui.SameLine(); ImGui.Button("?"); ImGui.SameLine(); ImGui.Button("?"); ImGui.SameLine(); ImGui.Button("?");
-                    ImGui.EndChildFrame();
-                }
+                ImGui.PushStyleColor(ImGuiCol.Text, 0xFF_34A8EB);
+                ImGui.Text(r.Value.Name);
+                ImGui.PopStyleColor();
+                ImGui.SameLine();
+                ImGui.PushStyleColor(ImGuiCol.Text, 0xFF_34EBC9);
+                ImGui.Text($"v{r.Value.Version}");
+                ImGui.PopStyleColor();
+
+                ImGui.SameLine(ImGui.GetWindowWidth()-55);
+                ImGui.Button("On/Off");
+
+                ImGui.TextWrapped(r.Value.Description);
+
+                Widgets.Link.link($"(GH) {string.Join('/', r.Value.Repo.Split('/').TakeLast(3))}", r.Value.Repo);
+                ImGui.SameLine(0, 25);
+                Widgets.Link.link($"(C) {r.Value.License}", "https://github.com/RetroMole/MOLE/blob/master/LICENSE.md");
+
+                ImGui.SameLine(ImGui.GetWindowWidth() - 90); ImGui.Button("?"); ImGui.SameLine(); ImGui.Button("?"); ImGui.SameLine(); ImGui.Button("?"); ImGui.SameLine(); ImGui.Button("?");
+                ImGui.Separator();
             }
             ImGui.EndTabItem();
         }
