@@ -12,6 +12,7 @@ namespace RetroMole.Gui
             {
                 { "About", new Windows.About() },
                 { "AsarTest", new Windows.AsarTest() },
+                { "ExternalAssemblyManager", new Windows.ExternalAssemblyManager() },
                 //=============Dialogs=============
                 { "OpenFile", new Dialogs.FilePicker("Select ROM file", "/", SearchFilter: ".smc,.sfc|.asm") },
                 { "OpenProject", new Dialogs.FilePicker("Select Project Directory", "/", OnlyFolders: true) },

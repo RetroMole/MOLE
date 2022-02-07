@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RetroMole.Core\RetroMole.Core.csproj" />
     <ProjectReference Include="..\RetroMole.Gui.Widgets\RetroMole.Gui.Widgets.csproj" />
-    <ProjectReference Include="..\RetroMole.Shared\RetroMole.Core.csproj" />
   </ItemGroup>
 
 </Project>

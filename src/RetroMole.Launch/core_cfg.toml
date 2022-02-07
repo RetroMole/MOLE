@@ -1,0 +1,9 @@
+﻿ConfigName = "Default configuration"
+
+[Startup]
+# Should an instance of Asar be initialized at start up for the entire lifetime of the application
+InitLifetimeAsar = true
+
+[Logging]
+# Overwriteable minimmum log level
+DefaultLogLevel = "Debug"

@@ -4,6 +4,12 @@ namespace RetroMole.Core.Interfaces
 {
     public interface IRenderer
     {
+        public string Name { get; }
+        public string Description { get; }
+        public Version Version { get; }
+        public string Repo { get; }
+        public string License { get; }
+
         // Main application loop
         /// <summary>
         /// Starts your renderer

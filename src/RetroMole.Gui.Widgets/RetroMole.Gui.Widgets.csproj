@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RetroMole.Shared\RetroMole.Core.csproj" />
+    <ProjectReference Include="..\RetroMole.Core\RetroMole.Core.csproj" />
   </ItemGroup>
 
 </Project>
