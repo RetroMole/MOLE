@@ -17,7 +17,7 @@ namespace RetroMole.Core.Utility
             DecompressingSuperExGfx,
             SavingProject
         }
-        
+
         public int CurrentProgress = 0;
         public int MaxProgress = 0;
         public bool Loaded = false;

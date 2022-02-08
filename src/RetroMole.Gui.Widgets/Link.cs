@@ -5,7 +5,7 @@ namespace RetroMole.Gui.Widgets
 {
     public static class Link
     {
-        private static Dictionary<string,uint> Link_Color = new();
+        private static Dictionary<string, uint> Link_Color = new();
         public static void link(string DisplayText, string URL)
         {
             if (!Link_Color.ContainsKey($"{DisplayText}|{URL}"))

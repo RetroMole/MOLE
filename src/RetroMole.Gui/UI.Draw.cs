@@ -7,11 +7,13 @@ namespace RetroMole.Gui
 {
     public static partial class Ui
     {
-        public static void Draw(ref RenderManager r)
+        public static void Draw(ref RenderManager _r, ref ModuleManager _m)
         {
             try
             {
-                Rmngr = r;
+                Rmngr = _r;
+                GMmngr = _m;
+
                 ImGui.DockSpaceOverViewport(ImGui.GetMainViewport());
                 //==========Main Menu Bar==========
                 if (ImGui.BeginMainMenuBar())
@@ -108,6 +110,9 @@ namespace RetroMole.Gui
                 //==========Draw Windows===========
                 foreach (var w in Windows.Values)
                     w.Draw(Data, Windows);
+                foreach (var m in GMmngr.AvailableModules)
+                    foreach (var w in m.Value.Windows.Values)
+                        w.Draw(Data, Windows);
             }
             //==========Error Handler==========
             catch (Exception e)

@@ -25,6 +25,7 @@ namespace RetroMole.Core.Utility
                 {
                     AvailableModules.Add(t.Key, t.Value);
                 }
+
             }
         }
     }

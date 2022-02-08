@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace RetroMole.Core.Utility
 {
     public class Project
@@ -13,7 +7,7 @@ namespace RetroMole.Core.Utility
         private string _root;
         public string OutputRomPath;
         public string CleanRomPath;
-        
+
         public class UiData
         {
             public Project Project;
@@ -74,12 +68,12 @@ namespace RetroMole.Core.Utility
                     _root, "OutputROM.*").Where(x => !x.EndsWith(".sha1")).First());
                 CleanRomPath = Path.Combine(_root, Directory.EnumerateFiles(
                     _root, "CleanROM.*").Where(x => !x.EndsWith(".sha1")).First());
-                
+
                 progress.Loaded = true;
                 progress.Working = false;
             }).Start();
         }
-        
+
         /// <summary>
         /// TODO: Initialize project from a compressed .moleproj file
         /// </summary>

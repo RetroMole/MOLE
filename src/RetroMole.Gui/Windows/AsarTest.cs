@@ -2,7 +2,6 @@
 using RetroMole.Core.Assemblers;
 using RetroMole.Core.Interfaces;
 using RetroMole.Core.Utility;
-using Serilog;
 using System.Reflection;
 
 namespace RetroMole.Gui.Windows
@@ -29,7 +28,7 @@ namespace RetroMole.Gui.Windows
 
             ImGui.InputText("ROM Path", ref (windows["OpenFile"] as Dialogs.FilePicker).SelectedFile, 4096);
             ImGui.SameLine();
-            if(ImGui.Button("Browse..."))
+            if (ImGui.Button("Browse..."))
                 windows["OpenFile"].Open();
             Widgets.Widgets.ComboWithArrows("AsarPatch", "Patch", Patches, ref PatchSelected, ref PatchPrev
                 );

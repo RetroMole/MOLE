@@ -1,6 +1,4 @@
-﻿
-using Serilog;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace RetroMole.Core.Utility
 {
@@ -13,7 +11,7 @@ namespace RetroMole.Core.Utility
             {
                 AssemblyName an = AssemblyName.GetAssemblyName(AssemblyPath);
                 //if (an.GetPublicKey() is not null)
-                    asm = Assembly.LoadFrom(AssemblyPath);
+                asm = Assembly.LoadFrom(AssemblyPath);
                 //else
                 //    throw new FileLoadException("Assembly public key was null", AssemblyPath);
             }

@@ -3,6 +3,6 @@
     public static class Ui
     {
         public static event Action OnMenuBar;
-        public static void TriggerMenuBar() => OnMenuBar.Invoke();
+        public static void TriggerMenuBar() => OnMenuBar?.Invoke();
     }
 }

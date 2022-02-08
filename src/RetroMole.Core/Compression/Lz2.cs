@@ -63,11 +63,11 @@ namespace RetroMole.Core.Compression
                 byte nextByte = 0;
                 ushort repeatAddress = 0;
 
-                int[] byteCount = new int[REPEAT+1];
+                int[] byteCount = new int[REPEAT + 1];
 
                 // Evaluate Byte Fill
                 byteCount[BYTE_FILL] = 1;
-                { 
+                {
                     for (int i = position; i < length; i++)
                     {
                         if (data[i] != currentByte)
@@ -117,7 +117,8 @@ namespace RetroMole.Core.Compression
                 {
                     //Slow O(n^2) brute force algorithm for now
                     int maxAddressInt = Math.Min(0xFFFF, position - 2);
-                    if (maxAddressInt >= 0) {
+                    if (maxAddressInt >= 0)
+                    {
                         ushort maxAddress = (ushort)maxAddressInt;
                         for (int start = 0; start <= maxAddress; start++)
                         {
@@ -177,7 +178,8 @@ namespace RetroMole.Core.Compression
                         output.AddRange(directCopyBuffer);
                         directCopyBuffer = null;
                     }
-                } else
+                }
+                else
                 {
                     if (directCopyBuffer != null)
                     {
@@ -189,7 +191,7 @@ namespace RetroMole.Core.Compression
                 }
 
                 // Output command
-                switch(nextCommand)
+                switch (nextCommand)
                 {
                     case DIRECT_COPY:
                         // Already handled above
@@ -302,7 +304,7 @@ namespace RetroMole.Core.Compression
                                 output.Add(output[origin++]);
                             }
                             break;
-                            
+
                         default:
                             throw new Exception("Invalid Lz2 command: " + command);
                     }
@@ -318,7 +320,7 @@ namespace RetroMole.Core.Compression
             {
                 throw new Exception("Compressed data contains invalid Lz2 Repeat command.");
             }
-            
+
         }
 
         private static void OutputCommand(int command, int length, List<byte> output)
@@ -346,4 +348,3 @@ namespace RetroMole.Core.Compression
         }
     }
 }
-    

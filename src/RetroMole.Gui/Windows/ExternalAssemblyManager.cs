@@ -1,7 +1,6 @@
 ﻿using ImGuiNET;
 using RetroMole.Core.Interfaces;
 using RetroMole.Core.Utility;
-using System.Numerics;
 
 namespace RetroMole.Gui.Windows
 {
@@ -58,7 +57,7 @@ namespace RetroMole.Gui.Windows
                 ImGui.Text($"v{r.Value.Version}");
                 ImGui.PopStyleColor();
 
-                ImGui.SameLine(ImGui.GetWindowWidth()-55);
+                ImGui.SameLine(ImGui.GetWindowWidth() - 55);
                 ImGui.Button("On/Off");
 
                 ImGui.TextWrapped(r.Value.Description);

@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace RetroMole.Core.Components.NES
 {
-    public class PRG_ROM : IRom, IEnumerator<byte>, IEnumerable<byte>
+    public class PRG_ROM : IRom
     {
         public PRG_ROM(byte[] data)
         { _rom = data; }

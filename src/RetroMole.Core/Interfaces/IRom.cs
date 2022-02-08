@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RetroMole.Core.Interfaces
+﻿namespace RetroMole.Core.Interfaces
 {
-    public interface IRom : IGameModuleComponent
-    {
-    }
+    public interface IRom : IGameModuleComponent, IEnumerable<byte>, IEnumerator<byte>
+    { }
 }

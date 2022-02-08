@@ -5,7 +5,7 @@ namespace RetroMole.Core.Interfaces
 {
     public abstract class WindowBase
     {
-        protected bool ShouldDraw = false;
+        protected bool ShouldDraw;
         public bool IsOpen { get => ShouldDraw; }
         public event Action<WindowBase> OnClose;
         public virtual void TriggerClose() => OnClose?.Invoke(this);

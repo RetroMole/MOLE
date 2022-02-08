@@ -3,13 +3,14 @@ using Serilog;
 
 namespace RetroMole.Core.Components.NES
 {
-    public class Rom : IRom
+    public class Rom : IGameModuleComponent
     {
         // Fields
         public string path = "";
 
         // Internal representation
         private byte[] _rom;
+        private byte[] _header;
 
         // ROMs
         public PRG_ROM PRG;
@@ -82,6 +83,7 @@ namespace RetroMole.Core.Components.NES
             path = FilePath;
             _rom = File.ReadAllBytes(path);
             var h = _rom.Take(16).ToArray();
+            _header = h;
             if (!(h[0] == 'N' && h[1] == 'E' && h[2] == 'S' && h[3] == 0x1A))
             {
                 Log.Error("Not a valid iNES/NES2.0 file");
@@ -166,6 +168,12 @@ namespace RetroMole.Core.Components.NES
                 .Take((int)Header.GetType().GetField("PRG_ROMSize").GetValue(Header)) // Get Size * bytes from _rom
                 .ToArray()
             );
+            if (OnRomSave is null)
+                OnRomSave += Save;
         }
+        public event Action OnRomSave;
+        public void TriggerRomSave() => OnRomSave?.Invoke();
+        private void Save() => Save(path);
+        private void Save(string path) => File.WriteAllBytes(path, _header.Concat(PRG).Concat(CHR).ToArray());
     }
 }

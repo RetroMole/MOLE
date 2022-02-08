@@ -1,11 +1,11 @@
-﻿using System.Reflection;
-using CommandLine;
+﻿using CommandLine;
 using RetroMole.Core.Assemblers;
 using RetroMole.Core.Utility;
 using RetroMole.Gui;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
+using System.Reflection;
 using Tommy;
 
 namespace RetroMole.Launch
@@ -67,9 +67,11 @@ namespace RetroMole.Launch
         {
             Log.Information("Initializing \"{0}\" renderer", Renderer);
             Ui.Rmngr = RMngr;
-            RMngr.AvailableRenderers[Renderer].Start(() => {
+            Ui.GMmngr = GMMngr;
+            RMngr.AvailableRenderers[Renderer].Start(() =>
+            {
                 RMngr.AvailableRenderers[Renderer].BeforeLayout();
-                Ui.Draw(ref RMngr);
+                Ui.Draw(ref RMngr, ref GMMngr);
                 RMngr.AvailableRenderers[Renderer].AfterLayout();
             });
         }
@@ -80,8 +82,6 @@ namespace RetroMole.Launch
             foreach (var m in GMMngr.AvailableModules)
             {
                 m.Value.HookEvents();
-                foreach (var w in m.Value.Windows)
-                    Ui.Windows.Add($"{m.Key}|{w.Key}", w.Value);
             }
         }
     }

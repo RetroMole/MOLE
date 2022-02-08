@@ -12,8 +12,8 @@ ___
 ### License
 [GNU General Public License v3.0](https://github.com/Vawlpe/MOLE/blob/master/LICENSE.md)
 
-MOLE is an open source Super Mario World ROM editor and is in no way affiliated with Nintendo.
-Copyright (C) 2021 Vawlpe
+RetroMole is an open source ROM editor and does not endorse any form of Copyright infringing activities including distribution of ROMs with or without monetary incentive
+Copyright (C) 2020-2022 Vawlpe, RetroMole
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

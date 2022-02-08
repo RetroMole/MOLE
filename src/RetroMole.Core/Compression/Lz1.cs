@@ -157,7 +157,7 @@ namespace RetroMole.Core.Compression
                 byte nextByte = 0;
                 ushort repeatAddress = 0;
 
-                int[] byteCount = new int[Repeat+1];
+                int[] byteCount = new int[Repeat + 1];
 
                 EvalByteFill(ref data, ref position, ref byteCount, ref currentByte);
                 EvalWordFill(ref data, ref position, ref byteCount, ref currentByte, ref nextByte);
@@ -198,7 +198,8 @@ namespace RetroMole.Core.Compression
                         output.AddRange(directCopyBuffer);
                         directCopyBuffer = null;
                     }
-                } else
+                }
+                else
                 {
                     if (directCopyBuffer != null)
                     {
@@ -210,7 +211,7 @@ namespace RetroMole.Core.Compression
                 }
 
                 // Output command
-                switch(nextCommand)
+                switch (nextCommand)
                 {
                     case DirectCopy:
                         // Already handled above

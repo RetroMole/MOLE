@@ -1,10 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using Serilog;
 using System.Runtime.InteropServices;
-using Serilog;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 
