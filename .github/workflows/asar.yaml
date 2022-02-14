@@ -15,7 +15,7 @@ jobs:
               
       # Get CMake
       - name: Get CMake
-        uses: lukka/get-cmake@v3.21.2
+        uses: lukka/get-cmake@v3.22.2
 
       # CMake Asar project
       - name: Build and update asar in deps
@@ -43,7 +43,7 @@ jobs:
         
       # Get CMake
       - name: Get CMake
-        uses: lukka/get-cmake@v3.21.2
+        uses: lukka/get-cmake@v3.22.2
         
       # Setup MSBuild
       - name: Setup MSBuild
@@ -76,7 +76,7 @@ jobs:
       
       # Get CMake
       - name: Get CMake
-        uses: lukka/get-cmake@v3.21.2
+        uses: lukka/get-cmake@v3.22.2
 
       # CMake Asar project
       - name: Build and update asar in deps
