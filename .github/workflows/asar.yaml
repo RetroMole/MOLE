@@ -27,7 +27,7 @@ jobs:
           make
           
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v2.3.1
+        uses: actions/upload-artifact@v3.0.0
         with:
           name: AsarLinux
           path: ./deps/asar/Asar/out/asar/libasar.so
@@ -60,7 +60,7 @@ jobs:
           mv ./deps/asar/Asar/out/asar/Debug/asar.dll ./deps/asar/Asar/out/asar/Debug/libasar.dll
 
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v2.3.1
+        uses: actions/upload-artifact@v3.0.0
         with:
           name: AsarWindows
           path: ./deps/asar/Asar/out/asar/Debug/libasar.dll
@@ -89,7 +89,7 @@ jobs:
           cd ../../../../../
 
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v2.3.1
+        uses: actions/upload-artifact@v3.0.0
         with:
           name: AsarMacOS
           path: ./deps/asar/Asar/out/asar/libasar.dylib
