@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\RetroMole.Core\RetroMole.Core.csproj" />
+    <ProjectReference Include="..\RetroMole.Gui\RetroMole.Gui.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Packages\RetroMole.Render.Veldrid\RetroMole.Render.Veldrid.csproj" DestinationSubDirectory="Packages\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="spdx" Version="0.2.0" />
+  </ItemGroup>
+
+</Project>
