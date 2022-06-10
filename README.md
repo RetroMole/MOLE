@@ -1,6 +1,6 @@
 [![Discord](https://img.shields.io/discord/729355207862911027?label=Discord)](https://discord.gg/hAGM9UPv4q)
 [![License](https://badgen.net/github/license/Vawlpe/MOLE)](https://github.com/Vawlpe/MOLE/blob/master/LICENSE.md)
-[![Latest commit](https://img.shields.io/github/last-commit/Vawlpe/MOLE)](https://github.com/Vawlpe/MOLE/commits/)
+[![Latest commit](https://img.shields.io/github/last-commit/Vawlpe/MOLE/dev)](https://github.com/Vawlpe/MOLE/commits/dev)
 [![Version](https://badge.fury.io/gh/Vawlpe%2FMOLE.svg)](https://github.com/Vawlpe/MOLE/tags)
 
 # RetroMole is currently NOT (really?) in development!
