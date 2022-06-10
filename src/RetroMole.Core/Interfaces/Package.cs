@@ -1,5 +1,4 @@
-namespace RetroMole.Core;
-
+namespace RetroMole.Core.Interfaces;
 public class Package
 {
     public virtual string Name => String.Empty;
