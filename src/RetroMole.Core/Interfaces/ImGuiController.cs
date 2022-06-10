@@ -1,7 +1,7 @@
 using ImGuiNET;
 using System.Numerics;
-namespace RetroMole.Core;
 
+namespace RetroMole.Core.Interfaces;
 public abstract class ImGuiController
 {
 //---------------------------Vars------------------------------

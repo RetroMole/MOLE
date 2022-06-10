@@ -8,12 +8,11 @@ using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
 using System.Runtime.CompilerServices;
 using ImGuiNET;
-using RetroMole;
 
 namespace RetroMole.Render;
-public partial class Veldrid : RetroMole.Core.Package
+public partial class Veldrid : Core.Interfaces.Package
 {
-    public class Controller : Core.ImGuiController
+    public class Controller : Core.Interfaces.ImGuiController
     {
 //---------------------------Vars------------------------------
         private GraphicsDevice _gd;
@@ -43,7 +42,7 @@ public partial class Veldrid : RetroMole.Core.Package
         {
             // Create window, GraphicsDevice, and all resources necessary for the demo.
             VeldridStartup.CreateWindowAndGraphicsDevice(
-                new WindowCreateInfo(50, 50, width, height, WindowState.Normal, "ImGui.NET Sample Program"),
+                new WindowCreateInfo(50, 50, width, height, WindowState.Normal, "RetroMole"),
                 new GraphicsDeviceOptions(true, null, true, ResourceBindingModel.Improved, true, true),
                 out _window,
                 out _gd);
