@@ -3,8 +3,10 @@
 [![Latest commit](https://img.shields.io/github/last-commit/Vawlpe/MOLE)](https://github.com/Vawlpe/MOLE/commits/)
 [![Version](https://badge.fury.io/gh/Vawlpe%2FMOLE.svg)](https://github.com/Vawlpe/MOLE/tags)
 
-# RetroMole is currently NOT in development!
+# RetroMole is currently NOT (really?) in development!
 ### Due to personal reasons all source code of RetroMole has been removed and only select branches have been kept as archives, sadly development of RetroMole is a full-time commitment I don't currently have the ability to fullfill, sorry :(
+## BUT...
+### This branch will be slowly worked on in my free time, just don't expect frequent commits
 
 ## FAQ
 - #### Q: What?
