@@ -187,10 +187,6 @@ public partial class Veldrid : Core.Interfaces.Package
 
             _frameBegun = true;
             ImGui.NewFrame();
-
-            ImGui.Text($"Main viewport Position: {ImGui.GetPlatformIO().Viewports[0].Pos}");
-            ImGui.Text($"Main viewport Size: {ImGui.GetPlatformIO().Viewports[0].Size}");
-            ImGui.Text($"MoouseHoveredViewport: {ImGui.GetIO().MouseHoveredViewport}");
         }
 
         public void Render(GraphicsDevice gd, CommandList cl)
@@ -230,8 +226,9 @@ public partial class Veldrid : Core.Interfaces.Package
             ImGui.GetPlatformIO().Viewports[0].Size = new Vector2(_window.Width, _window.Height);
         }
 
-        public override void RenderImDrawData(ImDrawDataPtr draw_data)
+        public override void RenderImDrawData(params object[] args)
         {
+            ImDrawDataPtr draw_data = (ImDrawDataPtr)args[0];
             uint vertexOffsetInVertices = 0;
             uint indexOffsetInElements = 0;
 

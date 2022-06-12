@@ -1,3 +1,9 @@
 [submodule "src/ImGui.NET"]
 	path = src/ImGui.NET
 	url = https://github.com/mellinoe/ImGui.NET.git
+[submodule "submodules/asar"]
+	path = submodules/asar
+	url = https://github.com/RetroMole/asar.git
+[submodule "submodules/ImGui.NET"]
+	path = submodules/ImGui.NET
+	url = https://github.com/mellinoe/ImGui.NET.git

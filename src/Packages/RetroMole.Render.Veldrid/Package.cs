@@ -9,6 +9,6 @@ public partial class Veldrid : Core.Interfaces.Package
     public override Core.Interfaces.ImGuiController[] Controllers => new Core.Interfaces.ImGuiController[] { new Controller(1280, 720) };
     public override void ApplyHooks()
     {
-        throw new NotImplementedException();
+        return;
     }
 }

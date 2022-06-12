@@ -1,18 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <ItemGroup>
-    <ProjectReference Include="..\RetroMole.Core\RetroMole.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- <PackageReference Include="ImGui.NET" Version="1.87.3" /> -->
-    <ProjectReference Include="..\ImGui.NET\src\ImGui.NET\ImGui.NET.csproj" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RetroMole.Core\RetroMole.Core.csproj" />
+    <ProjectReference Include="..\..\submodules\ImGui.NET\src\ImGui.NET\ImGui.NET.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\submodules\ImGui.NET\deps\cimgui\win-x86\cimgui.dll" CopyToOutputDirectory="PreserveNewest">
+      <PackagePath>runtimes/win-x86/native</PackagePath>
+      <Pack>true</Pack>
+    </Content>
+    <Content Include="..\..\submodules\ImGui.NET\deps\cimgui\win-x64\cimgui.dll" CopyToOutputDirectory="PreserveNewest">
+      <PackagePath>runtimes/win-x64/native</PackagePath>
+      <Pack>true</Pack>
+    </Content>
+    <Content Include="..\..\submodules\ImGui.NET\deps\cimgui\linux-x64\cimgui.so" CopyToOutputDirectory="PreserveNewest">
+      <PackagePath>runtimes/linux-x64/native/libcimgui.so</PackagePath>
+      <Pack>true</Pack>
+    </Content>
+    <Content Include="..\..\submodules\ImGui.NET\deps\cimgui\osx\cimgui.dylib" CopyToOutputDirectory="PreserveNewest">
+      <PackagePath>runtimes/osx/native/libcimgui.dylib</PackagePath>
+      <Pack>true</Pack>
+    </Content>
+  </ItemGroup>
 </Project>
