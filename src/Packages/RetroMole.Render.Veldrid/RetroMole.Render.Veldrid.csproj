@@ -4,10 +4,11 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ImGui.Net" Version="1.87.3" />
+    <!-- <PackageReference Include="ImGui.Net" Version="1.87.3" /> -->
     <PackageReference Include="spdx" Version="0.2.0" />
     <PackageReference Include="Veldrid" Version="4.8.0" />
     <PackageReference Include="Veldrid.StartupUtilities" Version="4.8.0" />
@@ -26,5 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\RetroMole.Core\RetroMole.Core.csproj" />
+    <ProjectReference Include="..\..\ImGui.NET\src\ImGui.NET\ImGui.NET.csproj" />
   </ItemGroup>
 </Project>
