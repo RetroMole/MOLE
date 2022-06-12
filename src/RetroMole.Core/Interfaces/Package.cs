@@ -1,12 +1,12 @@
 namespace RetroMole.Core.Interfaces;
-public class Package
+public abstract class Package
 {
-    public virtual string Name => String.Empty;
-    public virtual string Author => String.Empty;
-    public virtual Version Version => new();
-    public virtual Uri Repository => new($"https://github.com/{Author}/{Name}");
-    public virtual Spdx.SpdxLicense License => Spdx.SpdxLicense.GetById("Unlicense");
+    public abstract string Name {get;}
+    public abstract string Author {get;}
+    public abstract Version Version {get;}
+    public abstract Spdx.SpdxLicense License {get;}
+    public virtual Uri Repository {get => new($"https://github.com/{Author}/{Name}");}
     public string PackageID {get => $"{Author}/{Name}@{Version}";}
     public virtual ImGuiController[] Controllers => null;
-    public virtual GameModule[] GameModules => null;
+    public abstract void ApplyHooks();
 }

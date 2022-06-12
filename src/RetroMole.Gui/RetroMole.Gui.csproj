@@ -5,7 +5,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ImGui.NET" Version="1.87.3" />
+    <!-- <PackageReference Include="ImGui.NET" Version="1.87.3" /> -->
+    <ProjectReference Include="..\ImGui.NET\src\ImGui.NET\ImGui.NET.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
