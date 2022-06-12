@@ -6,6 +6,7 @@ namespace RetroMole.Core.Utility;
 
 public static class Import
 {
+    // .NET Assembly (*.dll) containing Core.Interfaces.Package implementations 
     public static Interfaces.Package[] AssemblyPackages(Assembly asm)
     {
 		return asm.DefinedTypes
@@ -13,6 +14,8 @@ public static class Import
 			.Select((p, i) => (Interfaces.Package)asm.CreateInstance(p.FullName))
 			.ToArray();
     }
+
+    // TAR.GZ file (*.mole.pckg) containing Core.Interfaces.Package implementations 
     public static Interfaces.Package[] CompressedPackages(string path)
     {
         MemoryStream decompressed = new MemoryStream();
