@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\RetroMole.Core\RetroMole.Core.csproj" />
+    <ProjectReference Include="..\..\RetroMole.Gui\RetroMole.Gui.csproj" />
     <ProjectReference Include="..\..\..\submodules\ImGui.NET\src\ImGui.NET\ImGui.NET.csproj" />
   </ItemGroup>
 </Project>
