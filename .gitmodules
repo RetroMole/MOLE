@@ -7,3 +7,6 @@
 [submodule "submodules/imgui-node-editor"]
 	path = submodules/imgui-node-editor
 	url = https://github.com/RetroMole/imgui-node-editor.git
+[submodule "submodules/Flips"]
+	path = submodules/Flips
+	url = https://github.com/RetroMole/Flips.git
