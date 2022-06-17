@@ -7,6 +7,7 @@ public abstract class Package
     public abstract Spdx.SpdxLicense License {get;}
     public virtual Uri Repository {get => new($"https://github.com/{Author}/{Name}");}
     public string PackageID {get => $"{Author}/{Name}@{Version}";}
-    public virtual ImGuiController[] Controllers => null;
+    public virtual ImGuiController[] Controllers => new ImGuiController[] {};
+    public virtual object[] Windows => new object[] {};
     public abstract void ApplyHooks();
 }
