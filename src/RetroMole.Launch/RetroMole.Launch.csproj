@@ -24,6 +24,7 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="spdx" Version="0.2.0" />
+    <PackageReference Include="Tommy" Version="3.1.2" />
   </ItemGroup>
 
 </Project>

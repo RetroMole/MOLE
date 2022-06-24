@@ -1,4 +1,5 @@
 using ZipLib = ICSharpCode.SharpZipLib;
+using Tommy;
 using System.IO;
 using System.Reflection;
 
@@ -48,4 +49,6 @@ public static class Import
             return res.ToArray();
         }   
     }
+
+    public static TomlTable Config(string path) { using(StreamReader reader = File.OpenText(path)) return TOML.Parse(reader); }
 }
