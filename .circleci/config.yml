@@ -14,7 +14,7 @@ jobs:
             mkdir binCache
             cd ./submodules/asar
             cmake -S src -B cmakeCache
-            cp cmakeCache/asar/libasar.so ../../../binCache/libasar.so
+            cp ./cmakeCache/asar/libasar.so ../../../binCache/libasar.so
             cd ../../../
       - run:
           name: "Build .NET Projects"
@@ -42,7 +42,7 @@ jobs:
             mkdir binCache
             cd ./submodules/asar
             cmake -S src -B cmakeCache
-            cp cmakeCache/asar/libasar.dll ../../../binCache/libasar.dll
+            cp ./cmakeCache/asar/libasar.dll ../../../binCache/libasar.dll
             cd ../../../
       - run:
           name: "Test .NET Projects"
@@ -55,7 +55,7 @@ jobs:
 
   windowsBuild:
     machine:
-      image: windows-default
+      image: windows-server-2022-gui:current
     steps:
       - checkout
       - run: git checkout dev
@@ -67,7 +67,7 @@ jobs:
             mkdir binCache
             cd .\submodules\asar
             cmake -S src -B cmakeCache
-            cp cmakeCache\asar\libasar.dll ..\..\..\binCache\libasar.dll
+            cp .\cmakeCache\asar\libasar.dll ..\..\..\binCache\libasar.dll
             cd ..\..\..\
       - run:
           name: "Build .NET Projects"
@@ -83,7 +83,7 @@ jobs:
 
   windowsTest:
     machine:
-      image: windows-default
+      image: windows-server-2022-gui:current
     steps:
       - checkout
       - run: git checkout dev
@@ -95,7 +95,7 @@ jobs:
             mkdir binCache
             cd .\submodules\asar
             cmake -S src -B cmakeCache
-            cp cmakeCache\asar\libasar.dll ..\..\..\binCache\libasar.dll
+            cp .\cmakeCache\asar\libasar.dll ..\..\..\binCache\libasar.dll
             cd ..\..\..\
       - run:
           name: "Test .NET Projects"
