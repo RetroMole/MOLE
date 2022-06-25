@@ -14,8 +14,10 @@ jobs:
             mkdir binCache
             cd ./submodules/asar
             cmake -S src -B cmakeCache
-            cp ./cmakeCache/asar/libasar.so ../../../binCache/libasar.so
-            cd ../../../
+            cd ./cmakeCache
+            make
+            cp ./asar/libasar.so ../../../../binCache/libasar.so
+            cd ../../../../
       - run:
           name: "Build .NET Projects"
           command: |
@@ -42,8 +44,10 @@ jobs:
             mkdir binCache
             cd ./submodules/asar
             cmake -S src -B cmakeCache
-            cp ./cmakeCache/asar/libasar.dll ../../../binCache/libasar.dll
-            cd ../../../
+            cd ./cmakeCache
+            make
+            cp ./asar/libasar.dll ../../../../binCache/libasar.dll
+            cd ../../../../
       - run:
           name: "Test .NET Projects"
           command: |
@@ -67,8 +71,10 @@ jobs:
             mkdir binCache
             cd .\submodules\asar
             cmake -S src -B cmakeCache
-            cp .\cmakeCache\asar\libasar.dll ..\..\..\binCache\libasar.dll
-            cd ..\..\..\
+            cd .\cmakeCache
+            make
+            cp .\asar\libasar.dll ..\..\..\..\binCache\libasar.dll
+            cd ..\..\..\..\
       - run:
           name: "Build .NET Projects"
           command: |
@@ -95,8 +101,9 @@ jobs:
             mkdir binCache
             cd .\submodules\asar
             cmake -S src -B cmakeCache
-            cp .\cmakeCache\asar\libasar.dll ..\..\..\binCache\libasar.dll
-            cd ..\..\..\
+            cd .\cmakeCache
+            cp .\asar\libasar.dll ..\..\..\..\binCache\libasar.dll
+            cd ..\..\..\..\
       - run:
           name: "Test .NET Projects"
           command: |
