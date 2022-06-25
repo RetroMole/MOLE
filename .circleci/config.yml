@@ -1,0 +1,119 @@
+version: 2.1
+jobs:
+  linuxBuild:
+    machine:
+      image: ubuntu-2004:current
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run:
+          name: "Build native dependencies"
+          command: |
+            mkdir binCache
+            cd ./submodules/asar
+            cmake -S src -B cmakeCache
+            cp cmakeCache/asar/libasar.so ../../../binCache/libasar.so
+            cd ../../../
+      - run:
+          name: "Build .NET Projects"
+          command: |
+            cd ./src/RetroMole.Launch
+            mkdir ./bin/Debug/net6.0
+            cp ../../binCache/* ./bin/Debug/net6.0
+            dotnet build
+            cd ../../
+      - store_artifacts:
+          path: .\src\RetroMole.Launch\bin\Debug\net6.0
+          destination: linux
+
+  linuxTest:
+    machine:
+      image: ubuntu-2004:current
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run:
+          name: "Build native dependencies"
+          command: |
+            mkdir binCache
+            cd ./submodules/asar
+            cmake -S src -B cmakeCache
+            cp cmakeCache/asar/libasar.dll ../../../binCache/libasar.dll
+            cd ../../../
+      - run:
+          name: "Test .NET Projects"
+          command: |
+            cd ./src/RetroMole.Launch
+            mkdir ./bin/Debug/net6.0
+            cp ../../binCache/* ./bin/Debug/net6.0
+            dotnet test
+            cd ../../
+
+  windowsBuild:
+    machine:
+      image: windows-default
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run:
+          name: "Build native dependencies"
+          command: |
+            mkdir binCache
+            cd .\submodules\asar
+            cmake -S src -B cmakeCache
+            cp cmakeCache\asar\libasar.dll ..\..\..\binCache\libasar.dll
+            cd ..\..\..\
+      - run:
+          name: "Build .NET Projects"
+          command: |
+            cd .\src\RetroMole.Launch
+            mkdir .\bin\Debug\net6.0
+            cp ..\..\binCache\* .\bin\Debug\net6.0
+            dotnet build
+            cd ..\..\
+      - store_artifacts:
+          path: .\src\RetroMole.Launch\bin\Debug\net6.0
+          destination: windows
+
+  windowsTest:
+    machine:
+      image: windows-default
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run:
+          name: "Build native dependencies"
+          command: |
+            mkdir binCache
+            cd .\submodules\asar
+            cmake -S src -B cmakeCache
+            cp cmakeCache\asar\libasar.dll ..\..\..\binCache\libasar.dll
+            cd ..\..\..\
+      - run:
+          name: "Test .NET Projects"
+          command: |
+            cd .\src\RetroMole.Launch
+            mkdir .\bin\Debug\net6.0
+            cp ..\..\binCache\* .\bin\Debug\net6.0
+            dotnet test
+            cd ..\..\
+
+workflows:
+  version: 2
+  linux:
+    jobs:
+      - linuxBuild
+      - linuxTest:
+          requires:
+            - linuxBuild
+
+  windows:
+    jobs:
+      - windowsBuild
+      - windowsTest:
+          requires:
+            - windowsBuild
