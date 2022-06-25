@@ -39,7 +39,7 @@ jobs:
             ~/.dotnet/dotnet build
             cp ../../binCache/* ./bin/Debug/net6.0
             cd ~
-            tar -cfzv linuxBuild.tar.gz ~/project/src/RetroMole.Launch/bin/Debug/net6.0
+            tar -C ~/project/src/RetroMole.Launch/bin -czvf linuxBuild.tar.gz Debug/net6.0
 
       - store_artifacts:
           path: ~/linuxBuild.tar.gz
