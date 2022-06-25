@@ -1,0 +1,101 @@
+name: Build
+
+env:
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    if: ${{ !contains(github.event.head_commit.message, 'CISkip') }}
+    strategy:
+      matrix:
+       os: [ubuntu-20.04, windows-2019, macos-11]
+       include:
+          - os: windows-2019
+            cmake_generator: '-G "Visual Studio 16 2019"'
+            cmake_toolset: '-T v142'
+          - os: ubuntu-20.04
+            cmake_generator: '-G "Unix Makefiles"'
+#           cmake_toolset:
+          - os: macos-11
+            cmake_target: '-G "Unix Makefiles"'
+#           cmake_toolset:
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.4.2
+        with:
+          submodules: true
+          ref: dev
+      
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v2.1.0
+        with:
+          dotnet-version: '6.0'
+          
+      - name: Install CMake
+        uses: Symbitic/install-cmake@v0.1.0
+      
+      - name: Build native deps w/ CMake
+        run: |
+          mkdir ./nativeBin
+          cd ./submodules/asar
+          cmake -S ./src -B ./bin -DCMAKE_BUILD_TYPE=Release ${{ matrix.cmake_generator }} ${{ matrix.cmake_toolset }}
+          cmake --build ./bin --config Release
+      
+      - name: Copy libasar to nativeBin (linux)
+        if: matrix.os == 'ubuntu-20.04'
+        run: cp ./submodules/asar/bin/asar/libasar.so ./nativeBin
+      - name: Copy libasar to nativeBin (windows)
+        if: matrix.os == 'windows-2019'
+        run: cp ./submodules/asar/bin/asar/Release/asar.dll ./nativeBin/libasar.dll
+      - name: Copy libasar to nativeBin (macos)
+        if: matrix.os == 'macos-11'
+        run: cp ./submodules/asar/bin/asar/libasar.dylib ./nativeBin
+      
+      - name: Build .NET Projects
+        run: |
+          cd ./src/RetroMole.Launch
+          dotnet build .
+          cp ../../nativeBin/* ./bin/Debug/net6.0/
+          
+      - name: Delete unnecesarry native libs (linux)
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          cd ./src/RetroMole.Launch/bin/Debug/net6.0/runtimes
+          rm -rf osx*
+          rm -rf win*
+      - name: Delete unnecesarry native libs  (windows)
+        if: matrix.os == 'windows-2019'
+        run: |
+          cd ./src/RetroMole.Launch/bin/Debug/net6.0/runtimes
+          rm -rf osx*
+          rm -rf debian*
+          rm -rf fedora*
+          rm -rf opensuse*
+          rm -rf rhel*
+      - name: Delete unnecesarry native libs  (macos)
+        if: matrix.os == 'macos-11'
+        run: |
+          cd ./src/RetroMole.Launch/bin/Debug/net6.0/runtimes
+          rm -rf win*
+          rm -rf debian*
+          rm -rf fedora*
+          rm -rf opensuse*
+          rm -rf rhel*
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: ${{ matrix.os }}
+          path: ./src/RetroMole.Launch/bin/Debug/net6.0/
+          retention-days: 30
