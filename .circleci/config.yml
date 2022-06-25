@@ -37,6 +37,11 @@ jobs:
             cd ./src/RetroMole.Launch
             ~/.dotnet/dotnet build
             cp ../../binCache/* ./bin/Debug/net6.0
+            cd ../../
+
+      - store_artifacts:
+          path: ./src/RetroMole/bin/Debug/net6.0
+          destination: linux
 
 workflows:
   version: 2
