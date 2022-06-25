@@ -4,6 +4,7 @@ jobs:
   linuxBuild:
     docker:
       - image: cimg/base:stable
+
     steps:
       - checkout
       - run:
@@ -37,9 +38,8 @@ jobs:
             cd ./src/RetroMole.Launch
             ~/.dotnet/dotnet build
             cp ../../binCache/* ./bin/Debug/net6.0
-            tar -cfzv ~/linuxBuild.tar.gz ./bin/Debug/net6.0
-            cd ../../
-            
+            cd ~
+            tar -cfzv linuxBuild.tar.gz ~/project/src/RetroMole.Launch/bin/Debug/net6.0
 
       - store_artifacts:
           path: ~/linuxBuild.tar.gz
