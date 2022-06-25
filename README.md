@@ -2,6 +2,7 @@
 [![License](https://badgen.net/github/license/Vawlpe/MOLE)](https://github.com/Vawlpe/MOLE/blob/master/LICENSE.md)
 [![Latest commit](https://img.shields.io/github/last-commit/Vawlpe/MOLE/dev)](https://github.com/Vawlpe/MOLE/commits/dev)
 [![Version](https://badge.fury.io/gh/Vawlpe%2FMOLE.svg)](https://github.com/Vawlpe/MOLE/tags)
+[![Build](https://github.com/RetroMole/MOLE/actions/workflows/build.yaml/badge.svg?branch=dev)](https://github.com/RetroMole/MOLE/actions/workflows/build.yaml)
 
 # RetroMole is currently NOT (really?) in development!
 ### Due to personal reasons all source code of RetroMole has been removed and only select branches have been kept as archives, sadly development of RetroMole is a full-time commitment I don't currently have the ability to fullfill, sorry :(
