@@ -35,7 +35,7 @@ jobs:
           name: "Build .NET Projects"
           command: |
             cd ./src/RetroMole.Launch
-            dotnet build
+            ~/.dotnet/dotnet build
             cp ../../binCache/* ./bin/Debug/net6.0
 
 workflows:
