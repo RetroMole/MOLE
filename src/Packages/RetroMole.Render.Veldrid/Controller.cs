@@ -17,6 +17,7 @@ public partial class Veldrid : Core.Interfaces.Package
     {
         private GraphicsDevice _gd;
         private Sdl2Window _window;
+        private IntPtr _icon;
         private CommandList _cl;
         private bool _frameBegun;
         private static Vector3 _clearColor = new Vector3(0.45f, 0.55f, 0.6f);
@@ -80,6 +81,10 @@ public partial class Veldrid : Core.Interfaces.Package
                 _gd.MainSwapchain.Resize((uint)_window.Width, (uint)_window.Height);
                 WindowResized(_window.Width, _window.Height);
             };
+            var icon_src = SDL2Extensions.SDL_RWFromFile.Invoke(Path.Combine(Core.Utility.CommonDirectories.Exec, "Icon.bmp"), "rb");
+            _icon = SDL2Extensions.SDL_LoadBMP_RW.Invoke(icon_src, 1);
+            SDL2Extensions.SDL_SetWindowIcon.Invoke(_window.SdlWindowHandle, _icon);
+
             _cl = _gd.ResourceFactory.CreateCommandList();
 
             _windowWidth = width;
@@ -165,12 +170,12 @@ public partial class Veldrid : Core.Interfaces.Package
                 _gd.SwapBuffers(_gd.MainSwapchain);
                 SwapExtraWindows(_gd);
             }
-
             // Clean up Veldrid resources
             _gd.WaitForIdle();
             Dispose();
             _cl.Dispose();
             _gd.Dispose();
+            SDL2Extensions.SDL_FreeSurface.Invoke(_icon);
         }
 
         public void Update(float deltaSeconds, InputSnapshot snapshot)

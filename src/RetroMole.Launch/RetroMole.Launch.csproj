@@ -7,17 +7,18 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   
+  <!-- Other RetroMole projects -->
   <ItemGroup>
     <ProjectReference Include="..\RetroMole.Core\RetroMole.Core.csproj" />
     <ProjectReference Include="..\RetroMole.Gui\RetroMole.Gui.csproj" />
   </ItemGroup>
-
  
-
+  <!-- Default Packages -->
   <ItemGroup>
     <ProjectReference Include="..\Packages\RetroMole.Render.Veldrid\RetroMole.Render.Veldrid.csproj" DestinationSubDirectory="Packages\" />
   </ItemGroup>
 
+  <!-- NUGet Stuff -->
   <ItemGroup>
     <PackageReference Include="Serilog" Version="2.11.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
@@ -27,4 +28,21 @@
     <PackageReference Include="Tommy" Version="3.1.2" />
   </ItemGroup>
 
+  <!-- Icon -->
+  <ItemGroup>
+    <Content Include="..\..\res\Icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Icon.png</Link>
+    </Content>
+    <Content Include="..\..\res\Icon.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Icon.bmp</Link>
+    </Content>
+    <EmbeddedResource Include="..\..\res\Icon.ico">
+      <LogicalName>Icon.ico</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\res\Icon.bmp">
+      <LogicalName>Icon.bmp</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>
