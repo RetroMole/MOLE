@@ -399,10 +399,7 @@ public partial class Veldrid : Core.Interfaces.Package
         }
 
 //--------------------------Windows-----------------------------
-        private void CreateWindow(ImGuiViewportPtr vp)
-        {
-            ImGuiWindow window = new ImGuiWindow(_gd, vp);
-        }
+        private void CreateWindow(ImGuiViewportPtr vp) { ImGuiWindow window = new ImGuiWindow(_gd, vp); }
 
         private void DestroyWindow(ImGuiViewportPtr vp)
         {
@@ -447,27 +444,10 @@ public partial class Veldrid : Core.Interfaces.Package
             *outSize = new Vector2(bounds.Width, bounds.Height);
         }
 
-        private delegate void SDL_RaiseWindow_t(IntPtr sdl2Window);
-        private static SDL_RaiseWindow_t p_sdl_RaiseWindow;
-
-        private unsafe delegate uint SDL_GetGlobalMouseState_t(int* x, int* y);
-        private static SDL_GetGlobalMouseState_t p_sdl_GetGlobalMouseState;
-
-        private unsafe delegate int SDL_GetDisplayUsableBounds_t(int displayIndex, Rectangle* rect);
-        private static SDL_GetDisplayUsableBounds_t p_sdl_GetDisplayUsableBounds_t;
-
-        private delegate int SDL_GetNumVideoDisplays_t();
-        private static SDL_GetNumVideoDisplays_t p_sdl_GetNumVideoDisplays;
-
         private void SetWindowFocus(ImGuiViewportPtr vp)
         {
-            if (p_sdl_RaiseWindow == null)
-            {
-                p_sdl_RaiseWindow = Sdl2Native.LoadFunction<SDL_RaiseWindow_t>("SDL_RaiseWindow");
-            }
-
             ImGuiWindow window = (ImGuiWindow)GCHandle.FromIntPtr(vp.PlatformUserData).Target;
-            p_sdl_RaiseWindow(window.Window.SdlWindowHandle);
+            SDL2Extensions.SDL_RaiseWindow.Invoke(window.Window.SdlWindowHandle);
         }
 
         private byte GetWindowFocus(ImGuiViewportPtr vp)
@@ -514,25 +494,16 @@ public partial class Veldrid : Core.Interfaces.Package
         }
 
         private unsafe void UpdateMonitors()
-        {
-            if (p_sdl_GetNumVideoDisplays == null)
-            {
-                p_sdl_GetNumVideoDisplays = Sdl2Native.LoadFunction<SDL_GetNumVideoDisplays_t>("SDL_GetNumVideoDisplays");
-            }
-            if (p_sdl_GetDisplayUsableBounds_t == null)
-            {
-                p_sdl_GetDisplayUsableBounds_t = Sdl2Native.LoadFunction<SDL_GetDisplayUsableBounds_t>("SDL_GetDisplayUsableBounds");
-            }
-
+        {  
             ImGuiPlatformIOPtr platformIO = ImGui.GetPlatformIO();
             Marshal.FreeHGlobal(platformIO.NativePtr->Monitors.Data);
-            int numMonitors = p_sdl_GetNumVideoDisplays();
+            int numMonitors = SDL2Extensions.SDL_GetNumVideoDisplays();
             IntPtr data = Marshal.AllocHGlobal(Unsafe.SizeOf<ImGuiPlatformMonitor>() * numMonitors);
             platformIO.NativePtr->Monitors = new ImVector(numMonitors, numMonitors, data);
             for (int i = 0; i < numMonitors; i++)
             {
                 Rectangle r;
-                p_sdl_GetDisplayUsableBounds_t(i, &r);
+                SDL2Extensions.SDL_GetDisplayUsableBounds(i, &r);
                 ImGuiPlatformMonitorPtr monitor = platformIO.Monitors[i];
                 monitor.DpiScale = 1f;
                 monitor.MainPos = new Vector2(r.X, r.Y);
@@ -722,15 +693,10 @@ public partial class Veldrid : Core.Interfaces.Package
             io.MouseDown[1] = middlePressed || snapshot.IsMouseDown(MouseButton.Right);
             io.MouseDown[2] = rightPressed || snapshot.IsMouseDown(MouseButton.Middle);
 
-            if (p_sdl_GetGlobalMouseState == null)
-            {
-                p_sdl_GetGlobalMouseState = Sdl2Native.LoadFunction<SDL_GetGlobalMouseState_t>("SDL_GetGlobalMouseState");
-            }
-
             int x, y;
             unsafe
             {
-                uint buttons = p_sdl_GetGlobalMouseState(&x, &y);
+                uint buttons = SDL2Extensions.SDL_GetGlobalMouseState(&x, &y);
                 io.MouseDown[0] = (buttons & 0b0001) != 0;
                 io.MouseDown[1] = (buttons & 0b0010) != 0;
                 io.MouseDown[2] = (buttons & 0b0100) != 0;
