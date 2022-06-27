@@ -68,19 +68,18 @@ public partial class Veldrid : Core.Interfaces.Package
         private int _lastAssignedID = 100;
 
 //--------------------------General-----------------------------
-        public unsafe Controller( int width, int height)
+        public unsafe Controller(int width, int height, GraphicsBackend vk_backend = GraphicsBackend.Vulkan)
         {
             // Create window, GraphicsDevice, and all resources necessary for the demo.
-            VeldridStartup.CreateWindowAndGraphicsDevice(
-                new WindowCreateInfo(50, 50, 1280, 720, WindowState.Normal, "RetroMole"),
-                new GraphicsDeviceOptions(true, null, true, ResourceBindingModel.Improved, true, true),
-                out _window,
-                out _gd);
+            _window = VeldridStartup.CreateWindow(new WindowCreateInfo(50, 50, 1280, 720, WindowState.Normal, "RetroMole"));
+            _gd = VeldridStartup.CreateGraphicsDevice(_window, new GraphicsDeviceOptions(true, null, true, ResourceBindingModel.Improved, true, true), vk_backend);
+
             _window.Resized += () =>
             {
                 _gd.MainSwapchain.Resize((uint)_window.Width, (uint)_window.Height);
                 WindowResized(_window.Width, _window.Height);
             };
+
             var icon_src = SDL2Extensions.SDL_RWFromFile.Invoke(Path.Combine(Core.Utility.CommonDirectories.Exec, "Icon.bmp"), "rb");
             _icon = SDL2Extensions.SDL_LoadBMP_RW.Invoke(icon_src, 1);
             SDL2Extensions.SDL_SetWindowIcon.Invoke(_window.SdlWindowHandle, _icon);

@@ -8,13 +8,13 @@ namespace RetroMole.Core.Utility;
 public static class Import
 {
     // .NET Assembly (*.dll) containing Core.Interfaces.Package implementations 
-    public static Interfaces.Package[] AssemblyPackages(Assembly asm) => asm.DefinedTypes
+    public static Interfaces.Package[] AssemblyPackages(Assembly asm, params object[] extraInstArgs) => asm.DefinedTypes
         .Where(t => t.BaseType == typeof(Interfaces.Package))
-        .Select((p, i) => (Interfaces.Package)asm.CreateInstance(p.FullName))
+        .Select((p, i) => (Interfaces.Package)asm.CreateInstance(p.FullName, args: extraInstArgs, ignoreCase: false, bindingAttr: BindingFlags.Default, binder: null, culture: null, activationAttributes: null))
         .ToArray();
 
     // TAR.GZ file (*.mole.pckg) containing Core.Interfaces.Package implementations 
-    public static Interfaces.Package[] CompressedPackages(string path)
+    public static Interfaces.Package[] CompressedPackages(string path, params object[] extraInstArgs)
     {
         MemoryStream decompressed = new MemoryStream();
         using (var fs = new FileStream(path, FileMode.Open))
@@ -40,7 +40,7 @@ public static class Import
             {
                 var data = File.ReadAllBytes(f);
                 var asm = Assembly.Load(data);
-                res.AddRange(AssemblyPackages(asm));
+                res.AddRange(AssemblyPackages(asm, extraInstArgs));
             }
 
             // Delete temp files

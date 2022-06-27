@@ -3,12 +3,19 @@ using System.Reflection;
 using Serilog;
 using Serilog.Events;
 using Tommy;
+using CommandLine;
 
 namespace RetroMole;
-public static class Launch
+public static partial class Launch
 {
+	public static CLI CLIOpts = new();
 	public static void Main(string[] args)
 	{
+		// Parse CLI Arguments
+		Parser.Default.ParseArguments<CLI>(args)    // Parse arguments
+		.WithParsed(o => { CLIOpts = o; })          // If successful set options to the parsed results
+		.WithNotParsed(errs => { if (errs.IsHelp() || errs.IsVersion()) { Environment.Exit(0); } }); // Check for help and version args and just exit Mole
+
 		var pckgsDir = Path.Combine(Core.Utility.CommonDirectories.Exec, "Packages");
 
 		// Set up Default Logging
@@ -37,14 +44,26 @@ public static class Launch
 		// Find and load all packages, apply their hooks and import their windows, and pick the one from the config file
 		var pckgs = Directory.GetFileSystemEntries(pckgsDir, "*.dll", SearchOption.AllDirectories)
 			.Concat(Directory.GetFileSystemEntries(pckgsDir, "*.mole.pckg", SearchOption.AllDirectories))
-			.SelectMany(p => Path.GetExtension(p)?.ToUpper() switch {
-				".DLL" 		 => Core.Utility.Import.AssemblyPackages(Assembly.LoadFrom(p)),
-				".MOLE.PCKG" => Core.Utility.Import.CompressedPackages(p),
-				// TODO: Make this work somehow...
-				// Expected return type of Switch Case inside SelectMany is: Package[]
-				// Actual return type of this case: void
-				//_ 			 => Log.Error($"Uhh... how did you.. BAD PACKAGE @ {p}")
-				_			 => throw new Exception($"Uhh... how did you.. BAD PACKAGE @ {p}")
+			.SelectMany(p => {
+				switch (Path.GetExtension(p)?.ToUpper())
+				{
+					case ".DLL":
+						if (p.Contains("RetroMole.Render.Veldrid"))
+						{
+							return Core.Utility.Import.AssemblyPackages(Assembly.LoadFrom(p), CLIOpts.Renderer);
+							break;
+						}
+
+						return Core.Utility.Import.AssemblyPackages(Assembly.LoadFrom(p));
+						break;
+
+					case ".MOLE.PCKG":
+						return Core.Utility.Import.CompressedPackages(p);
+
+					default:
+						Log.Error($"Uhh... how did you.. BAD PACKAGE @ {p}");
+						return null;
+				}
 			})
 			.Select(p => {
 				Log.Debug($"Loading Package \"{p.Name}\"...");
@@ -61,8 +80,8 @@ public static class Launch
 		var ctrlr = nocfg
 				  ? pckgs.First().Controllers.First()
 				  : pckgs.Select(p => p.Controllers.First(c => c.GetType().FullName == Config["renderer"].AsString)).First();
-			
-			
+
+
 		Log.Information($"Packages Loaded Successfully! Ready to launch ({ctrlr.GetType().FullName})");
 
 		ctrlr.Main(() => Gui.UI());
