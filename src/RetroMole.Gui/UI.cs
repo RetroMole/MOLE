@@ -4,14 +4,23 @@ using System.Numerics;
 using ImGuiNET;
 namespace RetroMole;
 public static partial class Gui
-{       
-	private static bool _showImGuiDemoWindow;
-	private static bool _showAsarWindow;
-	private static string AsarInitString = String.Empty;
+{
 	public static Window[] Windows = new Window[]
 	{
-		new Window("Test @ UI", 400, 250)
+		new WindowTypes.FileDialog("OpenFile Dialog", Core.Utility.CommonDirectories.Home, WindowTypes.FileDialog.FileMode.OpenFile, "*.*"),
+		new WindowTypes.FileDialog("SaveFile Dialog", Core.Utility.CommonDirectories.Home, WindowTypes.FileDialog.FileMode.SaveFile, "*.*"),
+		new WindowTypes.FileDialog("OpenFolder Dialog", Core.Utility.CommonDirectories.Home, WindowTypes.FileDialog.FileMode.OpenFolder, "*.*"),
+		new WindowTypes.FileDialog("SaveFolder Dialog", Core.Utility.CommonDirectories.Home, WindowTypes.FileDialog.FileMode.SaveFolder, "*.*")
 	};
+	public static string[] testPaths = new string[] {String.Empty, String.Empty, String.Empty, String.Empty};
+	private static bool _showImGuiDemoWindow;
+	public static void ApplyHooks()
+	{
+		Windows[0].Close += (path) => testPaths[0] = (string)path;
+		Windows[1].Close += (path) => testPaths[1] = (string)path;
+		Windows[2].Close += (path) => testPaths[2] = (string)path;
+		Windows[3].Close += (path) => testPaths[3] = (string)path;
+	}
 	public static void UI()
 	{
 		// Initialize
@@ -23,12 +32,16 @@ public static partial class Gui
 			if (ImGui.BeginMenu("Debug"))
 			{
 				ImGui.MenuItem("Demo", "", ref _showImGuiDemoWindow);
-				ImGui.MenuItem("Asar", "", ref _showAsarWindow);
+				foreach (var w in Windows)
+					ImGui.MenuItem(w.GetName(),"", ref w.IsOpen);
 				ImGui.EndMenu();
 			}
 			Core.Hooks.UI.TriggerMainMenuBar();
 			ImGui.EndMainMenuBar();
 		}
+
+		foreach(var s in testPaths)
+			ImGui.Text(s);
 
 		// Demo Window
 		if (_showImGuiDemoWindow)
@@ -37,25 +50,9 @@ public static partial class Gui
 			ImGui.ShowDemoWindow(ref _showImGuiDemoWindow);
 		}
 
-		// Asar Window
-		if (_showAsarWindow && ImGui.Begin("Asar"))
-		{
-			if (ImGui.Button("Init"))
-				if (Asar.Init())
-					AsarInitString = "Init Successful";
-				else
-					AsarInitString = "Init Failed";
-			ImGui.Text(AsarInitString);
-			ImGui.Text($"Asar Version: {Asar.Ver2Str(Asar.Version())}");
-					
-			ImGui.End();
-		}
-
 		// Draw Windows
 		foreach (var w in Windows)
-		{
 			w.Draw();
-		}
 
 		// Finish up
 		ImGuiIOPtr io = ImGui.GetIO();
