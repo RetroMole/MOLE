@@ -84,6 +84,7 @@ public static partial class Launch
 
 		Log.Information($"Packages Loaded Successfully! Ready to launch ({ctrlr.GetType().FullName})");
 
+		Gui.ApplyHooks();
 		ctrlr.Main(() => Gui.UI());
 		Log.Information(">---------------------------<Shutting Down>---------------------------<");
 		Log.CloseAndFlush();
