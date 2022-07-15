@@ -3,24 +3,7 @@
 [![Latest commit](https://img.shields.io/github/last-commit/Vawlpe/MOLE/dev)](https://github.com/Vawlpe/MOLE/commits/dev)
 [![Version](https://badge.fury.io/gh/Vawlpe%2FMOLE.svg)](https://github.com/Vawlpe/MOLE/tags)
 [![Build](https://github.com/RetroMole/MOLE/actions/workflows/build.yaml/badge.svg?branch=dev)](https://github.com/RetroMole/MOLE/actions/workflows/build.yaml)
-
 # RetroMole is currently NOT (really?) in development!
-### Due to personal reasons all source code of RetroMole has been removed and only select branches have been kept as archives, sadly development of RetroMole is a full-time commitment I don't currently have the ability to fullfill, sorry :(
-## BUT...
-### This branch will be slowly worked on in my free time, just don't expect frequent commits
-
-## FAQ
-- #### Q: What?
-  A: An open-source multi-game romhacking tool and library for various old console games, primarily NES/SNES geared to my personal tastes, primarily my preference of relatively high abstraction of these old game systems.
-- #### Q: Why?
-  A: Scope creep and a need to completely rewrite the codebase when I have more time and energy, currently focusing on myself, and perhaps other smaller projects, but stick around cuz RetroMole is not gone yet.
-- #### Q: When will you return?
-  A: Unfortunately I cannot give a rough estimate of this as I don't have a particular timeline for when my mental health will be in check, but I'd say you'll find be back on this before the end of the decade at most.
-- #### Q: What's left?
-  A: I kept 3 branches, for reference, these have been name "Old-yyyy/mm/dd", dated by their latest code-related commit date, these branches are only there for reference and archiving, pleeeease do not try to build any of these branches, better yet, ignore their existance. I hate most of the code on em :)
-- #### Q: Can/Should I try to pick up the bits while you're gone?
-  A: Do as you wish, but do not expect any direct support 'till I'm back on the project full-time, sorry.
-
 ___
 ## License
 [GNU General Public License v3.0](https://github.com/Vawlpe/MOLE/blob/master/LICENSE.md)
