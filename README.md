@@ -1,19 +1,10 @@
-[![License](https://badgen.net/github/license/Vawlpe/MOLE)](https://github.com/Vawlpe/MOLE/blob/master/LICENSE.md)
-[![Latest commit](https://img.shields.io/github/last-commit/Vawlpe/MOLE)](https://github.com/Vawlpe/MOLE/commits/)
-[![Version](https://badge.fury.io/gh/Vawlpe%2FMOLE.svg)](https://github.com/Vawlpe/MOLE/tags)
-
-
-[![Discord](https://img.shields.io/discord/729355207862911027?label=Discord)](https://discord.gg/hAGM9UPv4q)
-[![Trello](https://img.shields.io/badge/Trello-workspace-blue)](https://trello.com/mole34)
-
-
-### Uhhh.... new branch lol >.>
-___
+# FOR ARCHIVING PURPOSES ONLY, DIRECT PUSHING DISABLED
 ### License
 [GNU General Public License v3.0](https://github.com/Vawlpe/MOLE/blob/master/LICENSE.md)
 
 RetroMole is an open source ROM editor and does not endorse any form of Copyright infringing activities including distribution of ROMs with or without monetary incentive
-Copyright (C) 2020-2022 Vawlpe, RetroMole
+
+Copyright (C) 2019-2022 - Hazel (Vawlpe), RetroMole org, all other contributors
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
