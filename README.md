@@ -4,8 +4,7 @@
 [![Version](https://badge.fury.io/gh/Vawlpe%2FMOLE.svg)](https://github.com/Vawlpe/MOLE/tags)
 [![Build](https://github.com/RetroMole/MOLE/actions/workflows/build.yaml/badge.svg?branch=dev)](https://github.com/RetroMole/MOLE/actions/workflows/build.yaml)
 # RetroMole is currently NOT (really?) in development!
-___
-## License
+### License
 [GNU General Public License v3.0](https://github.com/Vawlpe/MOLE/blob/master/LICENSE.md)
 
 RetroMole is an open source ROM editor and does not endorse any form of Copyright infringing activities including distribution of ROMs with or without monetary incentive
