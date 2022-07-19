@@ -1,5 +1,5 @@
-﻿using System;
-using System.Reflection;
+﻿#pragma warning disable CS8603, CS8618
+
 using Serilog;
 using Serilog.Events;
 using Tommy;
@@ -16,12 +16,11 @@ public static partial class Launch
 		.WithParsed(o => { CLIOpts = o; })          // If successful set options to the parsed results
 		.WithNotParsed(errs => { if (errs.IsHelp() || errs.IsVersion()) { Environment.Exit(0); } }); // Check for help and version args and just exit Mole
 
-		var pckgsDir = Path.Combine(Core.Utility.CommonDirectories.Exec, "Packages");
 
 		// Set up Default Logging
 		Log.Logger = new LoggerConfiguration()
     		.WriteTo.Async(a => a.Console(), blockWhenFull: true)
-			.WriteTo.Async(a => a.File(Path.Combine(Core.Utility.CommonDirectories.Cfg, "logs", "RetroMole.log"),
+			.WriteTo.Async(a => a.File(Path.Combine(Core.GLOBALS.CfgPath, "logs", "RetroMole.log"),
 					rollingInterval: RollingInterval.Day,
 					fileSizeLimitBytes: 200000000,
 					rollOnFileSizeLimit: true,
@@ -31,72 +30,35 @@ public static partial class Launch
 			)
 			.MinimumLevel.Debug()
     		.CreateLogger();
+
 		Log.Information(">-----------------------------<Starting>------------------------------<");
 
-		// Read config file
+		// Read/Load config file
 		Log.Information("Reading user config file...");
-		var nocfg = !File.Exists(Path.Combine(Core.Utility.CommonDirectories.Cfg, "config.toml"));
-		if (nocfg) Log.Warning("No config file found, using default config...");
+		
+		if (!File.Exists(Path.Combine(Core.GLOBALS.CfgPath, "config.toml")))
+			Log.Warning("No config file found, using default config...");
 		else LoadConfig();
 
-		Log.Information("Loading Packages");
-
-		// Find and load all packages, apply their hooks and import their windows, and pick the one from the config file
-		var pckgs = Directory.GetFileSystemEntries(pckgsDir, "*.dll", SearchOption.AllDirectories)
-			.Concat(Directory.GetFileSystemEntries(pckgsDir, "*.mole.pckg", SearchOption.AllDirectories))
-			.SelectMany(p => {
-				switch (Path.GetExtension(p)?.ToUpper())
-				{
-					case ".DLL":
-						if (p.Contains("RetroMole.Render.Veldrid"))
-						{
-							return Core.Utility.Import.AssemblyPackages(Assembly.LoadFrom(p), CLIOpts.Renderer);
-							break;
-						}
-
-						return Core.Utility.Import.AssemblyPackages(Assembly.LoadFrom(p));
-						break;
-
-					case ".MOLE.PCKG":
-						return Core.Utility.Import.CompressedPackages(p);
-
-					default:
-						Log.Error($"Uhh... how did you.. BAD PACKAGE @ {p}");
-						return null;
-				}
-			})
-			.Select(p => {
-				Log.Debug($"Loading Package \"{p.Name}\"...");
-
-				p.ApplyHooks();
-				Gui.Windows = Gui.Windows
-					.Concat(p.Windows.Cast<Gui.Window>())
-					.ToArray();
-
-				Log.Debug($"Package \"{p.Name}\" Loaded Successfully!");
-				return p;
-			});
-
-		var ctrlr = nocfg
-				  ? pckgs.First().Controllers.First()
-				  : pckgs.Select(p => p.Controllers.First(c => c.GetType().FullName == Config["renderer"].AsString)).First();
-
-
-		Log.Information($"Packages Loaded Successfully! Ready to launch ({ctrlr.GetType().FullName})");
+		Log.Information("Finishing Package initialization (hook application, gui window registration)");
+		// Finish Package initialization
+		Core.GLOBALS.Packages = Core.GLOBALS.Packages.Select(p => {
+			p.ApplyHooks();
+			Gui.Windows = Gui.Windows.Concat(p.Windows.Cast<Gui.Window>()).ToArray();
+			return p;
+		})
+		.ToArray();
 
 		Gui.ApplyHooks();
-		ctrlr.Main(() => Gui.UI());
+		Core.GLOBALS.CurrentController.Main(() => Gui.UI());
 		Log.Information(">---------------------------<Shutting Down>---------------------------<");
 		Log.CloseAndFlush();
 	}
 
-	public static TomlTable Config;
 	public static void LoadConfig()
 	{
-		Config = Core.Utility.Import.Config(Path.Combine(Core.Utility.CommonDirectories.Cfg, "config.toml"));
-
 		var logger = new LoggerConfiguration();
-		foreach(TomlNode s in Config["logging"]["sinks"].AsArray)
+		foreach(TomlNode s in Core.GLOBALS.Config["logging"]["sinks"].AsArray)
 		{
 			string type  = s["type"].AsString;
 			string level = s["level"].AsString;
@@ -114,7 +76,7 @@ public static partial class Launch
 					);
 					break;
 				case "File":
-					string path = Path.Combine(Core.Utility.CommonDirectories.Cfg, s["path"].AsString);
+					string path = Path.Combine(Core.GLOBALS.CfgPath, s["path"].AsString);
 					string ri = s["rollingInterval"].AsString;
 					int fsl = s["fileSizeLimitBytes"].AsInteger;
 					bool rofl = s["rollOnFileSizeLimit"].AsBoolean;
@@ -133,7 +95,7 @@ public static partial class Launch
 					throw new Exception("Unknown logging sink type");
 			}
 		}
-		switch((string)Config["logging"]["minimumLevel"].AsString)
+		switch((string)Core.GLOBALS.Config["logging"]["minimumLevel"].AsString)
 		{
 			case "Verbose":
 				logger.MinimumLevel.Verbose();
@@ -161,3 +123,5 @@ public static partial class Launch
 		Log.Information("Logging settings loaded from config file.");
 	}
 }
+
+#pragma warning restore CS8603, CS8618

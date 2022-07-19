@@ -1,3 +1,5 @@
+#pragma warning disable CS8603
+
 using ImGuiNET;
 using Veldrid;
 namespace RetroMole.Render;
@@ -5,7 +7,7 @@ namespace RetroMole.Render;
 public partial class Veldrid : Core.Interfaces.Package
 {
     private static GraphicsBackend _graphicsBackend = GraphicsBackend.Vulkan;
-    public Veldrid(params object[] args) => _graphicsBackend = (GraphicsBackend)args[0];
+    public Veldrid(params object[] args) => _graphicsBackend = (GraphicsBackend)Enum.Parse(typeof(GraphicsBackend), args[0].ToString());
     public override string Name => "VeldridController";
     public override string Author => "RetroMole";
     public override Version Version => new(0,0,1,0);
@@ -14,3 +16,5 @@ public partial class Veldrid : Core.Interfaces.Package
     public override object[] Windows => new object[] { };
     public override void ApplyHooks() => Core.Hooks.UI.OnMainMenuBar += () => ImGui.MenuItem("Test Button");
 }
+
+#pragma warning restore CS8603

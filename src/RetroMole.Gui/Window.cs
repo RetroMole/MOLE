@@ -20,7 +20,7 @@ public static partial class Gui
         public ImGuiWindowFlags Flags;
         public event Action<object> Close;
         public void CloseWindow(object args) => Close?.DynamicInvoke(args);
-        public Window(string Name, int W, int H, ImGuiWindowFlags Flags, int X = 0, int Y = 0, bool IsOpen = false, bool IsPopUp = false)
+        public Window(string Name, int W, int H, ImGuiWindowFlags Flags = ImGuiWindowFlags.None, int X = 0, int Y = 0, bool IsOpen = false, bool IsPopUp = false) : base()
         {
             this.Name = Name;
             this.W = W;
