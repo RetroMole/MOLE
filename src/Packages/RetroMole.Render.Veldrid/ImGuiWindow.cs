@@ -1,5 +1,6 @@
+#pragma warning disable CS8618
+
 using ImGuiNET;
-using System;
 using System.Runtime.InteropServices;
 using Veldrid;
 using Veldrid.Sdl2;
@@ -82,3 +83,5 @@ public partial class Veldrid : Core.Interfaces.Package
         }
     }
 }
+
+#pragma warning restore CS8618

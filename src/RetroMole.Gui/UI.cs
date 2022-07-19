@@ -7,10 +7,11 @@ public static partial class Gui
 {
 	public static Window[] Windows = new Window[]
 	{
-		new WindowTypes.FileDialog("OpenFile Dialog", Core.Utility.CommonDirectories.Home, WindowTypes.FileDialog.FileMode.OpenFile, "*.*"),
-		new WindowTypes.FileDialog("SaveFile Dialog", Core.Utility.CommonDirectories.Home, WindowTypes.FileDialog.FileMode.SaveFile, "*.*"),
-		new WindowTypes.FileDialog("OpenFolder Dialog", Core.Utility.CommonDirectories.Home, WindowTypes.FileDialog.FileMode.OpenFolder, "*.*"),
-		new WindowTypes.FileDialog("SaveFolder Dialog", Core.Utility.CommonDirectories.Home, WindowTypes.FileDialog.FileMode.SaveFolder, "*.*")
+		new WindowTypes.FileDialog("OpenFile Dialog", Core.GLOBALS.HomePath, WindowTypes.FileDialog.FileMode.OpenFile, "*.*"),
+		new WindowTypes.FileDialog("SaveFile Dialog", Core.GLOBALS.HomePath, WindowTypes.FileDialog.FileMode.SaveFile, "*.*"),
+		new WindowTypes.FileDialog("OpenFolder Dialog", Core.GLOBALS.HomePath, WindowTypes.FileDialog.FileMode.OpenFolder, "*.*"),
+		new WindowTypes.FileDialog("SaveFolder Dialog", Core.GLOBALS.HomePath, WindowTypes.FileDialog.FileMode.SaveFolder, "*.*"),
+		new WindowTypes.Test("TextureCanvas Test")
 	};
 	public static string[] testPaths = new string[] {String.Empty, String.Empty, String.Empty, String.Empty};
 	private static bool _showImGuiDemoWindow;

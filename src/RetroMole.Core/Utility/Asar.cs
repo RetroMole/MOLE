@@ -1,7 +1,9 @@
+#pragma warning disable CS0618, CS8625, CS8601
+
 using Serilog;
 using System.Runtime.InteropServices;
 
-namespace RetroMole.Core.Assemblers
+namespace RetroMole.Core.Utility
 {
     /// <summary>
     /// Contains various functions to apply patches.
@@ -574,3 +576,5 @@ namespace RetroMole.Core.Assemblers
         NoRom
     }
 }
+
+#pragma warning restore CS0618, CS8625, CS8601
