@@ -31,7 +31,6 @@ public static class GLOBALS
                                 ? "Vulkan"
                                 : Config["renderer"]["params"]
                         );
-                    Log.Information($"Successfully loaded Package @ {Path.GetFullPath(p)}");
                     return Core.Utility.Import.AssemblyPackages(ctx.LoadFromAssemblyPath(Path.GetFullPath(p)));
                 case ".MOLE.PCKG":
                     return Core.Utility.Import.CompressedPackages(p);

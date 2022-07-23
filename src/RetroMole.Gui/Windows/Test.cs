@@ -1,3 +1,5 @@
+using ImGuiNET;
+
 namespace RetroMole;
 
 public static partial class Gui
@@ -7,7 +9,7 @@ public static partial class Gui
         public class Test : RetroMole.Gui.Window
         {
             public Test(string Name) : base(Name, 300, 300) { }
-            Widgets.TextureCanvas TestCanvas = new(Path.GetFullPath(Path.Join(Core.GLOBALS.ExecPath, "Icon.bmp")));
+            Widgets.TextureCanvas TestCanvas = new(Path.GetFullPath(Path.Join(Core.GLOBALS.ExecPath, "test.png")));
             public override void Draw(string Name, int W, int H) => TestCanvas.Draw();
         }
     }

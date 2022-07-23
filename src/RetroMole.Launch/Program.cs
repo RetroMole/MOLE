@@ -22,9 +22,9 @@ public static partial class Launch
     		.WriteTo.Async(a => a.Console(), blockWhenFull: true)
 			.WriteTo.Async(a => a.File(Path.Combine(Core.GLOBALS.CfgPath, "logs", "RetroMole.log"),
 					rollingInterval: RollingInterval.Day,
-					fileSizeLimitBytes: 200000000,
+					fileSizeLimitBytes: 2000000,
 					rollOnFileSizeLimit: true,
-					retainedFileCountLimit: 7
+					retainedFileCountLimit: 12
 				),
 				blockWhenFull: true
 			)
