@@ -1,4 +1,4 @@
 .vscode
 src/**/bin/
 src/**/obj/
-src/**/imgui.ini
+**/imgui.ini
