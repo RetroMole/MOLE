@@ -23,9 +23,7 @@ public class Texture
     {
         get => _Pixels;
         set {
-            _Pixels = _Pixels
-                .Select((p, i) => value[i])
-                .ToArray();
+            _Pixels = value;
             OnChanged?.Invoke(new OnTextureChangedEventArgs(this));
         }
     }
@@ -43,6 +41,9 @@ public class Texture
     {
         var texture = new Texture(FilePath);
         texture.ID = BindController.BindTexture(texture);
+
+        texture.OnChanged += (e) => BindController.UpdateTexture(e.Texture);
+
         return texture;
     }
     private Texture(string FilePath)
@@ -52,7 +53,7 @@ public class Texture
         Width = img.Width;
         Height = img.Height;
 
-        _Pixels = new Rgba32[Width * Height * 4];
+        _Pixels = new Rgba32[Width * Height];
         img.CopyPixelDataTo(Pixels);
     }
 }

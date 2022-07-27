@@ -29,11 +29,7 @@ public static partial class Gui
                     () => {
                         if (ImGui.Button("Reverse"))
                         {
-                            for (int i = 0; i < TextureObj.Pixels.Length; i++)
-                            {
-                                var p = TextureObj.Pixels[i];
-                                TextureObj.Pixels[i] = new Rgba32(p.A, p.B, p.G, p.R);
-                            }
+                            TextureObj.Pixels = TextureObj.Pixels.Reverse().ToArray();
                             Log.Debug($"Data: \n" +
                                 $"{String.Join(", ", TextureObj.Pixels.Select(p => $"{p.Rgba:X8}"))}"
                             );
