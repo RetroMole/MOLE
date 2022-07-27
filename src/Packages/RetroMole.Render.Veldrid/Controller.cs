@@ -28,10 +28,11 @@ public partial class Veldrid : Core.Interfaces.Package
         private Shader _vertexShader;
         private Shader _fragmentShader;
         private ResourceLayout _mainRL;
-        private ResourceLayout _textRL;
+        private ResourceLayout _ftRL;
         private Pipeline _pipeline;
         private ResourceSet _mainRS;
         private ResourceSet _ftRS;
+        private Dictionary<IntPtr, ResourceSet> _textureRS = new();
 
         private bool _controlDown;
         private bool _shiftDown;
@@ -295,11 +296,11 @@ public partial class Veldrid : Core.Interfaces.Package
                         throw new NotImplementedException();
                     else
                     {
-                        if (pcmd.TextureId != IntPtr.Zero)
-                            if (pcmd.TextureId == FontTexture.ID)
-                                _cl.SetGraphicsResourceSet(1, _ftRS);
-                            else
-                                _cl.SetGraphicsResourceSet(1, GetRSByID(pcmd.TextureId));
+                        // if (pcmd.TextureId != IntPtr.Zero)
+                        if (pcmd.TextureId == FontTexture.ID)
+                            _cl.SetGraphicsResourceSet(1, _ftRS);
+                        else
+                            _cl.SetGraphicsResourceSet(1, _textureRS[pcmd.TextureId]);
 
                         _cl.SetScissorRect(
                             0,
@@ -361,12 +362,22 @@ public partial class Veldrid : Core.Interfaces.Package
             _vertexBuffer.Dispose();
             _indexBuffer.Dispose();
             _projMatrixBuffer.Dispose();
+
             _vertexShader.Dispose();
             _fragmentShader.Dispose();
+
             _pipeline.Dispose();
-            
-            Array.ForEach<Binding>(Textures.ToArray(), t => FreeTexture(t.ID));
-            _lastAssignedID = 100;
+
+            _mainRS.Dispose();
+            _ftRS.Dispose();
+
+            _mainRL.Dispose();
+            _ftRL.Dispose();
+
+            ((TextureView)FontTexture.Texture).Target.Dispose();
+            ((TextureView)FontTexture.Texture).Dispose();
+
+            Array.ForEach<IntPtr>(Textures.Keys.ToArray(), ID => FreeTexture(ID));
         }
 
         //--------------------------Windows-----------------------------
@@ -515,7 +526,7 @@ public partial class Veldrid : Core.Interfaces.Package
             _mainRL = factory.CreateResourceLayout(new ResourceLayoutDescription(
                 new ResourceLayoutElementDescription("ProjectionMatrixBuffer", ResourceKind.UniformBuffer, ShaderStages.Vertex),
                 new ResourceLayoutElementDescription("MainSampler", ResourceKind.Sampler, ShaderStages.Fragment)));
-            _textRL = factory.CreateResourceLayout(new ResourceLayoutDescription(
+            _ftRL = factory.CreateResourceLayout(new ResourceLayoutDescription(
                 new ResourceLayoutElementDescription("MainTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment)));
 
             GraphicsPipelineDescription pd = new GraphicsPipelineDescription(
@@ -524,7 +535,7 @@ public partial class Veldrid : Core.Interfaces.Package
                 new RasterizerStateDescription(FaceCullMode.None, PolygonFillMode.Solid, FrontFace.Clockwise, false, true),
                 PrimitiveTopology.TriangleList,
                 new ShaderSetDescription(vertexLayouts, new[] { _vertexShader, _fragmentShader }),
-                new ResourceLayout[] { _mainRL, _textRL },
+                new ResourceLayout[] { _mainRL, _ftRL },
                 outputDescription,
                 ResourceBindingModel.Default);
             _pipeline = factory.CreateGraphicsPipeline(ref pd);
@@ -535,8 +546,8 @@ public partial class Veldrid : Core.Interfaces.Package
                 _gd.PointSampler
             ));
             _ftRS = factory.CreateResourceSet(new(
-                _textRL,
-                (((Texture, TextureView))FontTexture.Texture).Item2
+                _ftRL,
+                (TextureView)FontTexture.Texture
             ));
         }
 
@@ -555,40 +566,47 @@ public partial class Veldrid : Core.Interfaces.Package
 
             var tv = _gd.ResourceFactory.CreateTextureView(t);
             var rs = _gd.ResourceFactory.CreateResourceSet(new(
-                _textRL,
+                _ftRL,
                 tv
             ));
 
-            var id = GetNextImGuiBindingID();
+            var ID = GetNextImGuiBindingID();
 
-            Textures.Add(new() {ID = id, Texture = rs});
+            Textures.Add(ID, tv);
+            _textureRS.Add(ID, rs);
 
-            return id;
+            return ID;
         }
         
-        public override IntPtr UpdateTexture(IntPtr ID, Core.Interfaces.Texture texture)
+        public override IntPtr UpdateTexture(Core.Interfaces.Texture texture)
         {
-            Texture t = (Texture)Textures.First(t => t.ID == texture.ID).Texture;
+            Texture t = ((TextureView)Textures[texture.ID]).Target;
 
             _gd.UpdateTexture(t, texture.Pixels, 0, 0, 0, (uint)texture.Width, (uint)texture.Height, 1, 0, 0);
-            Textures.Remove(Textures.First(t => t.ID == texture.ID));
 
             var tv = _gd.ResourceFactory.CreateTextureView(t);
             var rs = _gd.ResourceFactory.CreateResourceSet(new(
-                _textRL,
+                _ftRL,
                 tv
             ));
 
-            Textures.Add(new() {ID = texture.ID, Texture = rs});
+            Textures[texture.ID] = tv;
+            _textureRS[texture.ID] = rs;
+
             return texture.ID;
         }
         public override void FreeTexture(IntPtr ID)
         {
-            ResourceSet t = (ResourceSet)Textures.First(t => t.ID == ID).Texture;
-            Textures.RemoveAll(x => x.ID == ID);
-            t.Dispose();
+            TextureView tv = (TextureView)Textures[ID];
+            ResourceSet rs = _textureRS[ID];
+
+            Textures.Remove(ID);
+            _textureRS.Remove(ID);
+
+            tv.Target.Dispose();  
+            tv.Dispose();
+            rs.Dispose();        
         }
-        private ResourceSet GetRSByID(IntPtr ID) => (ResourceSet)Textures.First(t => t.ID == ID).Texture;
         private IntPtr GetNextImGuiBindingID() => (IntPtr)(++_lastAssignedID);
 
         public unsafe void RecreateFontDeviceTexture()
@@ -608,6 +626,7 @@ public partial class Veldrid : Core.Interfaces.Package
                 )
             );
             ft.Name = "ImGui.NET Font Texture";
+
             _gd.UpdateTexture(
                 ft,
                 (IntPtr)pixels,
@@ -618,7 +637,7 @@ public partial class Veldrid : Core.Interfaces.Package
                 1,0,0
             );
 
-            FontTexture.Texture = (ft, _gd.ResourceFactory.CreateTextureView(ft));
+            FontTexture.Texture = _gd.ResourceFactory.CreateTextureView(ft);
 
             _IO.Fonts.ClearTexData();
         }
