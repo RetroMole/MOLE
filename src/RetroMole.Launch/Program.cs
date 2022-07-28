@@ -15,21 +15,9 @@ public static partial class Launch
 		Parser.Default.ParseArguments<CLI>(args)    // Parse arguments
 		.WithParsed(o => { CLIOpts = o; })          // If successful set options to the parsed results
 		.WithNotParsed(errs => { if (errs.IsHelp() || errs.IsVersion()) { Environment.Exit(0); } }); // Check for help and version args and just exit Mole
-
-
-		// Set up Default Logging
-		Log.Logger = new LoggerConfiguration()
-    		.WriteTo.Async(a => a.Console(), blockWhenFull: true)
-			.WriteTo.Async(a => a.File(Path.Combine(Core.GLOBALS.CfgPath, "logs", "RetroMole.log"),
-					rollingInterval: RollingInterval.Day,
-					fileSizeLimitBytes: 2000000,
-					rollOnFileSizeLimit: true,
-					retainedFileCountLimit: 12
-				),
-				blockWhenFull: true
-			)
-			.MinimumLevel.Debug()
-    		.CreateLogger();
+		
+		// Set up default Logging
+		ConfigureLogging();
 
 		Log.Information(">-----------------------------<Starting>------------------------------<");
 
@@ -37,8 +25,18 @@ public static partial class Launch
 		Log.Information("Reading user config file...");
 		
 		if (!File.Exists(Path.Combine(Core.GLOBALS.CfgPath, "config.toml")))
+		{
 			Log.Warning("No config file found, using default config...");
-		else LoadConfig();
+			Core.Utility.Export.Config(
+				Core.GLOBALS.DefaultConfig,
+				Path.Combine(Core.GLOBALS.CfgPath, "config.toml")
+			);
+		}
+		else
+		{
+			Log.Information("Config file found, re-configuring logger...");
+			ConfigureLogging();
+		}
 
 		Log.Information("Finishing Package initialization (hook application, gui window registration)");
 		// Finish Package initialization
@@ -55,14 +53,18 @@ public static partial class Launch
 		Log.CloseAndFlush();
 	}
 
-	public static void LoadConfig()
+	public static void ConfigureLogging()
 	{
 		var logger = new LoggerConfiguration();
-		foreach(TomlNode s in Core.GLOBALS.Config["logging"]["sinks"].AsArray)
+		for (int i = 0; i < Core.GLOBALS.Config["logging"]["sinks"].ChildrenCount; i++)
 		{
+			TomlTable s = Core.GLOBALS.Config["logging"]["sinks"].AsArray[i]["value"].AsTable;
 			string type  = s["type"].AsString;
 			string level = s["level"].AsString;
 			bool blkwf   = s["blockWhenFull"].AsBoolean;
+
+			if (level == "Fatal")
+				Log.Warning("Logging level for {type} sink is set to Fatal.\n\tThis may cause error messages to be lost.\n\tPlease consider lowering the logging level");
 
 			switch (type)
 			{
@@ -92,7 +94,8 @@ public static partial class Launch
 					);
 					break;
 				default:
-					throw new Exception("Unknown logging sink type");
+					Log.Error("Unknown Logging sink type: {0}", type);
+					break;
 			}
 		}
 		switch((string)Core.GLOBALS.Config["logging"]["minimumLevel"].AsString)
@@ -116,8 +119,13 @@ public static partial class Launch
 				logger.MinimumLevel.Fatal();
 				break;
 			default:
-				throw new Exception("Unknown log level");
+				Log.Error("Unknown minimum log level: {0}", Core.GLOBALS.Config["logging"]["minimumLevel"].AsString);
+				break;
 		}
+
+		if (Core.GLOBALS.Config["logging"]["minimumLevel"].AsString == "Fatal")
+			Log.Warning("Logging level set to Fatal, this may cause error messages to be lost, please consider lowering the logging level");
+
 		Log.CloseAndFlush();
 		Log.Logger = logger.CreateLogger();
 		Log.Information("Logging settings loaded from config file.");
