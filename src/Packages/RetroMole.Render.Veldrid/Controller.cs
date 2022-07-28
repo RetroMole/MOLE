@@ -62,33 +62,34 @@ public partial class Veldrid : Core.Interfaces.Package
         public ImGuiPlatformIOPtr _platformIO;
 
 //--------------------------General-----------------------------
-        public unsafe Controller(int width, int height, GraphicsBackend vk_backend = GraphicsBackend.Vulkan)
+        public unsafe Controller(int width, int height, GraphicsBackend vk_backend = GraphicsBackend.OpenGL)
         {
-            // Create window, GraphicsDevice, and all resources necessary for the demo.
+            // Create window, GraphicsDevice, and all resources necessary to render
             _window = VeldridStartup.CreateWindow(new WindowCreateInfo(50, 50, 1280, 720, WindowState.Normal, "RetroMole"));
             _gd = VeldridStartup.CreateGraphicsDevice(_window, new GraphicsDeviceOptions(true, null, true, ResourceBindingModel.Improved, true, true), vk_backend);
+            _cl = _gd.ResourceFactory.CreateCommandList();
 
             _window.Resized += () =>
             {
                 _gd.MainSwapchain.Resize((uint)_window.Width, (uint)_window.Height);
                 WindowResized(_window.Width, _window.Height);
             };
+            _windowWidth = width;
+            _windowHeight = height;
 
+            // Load and set icon
             var icon_src = SDL2Extensions.SDL_RWFromFile.Invoke(Path.Combine(Core.GLOBALS.ExecPath, "Icon.bmp"), "rb");
             _icon = SDL2Extensions.SDL_LoadBMP_RW.Invoke(icon_src, 1);
             SDL2Extensions.SDL_SetWindowIcon.Invoke(_window.SdlWindowHandle, _icon);
 
-            _cl = _gd.ResourceFactory.CreateCommandList();
-
-            _windowWidth = width;
-            _windowHeight = height;
-
+            // Set up ImGui
             IntPtr context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
             _IO = ImGui.GetIO();
 
             _IO.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
-            _IO.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
+            if (vk_backend == GraphicsBackend.Vulkan)
+                _IO.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
 
             _platformIO = ImGui.GetPlatformIO();
             ImGuiViewportPtr mainViewport = _platformIO.Viewports[0];
@@ -535,7 +536,7 @@ public partial class Veldrid : Core.Interfaces.Package
                 new RasterizerStateDescription(FaceCullMode.None, PolygonFillMode.Solid, FrontFace.Clockwise, false, true),
                 PrimitiveTopology.TriangleList,
                 new ShaderSetDescription(vertexLayouts, new[] { _vertexShader, _fragmentShader }),
-                new ResourceLayout[] { _mainRL, _ftRL },
+                new[] { _mainRL, _ftRL },
                 outputDescription,
                 ResourceBindingModel.Default);
             _pipeline = factory.CreateGraphicsPipeline(ref pd);

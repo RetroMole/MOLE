@@ -8,6 +8,61 @@ namespace RetroMole.Core;
 
 public static class GLOBALS
 {
+    //--------------------Paths--------------------//
+    public static string HomePath =>
+        (  Environment.OSVersion.Platform == PlatformID.Unix
+        || Environment.OSVersion.Platform == PlatformID.MacOSX)
+        ?  Environment.GetEnvironmentVariable("HOME")                      
+        :  Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%"
+    );
+    public static string TempPath => Path.GetFullPath(Path.GetTempPath());
+    public static string ExecPath => Path.GetFullPath(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+    public static string CfgPath =>
+        (  Environment.OSVersion.Platform == PlatformID.Unix
+        || Environment.OSVersion.Platform == PlatformID.MacOSX)
+        ?  Path.GetFullPath(Path.Combine(HomePath, ".config", "RetroMole"))
+        :  Path.GetFullPath(Path.Combine(HomePath, "AppData", "Roaming", "RetroMole"));
+    //--------------------Config--------------------//
+    public static readonly TomlTable DefaultConfig = new TomlTable
+        {
+            ["renderer"] = new TomlTable
+            {
+                ["assembly"] = "RetroMole.Render.Veldrid+Controller",
+                ["params"]   = "OpenGL"
+            },
+            ["logging"] = new TomlTable
+            {
+                ["minimumLevel"] = "Information",
+                ["sinks"] =  new TomlArray
+                {
+                    IsTableArray = true,
+                    [0] ={["value"] = new TomlTable
+                    {
+                        ["type"]  = "Console",
+                        ["level"] = "Information",
+                        ["blockWhenFull"]  = true,
+                        ["outputTemplate"] = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+                    }},
+                    [1] ={["value"] = new TomlTable
+                    {
+                        ["type"]  = "File",
+                        ["level"] = "Information",
+                        ["path"]  = Path.Combine(Core.GLOBALS.CfgPath, "logs", "RetroMole.log"),
+                        ["rollingInterval"]        = "Day",
+                        ["fileSizeLimitBytes"]     = 2000000,
+                        ["rollOnFileSizeLimit"]    = true,
+                        ["retainedFileCountLimit"] = 7,
+                        ["blockWhenFull"]  = true,
+                        ["outputTemplate"] = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+                    }}
+                }
+            }
+        };
+
+        public static TomlTable Config = File.Exists(Path.Combine(Core.GLOBALS.CfgPath, "config.toml"))
+            ? Core.Utility.Import.Config(Path.Combine(Core.GLOBALS.CfgPath, "config.toml"))
+            : DefaultConfig;
+    //--------------------Packages--------------------//
     public static Interfaces.Package[] Packages =
         Directory.GetFileSystemEntries(
             Path.Combine(Core.GLOBALS.ExecPath, "Packages"),
@@ -40,26 +95,9 @@ public static class GLOBALS
             }
         })
         .ToArray();
-    public static Core.Interfaces.ImGuiController? CurrentController = Config is null
+    public static Core.Interfaces.ImGuiController CurrentController = Config is null
 		? Packages.First().Controllers.First()
-		: Packages.Select(p => p.Controllers.First(c => c.GetType().FullName == Config["renderer"].AsString)).First();
-    public static TomlTable? Config = File.Exists(Path.Combine(Core.GLOBALS.CfgPath, "config.toml"))
-        ? Core.Utility.Import.Config(Path.Combine(Core.GLOBALS.CfgPath, "config.toml"))
-        : null;
-    public static string HomePath =>
-        (  Environment.OSVersion.Platform == PlatformID.Unix
-        || Environment.OSVersion.Platform == PlatformID.MacOSX)
-        ?  Environment.GetEnvironmentVariable("HOME")                      
-        :  Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%"
-    );
-    public static string TempPath => Path.GetTempPath();
-    public static string ExecPath => Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-    public static string CfgPath =>
-        (  Environment.OSVersion.Platform == PlatformID.Unix
-        || Environment.OSVersion.Platform == PlatformID.MacOSX)
-        ?  Path.Combine(HomePath, ".config", "RetroMole")
-        :  Path.Combine(HomePath, "AppData", "Roaming", "RetroMole"
-    );
+		: Packages.Select(p => p.Controllers.First(c => c.GetType().FullName == Config["renderer"]["assembly"].AsString)).First();
 }
 
 #pragma warning restore CS8603
