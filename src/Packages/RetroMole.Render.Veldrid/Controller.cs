@@ -62,11 +62,11 @@ public partial class Veldrid : Core.Interfaces.Package
         public ImGuiPlatformIOPtr _platformIO;
 
 //--------------------------General-----------------------------
-        public unsafe Controller(int width, int height, GraphicsBackend vk_backend = GraphicsBackend.OpenGL)
+        public unsafe Controller(int width, int height, GraphicsBackend vr_backend = GraphicsBackend.OpenGL)
         {
             // Create window, GraphicsDevice, and all resources necessary to render
             _window = VeldridStartup.CreateWindow(new WindowCreateInfo(50, 50, 1280, 720, WindowState.Normal, "RetroMole"));
-            _gd = VeldridStartup.CreateGraphicsDevice(_window, new GraphicsDeviceOptions(true, null, true, ResourceBindingModel.Improved, true, true), vk_backend);
+            _gd = VeldridStartup.CreateGraphicsDevice(_window, new GraphicsDeviceOptions(true, null, true, ResourceBindingModel.Improved, true, true), vr_backend);
             _cl = _gd.ResourceFactory.CreateCommandList();
 
             _window.Resized += () =>
@@ -88,7 +88,7 @@ public partial class Veldrid : Core.Interfaces.Package
             _IO = ImGui.GetIO();
 
             _IO.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
-            if (vk_backend == GraphicsBackend.Vulkan)
+            if (vr_backend == GraphicsBackend.Vulkan)
                 _IO.ConfigFlags |= ImGuiConfigFlags.ViewportsEnable;
 
             _platformIO = ImGui.GetPlatformIO();
@@ -297,7 +297,6 @@ public partial class Veldrid : Core.Interfaces.Package
                         throw new NotImplementedException();
                     else
                     {
-                        // if (pcmd.TextureId != IntPtr.Zero)
                         if (pcmd.TextureId == FontTexture.ID)
                             _cl.SetGraphicsResourceSet(1, _ftRS);
                         else
@@ -528,7 +527,8 @@ public partial class Veldrid : Core.Interfaces.Package
                 new ResourceLayoutElementDescription("ProjectionMatrixBuffer", ResourceKind.UniformBuffer, ShaderStages.Vertex),
                 new ResourceLayoutElementDescription("MainSampler", ResourceKind.Sampler, ShaderStages.Fragment)));
             _ftRL = factory.CreateResourceLayout(new ResourceLayoutDescription(
-                new ResourceLayoutElementDescription("MainTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment)));
+                new ResourceLayoutElementDescription("MainTexture", ResourceKind.TextureReadOnly, ShaderStages.Fragment),
+                new ResourceLayoutElementDescription("MainSampler", ResourceKind.Sampler, ShaderStages.Fragment)));
 
             GraphicsPipelineDescription pd = new GraphicsPipelineDescription(
                 BlendStateDescription.SingleAlphaBlend,
@@ -546,9 +546,11 @@ public partial class Veldrid : Core.Interfaces.Package
                 _projMatrixBuffer,
                 _gd.PointSampler
             ));
+
             _ftRS = factory.CreateResourceSet(new(
                 _ftRL,
-                (TextureView)FontTexture.Texture
+                (TextureView)FontTexture.Texture,
+                _gd.PointSampler
             ));
         }
 
@@ -568,7 +570,8 @@ public partial class Veldrid : Core.Interfaces.Package
             var tv = _gd.ResourceFactory.CreateTextureView(t);
             var rs = _gd.ResourceFactory.CreateResourceSet(new(
                 _ftRL,
-                tv
+                tv,
+                _gd.PointSampler
             ));
 
             var ID = GetNextImGuiBindingID();
@@ -588,7 +591,8 @@ public partial class Veldrid : Core.Interfaces.Package
             var tv = _gd.ResourceFactory.CreateTextureView(t);
             var rs = _gd.ResourceFactory.CreateResourceSet(new(
                 _ftRL,
-                tv
+                tv,
+                _gd.PointSampler
             ));
 
             Textures[texture.ID] = tv;
