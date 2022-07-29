@@ -1,7 +1,8 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using RetroMole.Core.Interfaces;
 
-namespace RetroMole.Core.Interfaces;
+namespace RetroMole.Core;
 
 public class Texture
 {
@@ -29,11 +30,11 @@ public class Texture
     }
 
     //----------------------------------------------------------------------------------------------------------------------
-    public event Action<OnTextureChangedEventArgs> OnChanged;
-    public class OnTextureChangedEventArgs : OnChangedEventArgs
+    public event Action<OnTextureChangedEventArgs>? OnChanged;
+    public class OnTextureChangedEventArgs : EventArgs
     {
         public Texture Texture { get; }
-        public OnTextureChangedEventArgs(Texture texture) : base(texture) { Texture = texture; }
+        public OnTextureChangedEventArgs(Texture texture) { Texture = texture; }
     }
     
     //----------------------------------------------------------------------------------------------------------------------

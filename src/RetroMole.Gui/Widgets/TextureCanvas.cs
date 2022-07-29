@@ -3,8 +3,7 @@
 using ImGuiNET;
 using Serilog;
 using SixLabors.ImageSharp.PixelFormats;
-using RetroMole.Core.Interfaces;
-using RetroMole.Core.Utility;
+using RetroMole.Core;
 
 namespace RetroMole;
 
@@ -18,7 +17,7 @@ public static partial class Gui
             private readonly UndoRedo.TextureUR UndoRedoObj;
             public TextureCanvas(string FilePath) : base()
             {
-                TextureObj = Texture.Bind(FilePath, Core.GLOBALS.CurrentController);
+                TextureObj = Texture.Bind(FilePath, GLOBAL.CurrentController);
                 UndoRedoObj = new(TextureObj);
             }
             //public TextureCanvas(uint[,] RawPixelData) : base() { }

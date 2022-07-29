@@ -1,12 +1,12 @@
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace RetroMole.Core.Utility;
+namespace RetroMole.Core;
 
 public static partial class UndoRedo
 {
     public class TextureUR : Interfaces.IUndoRedo
     {
-        public TextureUR(Interfaces.Texture texture)
+        public TextureUR(Texture texture)
         {
             state = texture;
             state.OnChanged += CatchDo;
@@ -17,7 +17,7 @@ public static partial class UndoRedo
             new Stack<(int oldW, int oldH, int newW, int newH, List<(int i, Rgba32 oldPixel, Rgba32 newPixel)>)>();
         public void CatchDo(object args)
         {
-            var newState = ((Interfaces.Texture.OnTextureChangedEventArgs)args).Texture;
+            var newState = ((Texture.OnTextureChangedEventArgs)args).Texture;
             var diff = state.Pixels
                 .Where((p, i) => p != newState.Pixels[i])
                 .Select((p, i) => (i, p, newState.Pixels[i]))
@@ -59,6 +59,6 @@ public static partial class UndoRedo
         }
         public bool CanUndo => UndoStack.Count > 0;
         public bool CanRedo => RedoStack.Count > 0;
-        private Interfaces.Texture state;
+        private Texture state;
     }
 }

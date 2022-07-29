@@ -1,6 +1,6 @@
 using Tommy;
 
-namespace RetroMole.Core.Utility;
+namespace RetroMole.Core;
 
 public static class Export
 {
