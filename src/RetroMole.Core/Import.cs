@@ -6,7 +6,7 @@ using Serilog;
 using System.Reflection;
 using System.Runtime.Loader;
 
-namespace RetroMole.Core.Utility;
+namespace RetroMole.Core;
 
 public static class Import
 {
@@ -38,7 +38,7 @@ public static class Import
             var tar = ZipLib.Tar.TarArchive.CreateInputTarArchive(decompressed);
             
             // Store temp path
-            var tempPath = Path.Combine(GLOBALS.TempPath, $"retromoletemp_{Path.GetFileName(path)}_{DateTime.Now.ToFileTimeUtc()}");
+            var tempPath = Path.Combine(GLOBAL.TempPath, $"{Path.GetFileName(path)}_{DateTime.Now.ToFileTimeUtc()}");
             
             // Extract to temp path
             tar.ExtractContents(tempPath);

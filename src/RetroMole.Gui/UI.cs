@@ -2,15 +2,18 @@
 using System.Linq;
 using System.Numerics;
 using ImGuiNET;
+using RetroMole.Core;
+
 namespace RetroMole;
+
 public static partial class Gui
 {
 	public static Window[] Windows = new Window[]
 	{
-		new WindowTypes.FileDialog("OpenFile Dialog", Core.GLOBALS.HomePath, WindowTypes.FileDialog.FileMode.OpenFile, "*.*"),
-		new WindowTypes.FileDialog("SaveFile Dialog", Core.GLOBALS.HomePath, WindowTypes.FileDialog.FileMode.SaveFile, "*.*"),
-		new WindowTypes.FileDialog("OpenFolder Dialog", Core.GLOBALS.HomePath, WindowTypes.FileDialog.FileMode.OpenFolder, "*.*"),
-		new WindowTypes.FileDialog("SaveFolder Dialog", Core.GLOBALS.HomePath, WindowTypes.FileDialog.FileMode.SaveFolder, "*.*"),
+		new WindowTypes.FileDialog("OpenFile Dialog", GLOBAL.HomePath, WindowTypes.FileDialog.FileMode.OpenFile, "*.*"),
+		new WindowTypes.FileDialog("SaveFile Dialog", GLOBAL.HomePath, WindowTypes.FileDialog.FileMode.SaveFile, "*.*"),
+		new WindowTypes.FileDialog("OpenFolder Dialog", GLOBAL.HomePath, WindowTypes.FileDialog.FileMode.OpenFolder, "*.*"),
+		new WindowTypes.FileDialog("SaveFolder Dialog", GLOBAL.HomePath, WindowTypes.FileDialog.FileMode.SaveFolder, "*.*"),
 		new WindowTypes.Test("TextureCanvas Test")
 	};
 	public static string[] testPaths = new string[] {String.Empty, String.Empty, String.Empty, String.Empty};

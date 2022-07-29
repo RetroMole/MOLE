@@ -1,12 +1,13 @@
 #pragma warning disable CS8603
 
 using System.Runtime.Loader;
+using System.Reflection;
 using Serilog;
 using Tommy;
 
 namespace RetroMole.Core;
 
-public static class GLOBALS
+public static class GLOBAL
 {
     //--------------------Paths--------------------//
     public static string HomePath =>
@@ -15,12 +16,17 @@ public static class GLOBALS
         ?  Environment.GetEnvironmentVariable("HOME")                      
         :  Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%"
     );
-    public static string TempPath => Path.GetFullPath(Path.GetTempPath());
-    public static string ExecPath => Path.GetFullPath(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+    public static string TempPath => Path.GetFullPath(Path.Combine(Path.GetTempPath(), "RetroMoleTemp"));
+    public static string ExecPath => Path.GetFullPath(
+        Path.GetDirectoryName
+            (  Assembly.GetEntryAssembly()?.Location
+            ?? Assembly.GetExecutingAssembly()?.Location
+        )?? Path.Combine(TempPath, "tmpxc")
+    );
     public static string CfgPath =>
         (  Environment.OSVersion.Platform == PlatformID.Unix
-        || Environment.OSVersion.Platform == PlatformID.MacOSX)
-        ?  Path.GetFullPath(Path.Combine(HomePath, ".config", "RetroMole"))
+        || Environment.OSVersion.Platform == PlatformID.MacOSX
+        )? Path.GetFullPath(Path.Combine(HomePath, ".config", "RetroMole"))
         :  Path.GetFullPath(Path.Combine(HomePath, "AppData", "Roaming", "RetroMole"));
     //--------------------Config--------------------//
     public static readonly TomlTable DefaultConfig = new TomlTable
@@ -36,41 +42,40 @@ public static class GLOBALS
                 ["sinks"] =  new TomlArray
                 {
                     IsTableArray = true,
-                    [0] ={["value"] = new TomlTable
+                    [0] = new TomlTable
                     {
                         ["type"]  = "Console",
-                        ["level"] = "Information",
                         ["blockWhenFull"]  = true,
                         ["outputTemplate"] = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
-                    }},
-                    [1] ={["value"] = new TomlTable
+                    },
+                    [1] = new TomlTable
                     {
                         ["type"]  = "File",
-                        ["level"] = "Information",
-                        ["path"]  = Path.Combine(Core.GLOBALS.CfgPath, "logs", "RetroMole.log"),
+                        ["level"] = "Warning",
+                        ["path"]  = Path.GetFullPath(Path.Combine(CfgPath, "logs", "RetroMole.log")),
                         ["rollingInterval"]        = "Day",
                         ["fileSizeLimitBytes"]     = 2000000,
                         ["rollOnFileSizeLimit"]    = true,
                         ["retainedFileCountLimit"] = 7,
                         ["blockWhenFull"]  = true,
                         ["outputTemplate"] = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
-                    }}
+                    }
                 }
             }
         };
 
-        public static TomlTable Config = File.Exists(Path.Combine(Core.GLOBALS.CfgPath, "config.toml"))
-            ? Core.Utility.Import.Config(Path.Combine(Core.GLOBALS.CfgPath, "config.toml"))
+        public static TomlTable Config = File.Exists(Path.Combine(CfgPath, "config.toml"))
+            ? Import.Config(Path.Combine(CfgPath, "config.toml"))
             : DefaultConfig;
     //--------------------Packages--------------------//
     public static Interfaces.Package[] Packages =
         Directory.GetFileSystemEntries(
-            Path.Combine(Core.GLOBALS.ExecPath, "Packages"),
+            Path.Combine(ExecPath, "Packages"),
             "*.dll", SearchOption.AllDirectories
         )
         .Concat(
             Directory.GetFileSystemEntries(
-                Path.Combine(Core.GLOBALS.ExecPath, "Packages"),
+                Path.Combine(ExecPath, "Packages"),
                 "*.mole.pckg", SearchOption.AllDirectories
             )
         )
@@ -80,15 +85,15 @@ public static class GLOBALS
             {
                 case ".DLL":
                     if (p.Contains("RetroMole.Render.Veldrid"))
-                        return Core.Utility.Import.AssemblyPackages(
+                        return Import.AssemblyPackages(
                             ctx.LoadFromAssemblyPath(Path.GetFullPath(p)),
                             Config is null
                                 ? "Vulkan"
                                 : Config["renderer"]["params"]
                         );
-                    return Core.Utility.Import.AssemblyPackages(ctx.LoadFromAssemblyPath(Path.GetFullPath(p)));
+                    return Import.AssemblyPackages(ctx.LoadFromAssemblyPath(Path.GetFullPath(p)));
                 case ".MOLE.PCKG":
-                    return Core.Utility.Import.CompressedPackages(p);
+                    return Import.CompressedPackages(p);
                 default:
                     Log.Error($"Uhh... how did you.. BAD PACKAGE @ {p}");
                     return null;

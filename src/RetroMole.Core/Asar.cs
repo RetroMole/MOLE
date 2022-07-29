@@ -3,7 +3,7 @@
 using Serilog;
 using System.Runtime.InteropServices;
 
-namespace RetroMole.Core.Utility
+namespace RetroMole.Core
 {
     /// <summary>
     /// Contains various functions to apply patches.

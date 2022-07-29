@@ -78,7 +78,7 @@ public partial class Veldrid : Core.Interfaces.Package
             _windowHeight = height;
 
             // Load and set icon
-            var icon_src = SDL2Extensions.SDL_RWFromFile.Invoke(Path.Combine(Core.GLOBALS.ExecPath, "Icon.bmp"), "rb");
+            var icon_src = SDL2Extensions.SDL_RWFromFile.Invoke(Path.Combine(Core.GLOBAL.ExecPath, "Icon.bmp"), "rb");
             _icon = SDL2Extensions.SDL_LoadBMP_RW.Invoke(icon_src, 1);
             SDL2Extensions.SDL_SetWindowIcon.Invoke(_window.SdlWindowHandle, _icon);
 
@@ -554,7 +554,7 @@ public partial class Veldrid : Core.Interfaces.Package
             ));
         }
 
-        public override IntPtr BindTexture(Core.Interfaces.Texture Texture)
+        public override IntPtr BindTexture(Core.Texture Texture)
         {
             Texture t = _gd.ResourceFactory.CreateTexture(new TextureDescription(
                 (uint)Texture.Width,
@@ -582,7 +582,7 @@ public partial class Veldrid : Core.Interfaces.Package
             return ID;
         }
         
-        public override IntPtr UpdateTexture(Core.Interfaces.Texture texture)
+        public override IntPtr UpdateTexture(Core.Texture texture)
         {
             Texture t = ((TextureView)Textures[texture.ID]).Target;
 
