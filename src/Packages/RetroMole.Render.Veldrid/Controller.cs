@@ -651,9 +651,8 @@ public partial class Veldrid : Core.Interfaces.Package
         public override void UpdateInput(params object[] args) => UpdateInput((InputSnapshot)args[0]);
         public void UpdateInput(InputSnapshot snapshot)
         {
-            ImGuiIOPtr io = ImGui.GetIO();
-
-            Vector2 mousePosition = snapshot.MousePosition;
+            _IO.MousePos = snapshot.MousePosition;
+            _IO.MouseWheel = snapshot.WheelDelta;
 
             // Determine if any of the mouse buttons were pressed during this snapshot period, even if they are no longer held.
             bool leftPressed = false;
@@ -678,34 +677,33 @@ public partial class Veldrid : Core.Interfaces.Package
                 }
             }
 
-            io.MouseDown[0] = leftPressed || snapshot.IsMouseDown(MouseButton.Left);
-            io.MouseDown[1] = middlePressed || snapshot.IsMouseDown(MouseButton.Right);
-            io.MouseDown[2] = rightPressed || snapshot.IsMouseDown(MouseButton.Middle);
+            _IO.MouseDown[0] = leftPressed || snapshot.IsMouseDown(MouseButton.Left);
+            _IO.MouseDown[1] = middlePressed || snapshot.IsMouseDown(MouseButton.Right);
+            _IO.MouseDown[2] = rightPressed || snapshot.IsMouseDown(MouseButton.Middle);
 
-            int x, y;
-            unsafe
-            {
-                uint buttons = SDL2Extensions.SDL_GetGlobalMouseState(&x, &y);
-                io.MouseDown[0] = (buttons & 0b0001) != 0;
-                io.MouseDown[1] = (buttons & 0b0010) != 0;
-                io.MouseDown[2] = (buttons & 0b0100) != 0;
-            }
-
-            io.MousePos = new Vector2(x, y);
-            io.MouseWheel = snapshot.WheelDelta;
+            if (_IO.ConfigFlags.HasFlag(ImGuiConfigFlags.ViewportsEnable))
+                unsafe
+                {
+                    int x,y;
+                    uint buttons = SDL2Extensions.SDL_GetGlobalMouseState(&x, &y);
+                    _IO.MouseDown[0] = (buttons & 0b0001) != 0;
+                    _IO.MouseDown[1] = (buttons & 0b0010) != 0;
+                    _IO.MouseDown[2] = (buttons & 0b0100) != 0;
+                    _IO.MousePos = new Vector2(x, y);
+                }
 
             IReadOnlyList<char> keyCharPresses = snapshot.KeyCharPresses;
             for (int i = 0; i < keyCharPresses.Count; i++)
             {
                 char c = keyCharPresses[i];
-                io.AddInputCharacter(c);
+                _IO.AddInputCharacter(c);
             }
 
             IReadOnlyList<KeyEvent> keyEvents = snapshot.KeyEvents;
             for (int i = 0; i < keyEvents.Count; i++)
             {
                 KeyEvent keyEvent = keyEvents[i];
-                io.KeysDown[(int)keyEvent.Key] = keyEvent.Down;
+                _IO.KeysDown[(int)keyEvent.Key] = keyEvent.Down;
                 if (keyEvent.Key == Key.ControlLeft)
                 {
                     _controlDown = keyEvent.Down;
@@ -724,10 +722,10 @@ public partial class Veldrid : Core.Interfaces.Package
                 }
             }
 
-            io.KeyCtrl = _controlDown;
-            io.KeyAlt = _altDown;
-            io.KeyShift = _shiftDown;
-            io.KeySuper = _winKeyDown;
+            _IO.KeyCtrl = _controlDown;
+            _IO.KeyAlt = _altDown;
+            _IO.KeyShift = _shiftDown;
+            _IO.KeySuper = _winKeyDown;
 
             ImVector<ImGuiViewportPtr> viewports = ImGui.GetPlatformIO().Viewports;
             for (int i = 1; i < viewports.Size; i++)
@@ -738,30 +736,29 @@ public partial class Veldrid : Core.Interfaces.Package
             }
         }
 
-        private static void SetKeyMappings()
+        private void SetKeyMappings()
         {
-            ImGuiIOPtr io = ImGui.GetIO();
-            io.KeyMap[(int)ImGuiKey.Tab] = (int)Key.Tab;
-            io.KeyMap[(int)ImGuiKey.LeftArrow] = (int)Key.Left;
-            io.KeyMap[(int)ImGuiKey.RightArrow] = (int)Key.Right;
-            io.KeyMap[(int)ImGuiKey.UpArrow] = (int)Key.Up;
-            io.KeyMap[(int)ImGuiKey.DownArrow] = (int)Key.Down;
-            io.KeyMap[(int)ImGuiKey.PageUp] = (int)Key.PageUp;
-            io.KeyMap[(int)ImGuiKey.PageDown] = (int)Key.PageDown;
-            io.KeyMap[(int)ImGuiKey.Home] = (int)Key.Home;
-            io.KeyMap[(int)ImGuiKey.End] = (int)Key.End;
-            io.KeyMap[(int)ImGuiKey.Delete] = (int)Key.Delete;
-            io.KeyMap[(int)ImGuiKey.Backspace] = (int)Key.BackSpace;
-            io.KeyMap[(int)ImGuiKey.Enter] = (int)Key.Enter;
-            io.KeyMap[(int)ImGuiKey.Escape] = (int)Key.Escape;
-            io.KeyMap[(int)ImGuiKey.Space] = (int)Key.Space;
-            io.KeyMap[(int)ImGuiKey.A] = (int)Key.A;
-            io.KeyMap[(int)ImGuiKey.C] = (int)Key.C;
-            io.KeyMap[(int)ImGuiKey.V] = (int)Key.V;
-            io.KeyMap[(int)ImGuiKey.X] = (int)Key.X;
-            io.KeyMap[(int)ImGuiKey.Y] = (int)Key.Y;
-            io.KeyMap[(int)ImGuiKey.Z] = (int)Key.Z;
-            io.KeyMap[(int)ImGuiKey.Space] = (int)Key.Space;
+            _IO.KeyMap[(int)ImGuiKey.Tab] = (int)Key.Tab;
+            _IO.KeyMap[(int)ImGuiKey.LeftArrow] = (int)Key.Left;
+            _IO.KeyMap[(int)ImGuiKey.RightArrow] = (int)Key.Right;
+            _IO.KeyMap[(int)ImGuiKey.UpArrow] = (int)Key.Up;
+            _IO.KeyMap[(int)ImGuiKey.DownArrow] = (int)Key.Down;
+            _IO.KeyMap[(int)ImGuiKey.PageUp] = (int)Key.PageUp;
+            _IO.KeyMap[(int)ImGuiKey.PageDown] = (int)Key.PageDown;
+            _IO.KeyMap[(int)ImGuiKey.Home] = (int)Key.Home;
+            _IO.KeyMap[(int)ImGuiKey.End] = (int)Key.End;
+            _IO.KeyMap[(int)ImGuiKey.Delete] = (int)Key.Delete;
+            _IO.KeyMap[(int)ImGuiKey.Backspace] = (int)Key.BackSpace;
+            _IO.KeyMap[(int)ImGuiKey.Enter] = (int)Key.Enter;
+            _IO.KeyMap[(int)ImGuiKey.Escape] = (int)Key.Escape;
+            _IO.KeyMap[(int)ImGuiKey.Space] = (int)Key.Space;
+            _IO.KeyMap[(int)ImGuiKey.A] = (int)Key.A;
+            _IO.KeyMap[(int)ImGuiKey.C] = (int)Key.C;
+            _IO.KeyMap[(int)ImGuiKey.V] = (int)Key.V;
+            _IO.KeyMap[(int)ImGuiKey.X] = (int)Key.X;
+            _IO.KeyMap[(int)ImGuiKey.Y] = (int)Key.Y;
+            _IO.KeyMap[(int)ImGuiKey.Z] = (int)Key.Z;
+            _IO.KeyMap[(int)ImGuiKey.Space] = (int)Key.Space;
         }
     }
 }
