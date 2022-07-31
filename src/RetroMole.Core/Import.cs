@@ -63,7 +63,7 @@ public static class Import
         }   
     }
 
-    public static TomlTable Config(string path) { using(StreamReader reader = File.OpenText(path)) return TOML.Parse(reader); }
+    public static TomlTable TOMLFile(string path) { using(StreamReader reader = File.OpenText(path)) return TOML.Parse(reader); }
 
 }
 #pragma warning restore CS8619, CS8600, CS0618, CS8604

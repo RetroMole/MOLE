@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS8603, CS8618
 
+using System.Reflection;
 using Serilog;
 using Serilog.Events;
 using Tommy;
@@ -9,38 +10,20 @@ using RetroMole.Core;
 namespace RetroMole;
 public static partial class Launch
 {
-	public static CLI CLIOpts = new();
 	public static void Main(string[] args)
 	{
-		// Parse CLI Arguments
-		Parser.Default.ParseArguments<CLI>(args)    // Parse arguments
-		.WithParsed(o => { CLIOpts = o; })          // If successful set options to the parsed results
-		.WithNotParsed(errs => { if (errs.IsHelp() || errs.IsVersion()) { Environment.Exit(0); } }); // Check for help and version args and just exit Mole
-		
 		// Set up default Logging
+		if (!File.Exists(Path.Combine(GLOBAL.CfgPath, "config.toml")))
+	        Export.TOMLFile(Config.Sink.TOML(Config.Default), Path.Combine(GLOBAL.CfgPath, "config.toml"));
 		ConfigureLogging();
 
 		Log.Information(">-----------------------------<Starting>------------------------------<");
+		Log.Information($"RetroMole.Launch v{Assembly.GetAssembly(typeof(Launch))?.GetName().Version}");
+		Log.Information($"RetroMole.Core   v{Assembly.GetAssembly(typeof(Core.GLOBAL))?.GetName().Version}");
+		Log.Information($"RetroMole.Gui    v{Assembly.GetAssembly(typeof(Gui))?.GetName().Version}");
+		Log.Information($"{GLOBAL.Packages.Length} Packages found");
 
-		// Read/Load config file
-		Log.Information("Reading user config file...");
-		
-		if (!File.Exists(Path.Combine(GLOBAL.CfgPath, "config.toml")))
-		{
-			Log.Warning("No config file found, using default config...");
-			Core.Export.Config(
-				GLOBAL.DefaultConfig,
-				Path.Combine(GLOBAL.CfgPath, "config.toml")
-			);
-		}
-		else
-		{
-			Log.Information("Config file found, re-configuring logger...");
-			ConfigureLogging();
-		}
-
-		Log.Information("Finishing Package initialization (hook application, gui window registration)");
-		// Finish Package initialization
+		Log.Information("Applying Package Hooks & Registering Windows)");
 		GLOBAL.Packages = GLOBAL.Packages.Select(p => {
 			p.ApplyHooks();
 			Gui.Windows = Gui.Windows.Concat(p.Windows.Cast<Gui.Window>()).ToArray();
@@ -48,8 +31,13 @@ public static partial class Launch
 		})
 		.ToArray();
 
+		Log.Information("Applying Final GUI Hooks");
 		Gui.ApplyHooks();
+
+		Log.Information($"Starting GUI via {GLOBAL.Config.Renderer.FullClassName} w/ {GLOBAL.Config.Renderer.Parameters.Length}	Parameters:\n\t          "
+			+ string.Join("\n\t          ", GLOBAL.Config.Renderer.Parameters.Select(p => $"{p.Name}: {p.Value}")));
 		GLOBAL.CurrentController.Main(() => Gui.UI());
+
 		Log.Information(">---------------------------<Shutting Down>---------------------------<");
 		Log.CloseAndFlush();
 	}
@@ -57,79 +45,64 @@ public static partial class Launch
 	public static void ConfigureLogging()
 	{
 		var logger = new LoggerConfiguration();
-		for (int i = 0; i < GLOBAL.Config["logging"]["sinks"].ChildrenCount; i++)
+		foreach (Config.ConfT.LogT.SinkT s in GLOBAL.Config.Logging.Sinks)
 		{
-			TomlTable s = GLOBAL.Config["logging"]["sinks"].AsArray[i].AsTable;
-
-			string type  = s["type"].AsString;
-			string level = s["level"].AsString ?? GLOBAL.Config["logging"]["minimumLevel"].AsString.Value;
-
-			if (level == "Fatal")
-			Log.Warning($"Logging level for {i + 1}{(i + 1 % 10) switch { 1 => "st", 2 => "nd", 3 => "rd", _ => "th"}} sink ({type}) is set to Fatal.\n" +
-				"\t       This may cause error messages to be lost.\n" +
-				"\t       Please consider lowering the logging level"
-			);
-
-			switch (type)
+			switch (s.Type)
 			{
-				case "Console":
+				case Config.ConfT.LogT.SinkT.TypeT.Console:
 					
 					logger.WriteTo.Async(a => a.Console(
-							restrictedToMinimumLevel: (LogEventLevel)Enum.Parse(typeof(LogEventLevel), level),
-							outputTemplate: s["outputTemplate"].AsString
+							restrictedToMinimumLevel: s.Level,
+							outputTemplate: s.OutputTemplate
 						), 
-						blockWhenFull: s["blockWhenFull"].AsBoolean
+						blockWhenFull: s.BlockWhenFull
 					);
 					break;
-				case "File":
-					logger.WriteTo.Async(a => a.File( s["path"].AsString.Value,
-							rollingInterval: 	  	  (RollingInterval)Enum.Parse(typeof(RollingInterval), s["rollingInterval"].AsString),
-							fileSizeLimitBytes: 	  s["fileSizeLimitBytes"].AsInteger,
-							rollOnFileSizeLimit: 	  s["rollOnFileSizeLimit"].AsBoolean,
-							retainedFileCountLimit:   s["retainedFileCountLimit"].AsInteger,
-							restrictedToMinimumLevel: (LogEventLevel)Enum.Parse(typeof(LogEventLevel), level),
-							outputTemplate: 		  s["outputTemplate"].AsString
+				case Config.ConfT.LogT.SinkT.TypeT.File:
+					logger.WriteTo.Async(a => a.File( s.Path,
+							rollingInterval: 	  	  s.RollingInterval,
+							fileSizeLimitBytes: 	  s.FileSizeLimitBytes,
+							rollOnFileSizeLimit: 	  s.RollOnFileSizeLimit,
+							retainedFileCountLimit:   s.RetainedFileCountLimit,
+							restrictedToMinimumLevel: s.Level,
+							outputTemplate: 		  s.OutputTemplate
 						),
-						blockWhenFull: s["blockWhenFull"].AsBoolean
+						blockWhenFull: s.BlockWhenFull
 					);
 					break;
 				default:
-					Log.Error($"Unknown Logging sink type: {type}");
+					Log.Error($"Unknown Logging sink type: {s.Type}");
 					break;
 			}
 		}
 
-		switch(GLOBAL.Config["logging"]["minimumLevel"].AsString.Value)
+		switch(GLOBAL.Config.Logging.MinimumLevel)
 		{
-			case "Verbose":
+			case LogEventLevel.Verbose:
 				logger.MinimumLevel.Verbose();
 				break;
-			case "Debug":
+			case LogEventLevel.Debug:
 				logger.MinimumLevel.Debug();
 				break;
-			case "Information":
+			case LogEventLevel.Information:
 				logger.MinimumLevel.Information();
 				break;
-			case "Warning":
+			case LogEventLevel.Warning:
 				logger.MinimumLevel.Warning();
 				break;
-			case "Error":
+			case LogEventLevel.Error:
 				logger.MinimumLevel.Error();
 				break;
-			case "Fatal":
+			case LogEventLevel.Fatal:
 				logger.MinimumLevel.Fatal();
 				break;
 			default:
-				Log.Error("Unknown minimum log level: {0}", GLOBAL.Config["logging"]["minimumLevel"].AsString);
+				Log.Error("Unknown minimum log level: {0}", GLOBAL.Config.Logging.MinimumLevel.ToString());
 				break;
 		}
 
-		if (GLOBAL.Config["logging"]["minimumLevel"].AsString == "Fatal")
-			Log.Warning("Minimum Logging level set to Fatal, this may cause error messages to be lost, please consider lowering the logging level");
-
 		Log.CloseAndFlush();
 		Log.Logger = logger.CreateLogger();
-		Log.Information("Logging settings loaded from config file.");
 	}
 }
 

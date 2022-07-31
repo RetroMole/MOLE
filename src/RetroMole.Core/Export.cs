@@ -4,11 +4,11 @@ namespace RetroMole.Core;
 
 public static class Export
 {
-    public static void Config(TomlTable config, string path)
+    public static void TOMLFile(TomlTable tbl, string path)
     {
         using (TextWriter tw = File.CreateText(path))
         {
-            config.WriteTo(tw);
+            tbl.WriteTo(tw);
             tw.Flush();
         }
     }
