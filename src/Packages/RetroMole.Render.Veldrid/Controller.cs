@@ -554,7 +554,7 @@ public partial class Veldrid : Core.Interfaces.Package
             ));
         }
 
-        public override IntPtr BindTexture(Core.Texture Texture)
+        public override IntPtr BindTexture(Core.Interfaces.Texture Texture)
         {
             Texture t = _gd.ResourceFactory.CreateTexture(new TextureDescription(
                 (uint)Texture.Width,
@@ -582,7 +582,7 @@ public partial class Veldrid : Core.Interfaces.Package
             return ID;
         }
         
-        public override IntPtr UpdateTexture(Core.Texture texture)
+        public override IntPtr UpdateTexture(Core.Interfaces.Texture texture)
         {
             Texture t = ((TextureView)Textures[texture.ID]).Target;
 

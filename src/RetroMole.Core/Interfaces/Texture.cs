@@ -2,7 +2,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using RetroMole.Core.Interfaces;
 
-namespace RetroMole.Core;
+namespace RetroMole.Core.Interfaces;
 
 public class Texture
 {
@@ -16,16 +16,18 @@ public class Texture
     {
         get => _Pixels[x + y * Width];
         set {
+            var old = (Texture)MemberwiseClone();
             _Pixels[x + y * Width] = value;
-            OnChanged?.Invoke(new OnTextureChangedEventArgs(this));
+            OnChanged?.Invoke(new OnTextureChangedEventArgs(old, this));
         }
     }
     public Rgba32[] Pixels
     {
         get => _Pixels;
         set {
+            var old = (Texture)MemberwiseClone();
             _Pixels = value;
-            OnChanged?.Invoke(new OnTextureChangedEventArgs(this));
+            OnChanged?.Invoke(new OnTextureChangedEventArgs(old, this));
         }
     }
 
@@ -33,8 +35,9 @@ public class Texture
     public event Action<OnTextureChangedEventArgs>? OnChanged;
     public class OnTextureChangedEventArgs : EventArgs
     {
-        public Texture Texture { get; }
-        public OnTextureChangedEventArgs(Texture texture) { Texture = texture; }
+        public Texture oldT;
+        public Texture newT;
+        public OnTextureChangedEventArgs(Texture oldT, Texture newT) { this.oldT = oldT; this.newT = newT; }
     }
     
     //----------------------------------------------------------------------------------------------------------------------
@@ -43,7 +46,7 @@ public class Texture
         var texture = new Texture(FilePath);
         texture.ID = BindController.BindTexture(texture);
 
-        texture.OnChanged += (e) => BindController.UpdateTexture(e.Texture);
+        texture.OnChanged += (e) => BindController.UpdateTexture(e.newT);
 
         return texture;
     }
