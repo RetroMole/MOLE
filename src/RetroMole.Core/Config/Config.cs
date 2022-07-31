@@ -13,7 +13,7 @@ public static partial class Config
             FullClassName = "RetroMole.Render.Veldrid+Controller",
             Parameters = new[]
             {
-                new ConfT.ParamT { Name = "backend", Value = Enum.Parse(Type.GetType("Veldrid.GraphicsBackend, Veldrid, Version=4.8.0.0, Culture=neutral, PublicKeyToken=null"), "OpenGL"), FullEnumName = "Veldrid.GraphicsBackend, Veldrid, Version=4.8.0.0, Culture=neutral, PublicKeyToken=null" }
+                new ConfT.ParamT { Name = "backend", Value = -1, FullEnumName = "Veldrid.GraphicsBackend, Veldrid, Version=4.8.0.0, Culture=neutral, PublicKeyToken=null" }
             }
         },
         Logging = new ConfT.LogT
@@ -131,7 +131,7 @@ public static partial class Config
         public struct ParamT
         {
             public string Name;
-            public dynamic? Value;
+            public dynamic Value;
             public string? FullEnumName;
         }
     }
