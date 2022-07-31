@@ -1,12 +1,12 @@
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace RetroMole.Core;
+namespace RetroMole.Core.Utility;
 
 public static partial class UndoRedo
 {
     public class TextureUR : Interfaces.IUndoRedo
     {
-        public TextureUR(Texture texture)
+        public TextureUR(Interfaces.Texture texture)
         {
             state = texture;
             state.OnChanged += CatchDo;
@@ -17,16 +17,16 @@ public static partial class UndoRedo
             new Stack<(int oldW, int oldH, int newW, int newH, List<(int i, Rgba32 oldPixel, Rgba32 newPixel)>)>();
         public void CatchDo(object args)
         {
-            var newState = ((Texture.OnTextureChangedEventArgs)args).Texture;
-            var diff = state.Pixels
-                .Where((p, i) => p != newState.Pixels[i])
-                .Select((p, i) => (i, p, newState.Pixels[i]))
+            var newT = ((Interfaces.Texture.OnTextureChangedEventArgs)args).newT;
+            var oldT = ((Interfaces.Texture.OnTextureChangedEventArgs)args).oldT;
+
+            var diff = oldT.Pixels
+                .Where((p, i) => p != newT.Pixels[i])
+                .Select((p, i) => (i, p, newT.Pixels[i]))
                 .ToList();
 
-            UndoStack.Push((state.Width, state.Height, newState.Width, newState.Height, diff));
+            UndoStack.Push((oldT.Width, oldT.Height, newT.Width, newT.Height, diff));
             RedoStack.Clear();
-
-            state = newState;
         }
         public void Undo()
         {
@@ -37,7 +37,12 @@ public static partial class UndoRedo
             state.Width = oldW;
 
             state.OnChanged -= CatchDo;
-            diff.Select(d => state.Pixels[d.i] = d.oldPixel);
+            state.Pixels = state.Pixels
+                .Select((p, i) => diff
+                    .FirstOrDefault(d => d.i == i,
+                        (i:i, oldPixel:p, newPixel:p)
+                    ).oldPixel
+                ).ToArray();
             state.OnChanged += CatchDo;
         }
         public void Redo()
@@ -49,7 +54,12 @@ public static partial class UndoRedo
             state.Width = newW;
 
             state.OnChanged -= CatchDo;
-            diff.Select(d => state.Pixels[d.i] = d.newPixel);
+            state.Pixels = state.Pixels
+                .Select((p, i) => diff
+                    .FirstOrDefault(d => d.i == i,
+                        (i:i, oldPixel:p, newPixel:p)
+                    ).newPixel
+                ).ToArray();
             state.OnChanged += CatchDo;
         }
         public void Clear()
@@ -59,6 +69,6 @@ public static partial class UndoRedo
         }
         public bool CanUndo => UndoStack.Count > 0;
         public bool CanRedo => RedoStack.Count > 0;
-        private Texture state;
+        private Interfaces.Texture state;
     }
 }

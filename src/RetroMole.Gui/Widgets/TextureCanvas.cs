@@ -2,8 +2,9 @@
 
 using ImGuiNET;
 using Serilog;
-using SixLabors.ImageSharp.PixelFormats;
 using RetroMole.Core;
+using RetroMole.Core.Interfaces;
+using RetroMole.Core.Utility;
 
 namespace RetroMole;
 
@@ -34,14 +35,12 @@ public static partial class Gui
                             );
                         }
                     },
-                    () => {
-                        if (ImGui.Button("Undo") && UndoRedoObj.CanUndo)
-                            UndoRedoObj.Undo();
-                    },
-                    () => {
-                        if (ImGui.Button("Redo") && UndoRedoObj.CanRedo)
-                            UndoRedoObj.Redo();
-                    }
+                    () => Utility.WithDisabled(!UndoRedoObj.CanUndo,
+                        () => { if (ImGui.Button("Undo")) UndoRedoObj.Undo(); }
+                    ),
+                    () => Utility.WithDisabled(!UndoRedoObj.CanRedo,
+                        () => { if (ImGui.Button("Redo")) UndoRedoObj.Redo(); }
+                    )
                 );     
             }
         }
