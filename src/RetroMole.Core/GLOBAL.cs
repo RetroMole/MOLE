@@ -29,44 +29,9 @@ public static class GLOBAL
         )? Path.GetFullPath(Path.Combine(HomePath, ".config", "RetroMole"))
         :  Path.GetFullPath(Path.Combine(HomePath, "AppData", "Roaming", "RetroMole"));
     //--------------------Config--------------------//
-    public static readonly TomlTable DefaultConfig = new TomlTable
-        {
-            ["renderer"] = new TomlTable
-            {
-                ["assembly"] = "RetroMole.Render.Veldrid+Controller",
-                ["params"]   = "OpenGL"
-            },
-            ["logging"] = new TomlTable
-            {
-                ["minimumLevel"] = "Information",
-                ["sinks"] =  new TomlArray
-                {
-                    IsTableArray = true,
-                    [0] = new TomlTable
-                    {
-                        ["type"]  = "Console",
-                        ["blockWhenFull"]  = true,
-                        ["outputTemplate"] = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
-                    },
-                    [1] = new TomlTable
-                    {
-                        ["type"]  = "File",
-                        ["level"] = "Warning",
-                        ["path"]  = Path.GetFullPath(Path.Combine(CfgPath, "logs", "RetroMole.log")),
-                        ["rollingInterval"]        = "Day",
-                        ["fileSizeLimitBytes"]     = 2000000,
-                        ["rollOnFileSizeLimit"]    = true,
-                        ["retainedFileCountLimit"] = 7,
-                        ["blockWhenFull"]  = true,
-                        ["outputTemplate"] = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
-                    }
-                }
-            }
-        };
-
-        public static TomlTable Config = File.Exists(Path.Combine(CfgPath, "config.toml"))
-            ? Import.Config(Path.Combine(CfgPath, "config.toml"))
-            : DefaultConfig;
+        public static Core.Config.ConfT Config = File.Exists(Path.Combine(CfgPath, "config.toml"))
+            ? Core.Config.Source.TOML(Import.TOMLFile(Path.Combine(CfgPath, "config.toml")))
+            : Core.Config.Default;
     //--------------------Packages--------------------//
     public static Interfaces.Package[] Packages =
         Directory.GetFileSystemEntries(
@@ -87,9 +52,7 @@ public static class GLOBAL
                     if (p.Contains("RetroMole.Render.Veldrid"))
                         return Import.AssemblyPackages(
                             ctx.LoadFromAssemblyPath(Path.GetFullPath(p)),
-                            Config is null
-                                ? "Vulkan"
-                                : Config["renderer"]["params"]
+                            Config.Renderer.Parameters
                         );
                     return Import.AssemblyPackages(ctx.LoadFromAssemblyPath(Path.GetFullPath(p)));
                 case ".MOLE.PCKG":
@@ -100,9 +63,7 @@ public static class GLOBAL
             }
         })
         .ToArray();
-    public static Core.Interfaces.ImGuiController CurrentController = Config is null
-		? Packages.First().Controllers.First()
-		: Packages.Select(p => p.Controllers.First(c => c.GetType().FullName == Config["renderer"]["assembly"].AsString)).First();
+    public static Core.Interfaces.ImGuiController CurrentController = Packages.Select(p => p.Controllers.First(c => c.GetType().FullName == Config.Renderer.FullClassName)).First();
 }
 
 #pragma warning restore CS8603
