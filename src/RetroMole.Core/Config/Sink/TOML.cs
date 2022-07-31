@@ -23,19 +23,22 @@ public static partial class Config
             };
 
             tbl["Renderer"]["Parameters"].AddRange(
-                Config.Renderer.Parameters.Select(p => (p.FullEnumName is null
-                ? new TomlTable
-                {
-                    ["Name"] = p.Name,
-                    ["Value"] = p.Value,
-                }
-                : new TomlTable
-                {
-                    ["Name"] = p.Name,
-                    ["Value"] = Enum.GetName(Type.GetType(p.FullEnumName), p.Value),
-                    ["FullEnumName"] = p.FullEnumName.ToString(),
-                })
-            ));
+                Config.Renderer.Parameters.Select(p
+                    =>( p.FullEnumName is null
+                    ||( p.FullEnumName is not null && (int)p.Value == -1
+                    )?  new TomlTable
+                    {
+                        ["Name"] = p.Name,
+                        ["Value"] = p.Value,
+                    }
+                    : new TomlTable
+                    {
+                        ["Name"] = p.Name,
+                        ["Value"] = Enum.Format(p.Value.GetType(), p.Value, "G"),
+                        ["FullEnumName"] = p.FullEnumName.ToString(),
+                    })
+                )
+            );
 
             tbl["Logging"]["Sinks"].AddRange(
                 Config.Logging.Sinks.Select(s => s.Type switch {

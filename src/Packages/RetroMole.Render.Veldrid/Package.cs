@@ -6,8 +6,8 @@ namespace RetroMole.Render;
 
 public partial class Veldrid : Core.Interfaces.Package
 {
-    private static GraphicsBackend _graphicsBackend = GraphicsBackend.Vulkan;
-    public Veldrid(params Core.Config.ConfT.ParamT[] args) => _graphicsBackend = args.First(a => a.Name == "backend").Value;
+    public static GraphicsBackend _graphicsBackend = unchecked((GraphicsBackend)(-1));
+    public Veldrid(params Core.Config.ConfT.ParamT[] args) => _graphicsBackend = unchecked((GraphicsBackend)args.FirstOrDefault(a => a.Name == "backend", new Core.Config.ConfT.ParamT { Name="backend", Value=unchecked((GraphicsBackend)(-1)) }).Value);
     public override string Name => "VeldridController";
     public override string Author => "RetroMole";
     public override Version Version => new(0,0,1,0);

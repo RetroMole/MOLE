@@ -62,8 +62,18 @@ public partial class Veldrid : Core.Interfaces.Package
         public ImGuiPlatformIOPtr _platformIO;
 
 //--------------------------General-----------------------------
-        public unsafe Controller(int width, int height, GraphicsBackend vr_backend = GraphicsBackend.OpenGL)
+        public unsafe Controller(int width, int height, GraphicsBackend vr_backend)
         {
+            if (vr_backend == unchecked((GraphicsBackend)(-1)))
+            {
+                vr_backend = GraphicsDevice.IsBackendSupported(GraphicsBackend.Vulkan)     ? GraphicsBackend.Vulkan     // Vulkan & MoltenVK are prioritized on all platforms
+                           : GraphicsDevice.IsBackendSupported(GraphicsBackend.Metal)      ? GraphicsBackend.Metal      // Metal is only available on macOS but is prioritized over OpenGL
+                           : GraphicsDevice.IsBackendSupported(GraphicsBackend.OpenGL)     ? GraphicsBackend.OpenGL     // OpenGL is available on all platforms as a default backend if Vulkan is not available
+                           : GraphicsDevice.IsBackendSupported(GraphicsBackend.Direct3D11) ? GraphicsBackend.Direct3D11 // Direct3D11 is only available on Windows and is only a fallback if OpenGL is not available either
+                           : throw new System.InvalidOperationException("No supported backend found...");               // I wonder if there's an ImGui software renderer as an absolute final fallback?
+                Core.GLOBAL.Config.Renderer.Parameters = new[] { new Core.Config.ConfT.ParamT { Name = "backend", Value = vr_backend, FullEnumName = typeof(GraphicsBackend).AssemblyQualifiedName } };
+            }
+
             // Create window, GraphicsDevice, and all resources necessary to render
             _window = VeldridStartup.CreateWindow(new WindowCreateInfo(50, 50, 1280, 720, WindowState.Normal, "RetroMole"));
             _gd = VeldridStartup.CreateGraphicsDevice(_window, new GraphicsDeviceOptions(true, null, true, ResourceBindingModel.Improved, true, true), vr_backend);

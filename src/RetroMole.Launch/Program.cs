@@ -12,9 +12,6 @@ public static partial class Launch
 {
 	public static void Main(string[] args)
 	{
-		// Set up default Logging
-		if (!File.Exists(Path.Combine(GLOBAL.CfgPath, "config.toml")))
-	        Export.TOMLFile(Config.Sink.TOML(Config.Default), Path.Combine(GLOBAL.CfgPath, "config.toml"));
 		ConfigureLogging();
 
 		Log.Information(">-----------------------------<Starting>------------------------------<");
@@ -36,7 +33,14 @@ public static partial class Launch
 
 		Log.Information($"Starting GUI via {GLOBAL.Config.Renderer.FullClassName} w/ {GLOBAL.Config.Renderer.Parameters.Length}	Parameters:\n\t          "
 			+ string.Join("\n\t          ", GLOBAL.Config.Renderer.Parameters.Select(p => $"{p.Name}: {p.Value}")));
+
 		GLOBAL.CurrentController.Main(() => Gui.UI());
+
+
+		// Save config to file
+		Log.Information("Saving Config to file");
+		if (!File.Exists(Path.Combine(GLOBAL.CfgPath, "config.toml")))
+	        Export.TOMLFile(Config.Sink.TOML(GLOBAL.Config), Path.Combine(GLOBAL.CfgPath, "config.toml"));
 
 		Log.Information(">---------------------------<Shutting Down>---------------------------<");
 		Log.CloseAndFlush();
