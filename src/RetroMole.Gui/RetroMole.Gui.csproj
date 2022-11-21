@@ -1,31 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\RetroMole.Core\RetroMole.Core.csproj" />
-    <ProjectReference Include="..\..\submodules\ImGui.NET\src\ImGui.NET\ImGui.NET.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\submodules\QuickImGui.NET\src\ImGui.NET\src\ImGui.NET\ImGui.NET.csproj" />
+        <ProjectReference Include="..\RetroMole.Core\RetroMole.Core.csproj" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="..\..\submodules\ImGui.NET\deps\cimgui\win-x86\cimgui.dll" Condition=" '$(OS)' == 'Windows_NT' " CopyToOutputDirectory="PreserveNewest">
-      <PackagePath>runtimes/win-x86/native</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="..\..\submodules\ImGui.NET\deps\cimgui\win-x64\cimgui.dll" Condition=" '$(OS)' == 'Windows_NT' " CopyToOutputDirectory="PreserveNewest">
-      <PackagePath>runtimes/win-x64/native</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="..\..\submodules\ImGui.NET\deps\cimgui\linux-x64\cimgui.so" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' " CopyToOutputDirectory="PreserveNewest">
-      <PackagePath>runtimes/linux-x64/native/libcimgui.so</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <Content Include="..\..\submodules\ImGui.NET\deps\cimgui\osx\cimgui.dylib" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' " CopyToOutputDirectory="PreserveNewest">
-      <PackagePath>runtimes/osx/native/libcimgui.dylib</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-  </ItemGroup>
+    <ItemGroup>
+        <Content Include="..\..\submodules\QuickImGui.NET\src\ImGui.NET\\deps\cimgui\win-x86\cimgui.dll" Condition=" '$(OS)' == 'Windows_NT' " CopyToOutputDirectory="PreserveNewest">
+            <PackagePath>runtimes/win-x86/native</PackagePath>
+            <Pack>true</Pack>
+        </Content>
+        <Content Include="..\..\submodules\QuickImGui.NET\src\ImGui.NET\deps\cimgui\win-x64\cimgui.dll" Condition=" '$(OS)' == 'Windows_NT' " CopyToOutputDirectory="PreserveNewest">
+            <PackagePath>runtimes/win-x64/native</PackagePath>
+            <Pack>true</Pack>
+        </Content>
+        <Content Include="..\..\submodules\QuickImGui.NET\src\ImGui.NET\deps\cimgui\linux-x64\cimgui.so" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' " CopyToOutputDirectory="PreserveNewest">
+            <PackagePath>runtimes/linux-x64/native/libcimgui.so</PackagePath>
+            <Pack>true</Pack>
+        </Content>
+        <Content Include="..\..\submodules\QuickImGui.NET\src\ImGui.NET\deps\cimgui\osx\cimgui.dylib" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' " CopyToOutputDirectory="PreserveNewest">
+            <PackagePath>runtimes/osx/native/libcimgui.dylib</PackagePath>
+            <Pack>true</Pack>
+        </Content>
+    </ItemGroup>
 </Project>

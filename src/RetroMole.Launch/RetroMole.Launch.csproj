@@ -1,49 +1,45 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
- <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-  
-  <!-- Other RetroMole projects -->
-  <ItemGroup>
-    <ProjectReference Include="..\RetroMole.Core\RetroMole.Core.csproj" />
-    <ProjectReference Include="..\RetroMole.Gui\RetroMole.Gui.csproj" />
-  </ItemGroup>
- 
-  <!-- Default Packages -->
-  <ItemGroup>
-    <ProjectReference Include="..\Packages\RetroMole.Render.Veldrid\RetroMole.Render.Veldrid.csproj" DestinationSubDirectory="Packages\" />
-  </ItemGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <!-- NUGet Stuff -->
-  <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="Serilog" Version="2.11.0" />
-    <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="spdx" Version="0.2.0" />
-    <PackageReference Include="Tommy" Version="3.1.2" />
-  </ItemGroup>
+    <!-- Other RetroMole projects -->
+    <ItemGroup>
+        <ProjectReference Include="..\..\submodules\QuickImGui.NET\src\QuickImGuiNET.Veldrid\QuickImGuiNET.Veldrid.csproj"/>
+        <ProjectReference Include="..\..\submodules\QuickImGui.NET\src\QuickImGuiNET\QuickImGuiNET.csproj"/>
+        <ProjectReference Include="..\RetroMole.Core\RetroMole.Core.csproj"/>
+        <ProjectReference Include="..\RetroMole.Gui\RetroMole.Gui.csproj"/>
+    </ItemGroup>
 
-  <!-- Icon -->
-  <ItemGroup>
-    <Content Include="..\..\res\Icon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>Icon.png</Link>
-    </Content>
-    <Content Include="..\..\res\Icon.bmp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>Icon.bmp</Link>
-    </Content>
-    <EmbeddedResource Include="..\..\res\Icon.ico">
-      <LogicalName>Icon.ico</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\res\Icon.bmp">
-      <LogicalName>Icon.bmp</LogicalName>
-    </EmbeddedResource>
-  </ItemGroup>
+    <!-- NuGet Stuff -->
+    <ItemGroup>
+        <PackageReference Include="CommandLineParser" Version="2.9.1"/>
+        <PackageReference Include="Serilog" Version="2.12.1-dev-01587"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.1-dev-00896"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00947"/>
+        <PackageReference Include="spdx" Version="0.8.0"/>
+        <PackageReference Include="Tommy" Version="3.1.2"/>
+    </ItemGroup>
+
+    <!-- Icon -->
+    <ItemGroup>
+        <Content Include="..\..\res\Icon.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>Icon.png</Link>
+        </Content>
+        <Content Include="..\..\res\Icon.bmp">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>Icon.bmp</Link>
+        </Content>
+        <EmbeddedResource Include="..\..\res\Icon.ico">
+            <LogicalName>Icon.ico</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Include="..\..\res\Icon.bmp">
+            <LogicalName>Icon.bmp</LogicalName>
+        </EmbeddedResource>
+    </ItemGroup>
 </Project>

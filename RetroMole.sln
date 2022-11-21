@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImGui.NET", "submodules\QuickImGui.NET\src\ImGui.NET\src\ImGui.NET\ImGui.NET.csproj", "{229C37B7-2872-447F-B6C1-A528FC7F72C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickImGuiNET", "submodules\QuickImGui.NET\src\QuickImGuiNET\QuickImGuiNET.csproj", "{154A0F3D-B521-4E2A-B36B-061742A8F080}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickImGuiNET.Veldrid", "submodules\QuickImGui.NET\src\QuickImGuiNET.Veldrid\QuickImGuiNET.Veldrid.csproj", "{4B53538C-C3E9-4D29-9285-FFDE350F45EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Asar#", "submodules\asar\src\Asar#\Asar#.csproj", "{28F7162A-F5CD-4D0B-88B2-C999FA55B53F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetroMole.Core", "src\RetroMole.Core\RetroMole.Core.csproj", "{8A0ADA1D-D222-4DF7-89B8-5716E0B18DE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetroMole.Gui", "src\RetroMole.Gui\RetroMole.Gui.csproj", "{7D592058-D1A9-449E-B729-74F8C6C6C863}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetroMole.Launch", "src\RetroMole.Launch\RetroMole.Launch.csproj", "{F9D4936C-00AD-4ED2-BF53-0AF79271F770}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{229C37B7-2872-447F-B6C1-A528FC7F72C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{229C37B7-2872-447F-B6C1-A528FC7F72C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{229C37B7-2872-447F-B6C1-A528FC7F72C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{229C37B7-2872-447F-B6C1-A528FC7F72C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{154A0F3D-B521-4E2A-B36B-061742A8F080}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{154A0F3D-B521-4E2A-B36B-061742A8F080}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{154A0F3D-B521-4E2A-B36B-061742A8F080}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{154A0F3D-B521-4E2A-B36B-061742A8F080}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B53538C-C3E9-4D29-9285-FFDE350F45EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B53538C-C3E9-4D29-9285-FFDE350F45EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B53538C-C3E9-4D29-9285-FFDE350F45EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B53538C-C3E9-4D29-9285-FFDE350F45EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28F7162A-F5CD-4D0B-88B2-C999FA55B53F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28F7162A-F5CD-4D0B-88B2-C999FA55B53F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28F7162A-F5CD-4D0B-88B2-C999FA55B53F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28F7162A-F5CD-4D0B-88B2-C999FA55B53F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A0ADA1D-D222-4DF7-89B8-5716E0B18DE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A0ADA1D-D222-4DF7-89B8-5716E0B18DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A0ADA1D-D222-4DF7-89B8-5716E0B18DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A0ADA1D-D222-4DF7-89B8-5716E0B18DE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D592058-D1A9-449E-B729-74F8C6C6C863}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D592058-D1A9-449E-B729-74F8C6C6C863}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D592058-D1A9-449E-B729-74F8C6C6C863}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D592058-D1A9-449E-B729-74F8C6C6C863}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9D4936C-00AD-4ED2-BF53-0AF79271F770}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9D4936C-00AD-4ED2-BF53-0AF79271F770}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9D4936C-00AD-4ED2-BF53-0AF79271F770}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9D4936C-00AD-4ED2-BF53-0AF79271F770}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
