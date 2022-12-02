@@ -7,22 +7,23 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <!-- Other RetroMole projects -->
+    <!-- RetroMole Projects -->
     <ItemGroup>
-        <ProjectReference Include="..\..\submodules\QuickImGui.NET\src\QuickImGuiNET.Veldrid\QuickImGuiNET.Veldrid.csproj"/>
-        <ProjectReference Include="..\..\submodules\QuickImGui.NET\src\QuickImGuiNET\QuickImGuiNET.csproj"/>
-        <ProjectReference Include="..\RetroMole.Core\RetroMole.Core.csproj"/>
-        <ProjectReference Include="..\RetroMole.Gui\RetroMole.Gui.csproj"/>
+        <ProjectReference Include="..\..\submodules\QuickImGui.NET\src\QuickImGuiNET.Veldrid\QuickImGuiNET.Veldrid.csproj" />
+        <ProjectReference Include="..\..\submodules\QuickImGui.NET\src\QuickImGuiNET\QuickImGuiNET.csproj" />
+        <ProjectReference Include="..\RetroMole.Core\RetroMole.Core.csproj" />
+        <ProjectReference Include="..\RetroMole.Gui\RetroMole.Gui.csproj" />
     </ItemGroup>
+    
+    <!-- RetroMole Packages -->
 
     <!-- NuGet Stuff -->
     <ItemGroup>
-        <PackageReference Include="CommandLineParser" Version="2.9.1"/>
-        <PackageReference Include="Serilog" Version="2.12.1-dev-01587"/>
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.1-dev-00896"/>
-        <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00947"/>
-        <PackageReference Include="spdx" Version="0.8.0"/>
-        <PackageReference Include="Tommy" Version="3.1.2"/>
+        <PackageReference Include="Serilog" Version="2.12.1-dev-01587" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.1-dev-00896" />
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00947" />
+        <PackageReference Include="spdx" Version="0.8.0" />
+        <PackageReference Include="Tommy" Version="3.1.2" />
     </ItemGroup>
 
     <!-- Icon -->

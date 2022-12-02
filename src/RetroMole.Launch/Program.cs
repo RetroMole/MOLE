@@ -1,12 +1,11 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
 using System.Reflection;
-using ImGuiNET;
+using System.Runtime.Loader;
 using QuickImGuiNET;
 using RetroMole.Core;
 using Serilog;
-using Tomlyn;
 using Tomlyn.Model;
-using bk = QuickImGuiNET.Veldrid;
+using vbk = QuickImGuiNET.Veldrid;
 
 namespace RetroMole;
 
@@ -23,18 +22,21 @@ public static class Launch
         Log.Information("RetroMole Launch v0.1");
         
         // Config Sinks/Sources
-        var cfg_toml = new Config.Toml("RetroMole.cfg", ref _backend);
-        var cfg_cli = new Config.Cli(args, ref _backend);
+        var cfgToml = new Config.Toml("RetroMole.cfg", ref _backend);
+        var cfgCli = new Config.Cli(args, ref _backend);
         
         // Shadow Backend
         Log.Logger.Information("Initializing Veldrid Backend (shadow)");
-        _backend = new bk.Backend
+        _backend = new vbk.Backend
         {
             // Add Config to shadow backend
             Config = new Config
             {
                 _default = new TomlTable
                 {
+                    { "debug", new TomlTable {
+                        {"showMenu", true} 
+                    }},
                     { "window", new TomlTable {
                         { "width", 1280 },
                         { "height", 720 }
@@ -71,7 +73,7 @@ public static class Launch
                                     )) ?? string.Empty 
                             },
                             { "temp", Path.GetFullPath(Path.Combine(Path.GetTempPath(), "RetroMoleTemp")) },
-                            { "paths.exec", Path.GetFullPath(
+                            { "exec", Path.GetFullPath(
                                 Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? Assembly.GetExecutingAssembly()?.Location)
                                 ?? Path.Combine(Path.GetTempPath(), "RetroMoleTemp", "tmpxc")
                             )}
@@ -79,15 +81,16 @@ public static class Launch
                 },
                 Sinks = new IConfigSink[]
                 {
-                    cfg_toml,
-                    cfg_cli
+                    cfgToml,
+                    cfgCli
                 },
                 Sources = new IConfigSource[]
                 {
-                    cfg_toml,
-                    cfg_cli
+                    cfgToml,
+                    cfgCli
                 }
             },
+            
             // Add default Logger to shadow backend
             Logger = Log.Logger,
 
@@ -113,6 +116,7 @@ public static class Launch
         _backend.Config.From(_backend.Config.Sources[0]);
         _backend.Config.From(_backend.Config.Sources[1]);
 
+        // Re-initialize Logger
         _backend.Logger.Information("Initializing new logger using config");
         Log.CloseAndFlush();
         Log.Logger = new LoggerConfiguration()
@@ -132,12 +136,45 @@ public static class Launch
         // Initialize shadow -> ready backend
         _backend.Logger.Information("Config Done, fully initializing shadow backend");
         _backend.Init();
+
+        // Load Packages
+        _backend.Logger.Information("Load Packages (todo)");
+        if (!Directory.Exists(Path.Combine(_backend.Config["paths"]["exec"], "Packages")))
+            Directory.CreateDirectory(Path.Combine(_backend.Config["paths"]["exec"], "Packages"));
+        var packages = ((string[])Directory.GetFileSystemEntries(
+                Path.Combine(_backend.Config["paths"]["exec"], "Packages"),
+                "*.dll", SearchOption.AllDirectories
+            ))
+            .Concat(
+                (string[])Directory.GetFileSystemEntries(
+                    Path.Combine(_backend.Config["paths"]["exec"], "Packages"),
+                    "*.mole.pckg", SearchOption.AllDirectories
+                )
+            )
+            .SelectMany(p =>
+            {
+                var ctx = new AssemblyLoadContext($"{Path.GetFullPath(p)}_{DateTime.Now.ToFileTimeUtc()}");
+                var ext = Path.GetExtension(p).ToUpper();
+                switch (ext)
+                {
+                    case ".DLL":
+                        return Import.AssemblyPackages(ctx.LoadFromAssemblyPath(Path.GetFullPath(p)), _backend);
+                    case ".MOLE.PCKG":
+                        return Import.CompressedPackages(p, _backend);
+                    default:
+                        _backend.Logger.Error($"Invalid Package (doesn't end in .dll or .mole.pckg): {p}");
+                        return new List<Package>();
+                }
+            })
+            .ToArray();
+        foreach (var p in packages)
+        {
+            _backend.Logger.Information($"Intializing Package: {p.PackageId} ({p.License.Id})");
+            p.Init(ref _backend);
+        }
         
         // Initialize RetroMole UI
-        var gui = new Gui(_backend);
-        
-        //TODO Load Packages
-        _backend.Logger.Information("Load Packages (todo)");
+        var gui = new Gui(_backend, packages);
 
         // Run backend loop and handle errors
         _backend.Logger.Information("Run Backend loop");
@@ -148,6 +185,7 @@ public static class Launch
         catch (Exception e)
         {
             _backend.Logger.Error(e.ToString());
+            Debugger.Break();
         }
         finally
         {

@@ -4,8 +4,6 @@ using System.Text;
 using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
 using QuickImGuiNET;
-using RetroMole.Core.Interfaces;
-using Serilog;
 using ZipLib = ICSharpCode.SharpZipLib;
 
 namespace RetroMole.Core;
@@ -13,38 +11,31 @@ namespace RetroMole.Core;
 public static class Import
 {
     // .NET Assembly (*.dll) containing Core.Interfaces.Package implementations 
-    public static IEnumerable<Package> AssemblyPackages(Assembly asm, params object[] extraInstArgs)
+    public static IEnumerable<Package> AssemblyPackages(Assembly asm, Backend backend)
     {
-        Log.Information(
-            $"Loading Assembly Package container @ {Path.GetFullPath(asm.Location)} w/ ARGS = {string.Join(", ", extraInstArgs.Select(a => a.ToString()))}");
+        backend.Logger.Information(
+            $"Loading Assembly Package container @ {Path.GetFullPath(asm.Location)}");
 
         var res = asm.DefinedTypes
             .Where(t => t.BaseType == typeof(Package))
-            .Select((p, i) =>
-            {
-                if (p.FullName != null)
-                    return (Package)asm.CreateInstance(p.FullName, args: extraInstArgs, ignoreCase: false,
-                        bindingAttr: BindingFlags.Default, binder: null, culture: null, activationAttributes: null)!;
-                return null;
-            })
-            .Where(p => p is not null)!
-            .ToArray<Package>();
+            .Select(p => (Package)asm.CreateInstance(p.FullName, args: null, ignoreCase: false,
+                        bindingAttr: BindingFlags.Default, binder: null, culture: null, activationAttributes: null)
+                        ?? throw new Exception()
+            ).ToList();
 
-        Log.Information(
-            $"Successfully loaded Assembly Package container @ {Path.GetFullPath(asm.Location)} " +
-            $"w/ ARGS = {string.Join(", ", extraInstArgs.Select(a => a.ToString()))}" +
-            $"\nFound {res.Length} Package Classes");
+        backend.Logger.Information($"Found {res.Count} Packages in Container: {Path.GetFullPath(asm.Location)}");
         return res;
     }
 
     // TAR.GZ file (*.mole.pckg) containing Core.Interfaces.Package implementations 
-    public static IEnumerable<Package> CompressedPackages(string path, Backend backend, params object[] extraInstArgs)
+    public static IEnumerable<Package> CompressedPackages(string path, Backend backend)
     {
-        Log.Information(
-            $"Loading Compressed Package container @ {Path.GetFullPath(path)} w/ ARGS = {string.Join(", ", extraInstArgs.Select(a => a.ToString()))}");
-        var decompressed = new MemoryStream();
+        backend.Logger.Information(
+            $"Loading Compressed Package container: {Path.GetFullPath(path)}");
         using var fs = new FileStream(path, FileMode.Open);
+        
         // Decompress
+        var decompressed = new MemoryStream();
         GZip.Decompress(fs, decompressed, false);
 
         // Create input tar archive object
@@ -65,16 +56,13 @@ public static class Import
         {
             var ctx = new AssemblyLoadContext($"{Path.GetFullPath(f)}_{DateTime.Now.ToFileTimeUtc()}");
             var asm = ctx.LoadFromAssemblyPath(Path.GetFullPath(f));
-            res.AddRange(AssemblyPackages(asm, extraInstArgs));
+            res.AddRange(AssemblyPackages(asm, backend));
         }
 
         // Delete temp files
         Directory.Delete(tempPath, true);
 
-        Log.Information(
-            $"Successfully loaded Compressed Package container @ {Path.GetFullPath(path)} " + 
-            $"w/ ARGS = {string.Join(", ", extraInstArgs.Select(a => a.ToString()))}" +
-            "\nFound {res.Count} Package Classes");
+        backend.Logger.Information($"Found {res.Count} Packages in Container: {Path.GetFullPath(path)}");
         return res.ToArray();
     }
 }
