@@ -11,10 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="..\..\submodules\QuickImGui.NET\src\ImGui.NET\\deps\cimgui\win-x86\cimgui.dll" Condition=" '$(OS)' == 'Windows_NT' " CopyToOutputDirectory="PreserveNewest">
-            <PackagePath>runtimes/win-x86/native</PackagePath>
-            <Pack>true</Pack>
-        </Content>
         <Content Include="..\..\submodules\QuickImGui.NET\src\ImGui.NET\deps\cimgui\win-x64\cimgui.dll" Condition=" '$(OS)' == 'Windows_NT' " CopyToOutputDirectory="PreserveNewest">
             <PackagePath>runtimes/win-x64/native</PackagePath>
             <Pack>true</Pack>
@@ -27,5 +23,9 @@
             <PackagePath>runtimes/osx/native/libcimgui.dylib</PackagePath>
             <Pack>true</Pack>
         </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Widgets\Edit" />
     </ItemGroup>
 </Project>

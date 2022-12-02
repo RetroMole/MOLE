@@ -1,4 +1,4 @@
-namespace RetroMole.Core.Interfaces;
+namespace RetroMole.Core;
 
 public interface IUndoRedo
 {
