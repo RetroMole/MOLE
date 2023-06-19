@@ -3,7 +3,7 @@
 [![Latest commit](https://img.shields.io/github/last-commit/Vawlpe/MOLE/dev)](https://github.com/Vawlpe/MOLE/commits/dev)
 [![Version](https://badge.fury.io/gh/Vawlpe%2FMOLE.svg)](https://github.com/Vawlpe/MOLE/tags)
 [![Build](https://github.com/RetroMole/MOLE/actions/workflows/build.yaml/badge.svg?branch=dev)](https://github.com/RetroMole/MOLE/actions/workflows/build.yaml)
-# RetroMole is finally back in development!
+# RetroMole is (still) on Hiatus!
 ### License
 [GNU General Public License v3.0](https://github.com/Vawlpe/MOLE/blob/master/LICENSE.md)
 
