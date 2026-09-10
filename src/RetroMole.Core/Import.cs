@@ -11,9 +11,9 @@ namespace RetroMole.Core;
 public static class Import
 {
     // .NET Assembly (*.dll) containing Core.Interfaces.Package implementations 
-    public static IEnumerable<Package> AssemblyPackages(Assembly asm, Backend backend)
+    public static IEnumerable<Package> AssemblyPackages(Assembly asm, Context ctx)
     {
-        backend.Logger.Information(
+        ctx.Logger.Information(
             $"Loading Assembly Package container @ {Path.GetFullPath(asm.Location)}");
 
         var res = asm.DefinedTypes
@@ -23,14 +23,14 @@ public static class Import
                         ?? throw new Exception()
             ).ToList();
 
-        backend.Logger.Information($"Found {res.Count} Packages in Container: {Path.GetFullPath(asm.Location)}");
+        ctx.Logger.Information($"Found {res.Count} Packages in Container: {Path.GetFullPath(asm.Location)}");
         return res;
     }
 
     // TAR.GZ file (*.mole.pckg) containing Core.Interfaces.Package implementations 
-    public static IEnumerable<Package> CompressedPackages(string path, Backend backend)
+    public static IEnumerable<Package> CompressedPackages(string path, Context ctx)
     {
-        backend.Logger.Information(
+        ctx.Logger.Information(
             $"Loading Compressed Package container: {Path.GetFullPath(path)}");
         using var fs = new FileStream(path, FileMode.Open);
         
@@ -42,7 +42,7 @@ public static class Import
         var tar = TarArchive.CreateInputTarArchive(decompressed, Encoding.UTF8);
 
         // Store temp path
-        var tempPath = Path.Combine(backend.Config["paths"]["temp"], $"{Path.GetFileName(path)}_{DateTime.Now.ToFileTimeUtc()}");
+        var tempPath = Path.Combine(ctx.Config["paths"]["temp"], $"{Path.GetFileName(path)}_{DateTime.Now.ToFileTimeUtc()}");
 
         // Extract to temp path
         tar.ExtractContents(tempPath);
@@ -54,15 +54,15 @@ public static class Import
         List<Package> res = new();
         foreach (var f in paths)
         {
-            var ctx = new AssemblyLoadContext($"{Path.GetFullPath(f)}_{DateTime.Now.ToFileTimeUtc()}");
-            var asm = ctx.LoadFromAssemblyPath(Path.GetFullPath(f));
-            res.AddRange(AssemblyPackages(asm, backend));
+            var alc = new AssemblyLoadContext($"{Path.GetFullPath(f)}_{DateTime.Now.ToFileTimeUtc()}");
+            var asm = alc.LoadFromAssemblyPath(Path.GetFullPath(f));
+            res.AddRange(AssemblyPackages(asm, ctx));
         }
 
         // Delete temp files
         Directory.Delete(tempPath, true);
 
-        backend.Logger.Information($"Found {res.Count} Packages in Container: {Path.GetFullPath(path)}");
+        ctx.Logger.Information($"Found {res.Count} Packages in Container: {Path.GetFullPath(path)}");
         return res.ToArray();
     }
 }

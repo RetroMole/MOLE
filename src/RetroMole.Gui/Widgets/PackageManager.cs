@@ -12,7 +12,7 @@ public partial class Gui
         {
             public Package[] Packages;
 
-            public PackageManager(Backend backend, string? Name = null, bool AutoRegister = true) : base(backend, Name,
+            public PackageManager(Context ctx, string? Name = null, bool AutoRegister = true) : base(ctx, Name,
                 AutoRegister)
             {
             }

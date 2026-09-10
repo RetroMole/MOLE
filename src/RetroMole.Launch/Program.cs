@@ -11,7 +11,7 @@ namespace RetroMole;
 
 public static class Launch
 {
-    private static Backend _backend;
+    private static Context _ctx;
     public static void Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
@@ -22,14 +22,14 @@ public static class Launch
         Log.Information("RetroMole Launch v0.1");
         
         // Config Sinks/Sources
-        var cfgToml = new Config.Toml("RetroMole.cfg", ref _backend);
-        var cfgCli = new Config.Cli(args, ref _backend);
+        var cfgToml = new Config.Toml("RetroMole.cfg", ref _ctx);
+        var cfgCli = new Config.Cli(args, ref _ctx);
         
-        // Shadow Backend
-        Log.Logger.Information("Initializing Veldrid Backend (shadow)");
-        _backend = new vbk.Backend
+        // Shadow Context
+        Log.Logger.Information("Initializing Veldrid Context (shadow)");
+        _ctx = new vbk.Context
         {
-            // Add Config to shadow backend
+            // Add Config to shadow ctx
             Config = new Config
             {
                 _default = new TomlTable
@@ -91,10 +91,10 @@ public static class Launch
                 }
             },
             
-            // Add default Logger to shadow backend
+            // Add default Logger to shadow ctx
             Logger = Log.Logger,
 
-            // Add Events to shadow backend
+            // Add Events to shadow ctx
             Events = new Dictionary<string, Event>
             {
                 {
@@ -106,21 +106,21 @@ public static class Launch
                 { "widgetReg", new Event() }
             },
 
-            // Add Widget Registry to shadow backend
+            // Add Widget Registry to shadow ctx
             WidgetReg = new Dictionary<string, Widget>()
         };
         
         // Loading config sources
-        _backend.Logger.Information($"Loading default config + ({_backend.Config.Sources.Length}) source(s)");
-        _backend.Config.LoadDefault();
-        _backend.Config.From(_backend.Config.Sources[0]);
-        _backend.Config.From(_backend.Config.Sources[1]);
+        _ctx.Logger.Information($"Loading default config + ({_ctx.Config.Sources.Length}) source(s)");
+        _ctx.Config.LoadDefault();
+        _ctx.Config.From(_ctx.Config.Sources[0]);
+        _ctx.Config.From(_ctx.Config.Sources[1]);
 
         // Re-initialize Logger
-        _backend.Logger.Information("Initializing new logger using config");
+        _ctx.Logger.Information("Initializing new logger using config");
         Log.CloseAndFlush();
         Log.Logger = new LoggerConfiguration()
-            .ReadFrom.KeyValuePairs(((TomlTable)_backend.Config["serilog"]).SelectMany(kvp =>
+            .ReadFrom.KeyValuePairs(((TomlTable)_ctx.Config["serilog"]).SelectMany(kvp =>
                 kvp.Key switch
                 {
                     "using" => ((TomlTable)kvp.Value).Select(use =>
@@ -131,23 +131,23 @@ public static class Launch
                     _ => new[] { new KeyValuePair<string, string>(kvp.Key, (string)kvp.Value) }
                 }
             )).CreateLogger();
-        _backend.Logger = Log.Logger;
+        _ctx.Logger = Log.Logger;
 
-        // Initialize shadow -> ready backend
-        _backend.Logger.Information("Config Done, fully initializing shadow backend");
-        _backend.Init();
+        // Initialize shadow -> ready ctx
+        _ctx.Logger.Information("Config Done, fully initializing shadow ctx");
+        _ctx.Init();
 
         // Load Packages
-        _backend.Logger.Information("Load Packages (todo)");
-        if (!Directory.Exists(Path.Combine(_backend.Config["paths"]["exec"], "Packages")))
-            Directory.CreateDirectory(Path.Combine(_backend.Config["paths"]["exec"], "Packages"));
+        _ctx.Logger.Information("Load Packages (todo)");
+        if (!Directory.Exists(Path.Combine(_ctx.Config["paths"]["exec"], "Packages")))
+            Directory.CreateDirectory(Path.Combine(_ctx.Config["paths"]["exec"], "Packages"));
         var packages = ((string[])Directory.GetFileSystemEntries(
-                Path.Combine(_backend.Config["paths"]["exec"], "Packages"),
+                Path.Combine(_ctx.Config["paths"]["exec"], "Packages"),
                 "*.dll", SearchOption.AllDirectories
             ))
             .Concat(
                 (string[])Directory.GetFileSystemEntries(
-                    Path.Combine(_backend.Config["paths"]["exec"], "Packages"),
+                    Path.Combine(_ctx.Config["paths"]["exec"], "Packages"),
                     "*.mole.pckg", SearchOption.AllDirectories
                 )
             )
@@ -158,38 +158,38 @@ public static class Launch
                 switch (ext)
                 {
                     case ".DLL":
-                        return Import.AssemblyPackages(ctx.LoadFromAssemblyPath(Path.GetFullPath(p)), _backend);
+                        return Import.AssemblyPackages(ctx.LoadFromAssemblyPath(Path.GetFullPath(p)), _ctx);
                     case ".MOLE.PCKG":
-                        return Import.CompressedPackages(p, _backend);
+                        return Import.CompressedPackages(p, _ctx);
                     default:
-                        _backend.Logger.Error($"Invalid Package (doesn't end in .dll or .mole.pckg): {p}");
+                        _ctx.Logger.Error($"Invalid Package (doesn't end in .dll or .mole.pckg): {p}");
                         return new List<Package>();
                 }
             })
             .ToArray();
         foreach (var p in packages)
         {
-            _backend.Logger.Information($"Intializing Package: {p.PackageId} ({p.License.Id})");
-            p.Init(ref _backend);
+            _ctx.Logger.Information($"Intializing Package: {p.PackageId} ({p.License.Id})");
+            p.Init(ref _ctx);
         }
         
         // Initialize RetroMole UI
-        var gui = new Gui(_backend, packages);
+        var gui = new Gui(_ctx, packages);
 
-        // Run backend loop and handle errors
-        _backend.Logger.Information("Run Backend loop");
+        // Run ctx loop and handle errors
+        _ctx.Logger.Information("Run Context loop");
         try
         {
-            _backend.Run(gui.Draw, UpdateCallback: gui.Update);
+            _ctx.Run(gui.Draw, UpdateCallback: gui.Update);
         }
         catch (Exception e)
         {
-            _backend.Logger.Error(e.ToString());
+            _ctx.Logger.Error(e.ToString());
             Debugger.Break();
         }
         finally
         {
-            _backend.Logger.Information($"EXITING: {Environment.ExitCode}");
+            _ctx.Logger.Information($"EXITING: {Environment.ExitCode}");
             Log.CloseAndFlush();
         }
     }

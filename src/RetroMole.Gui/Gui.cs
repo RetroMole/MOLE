@@ -9,15 +9,15 @@ namespace RetroMole;
 public partial class Gui
 {
     private bool _showDemoWindow;
-    private readonly Backend _backend;
-    public Gui(Backend backend, Package[] packages)
+    private readonly Context _ctx;
+    public Gui(Context ctx, Package[] packages)
     {
-        _backend = backend;
+        _ctx = ctx;
         
         // Auto-register Widgets
-        backend.Logger.Information("RetroMole Gui v0.1");
-        backend.Logger.Information("RetroMole Core (todo)");
-        new QuickImGuiNET.Widgets.FileManager(backend, "FileManager##FileManager00")
+        ctx.Logger.Information("RetroMole Gui v0.1");
+        ctx.Logger.Information("RetroMole Core (todo)");
+        new QuickImGuiNET.Widgets.FileManager(ctx, "FileManager##FileManager00")
         {
             RenderMode = WidgetRenderMode.Modal,
             Size = new Vector2(500, 500),
@@ -36,7 +36,7 @@ public partial class Gui
             },
             CurrentFTQuery = "All"
         };
-        new QuickImGuiNET.Widgets.MemoryEditor(backend, "MemoryView##MemoryView00")
+        new QuickImGuiNET.Widgets.MemoryEditor(ctx, "MemoryView##MemoryView00")
         {
             RenderMode = WidgetRenderMode.Window,
             Size = new Vector2(500, 360),
@@ -75,7 +75,7 @@ public partial class Gui
                 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F
             }
         };
-        new Widgets.PackageManager(backend, "PackageManager##PackageManager00")
+        new Widgets.PackageManager(ctx, "PackageManager##PackageManager00")
         {
             RenderMode = WidgetRenderMode.Window,
             Size = new Vector2(300, 300),
@@ -85,7 +85,7 @@ public partial class Gui
             
             Packages = packages
         };
-        new Widgets.About(backend, "About##About00")
+        new Widgets.About(ctx, "About##About00")
         {
             RenderMode = WidgetRenderMode.Window,
             Size = new Vector2(300, 300),
@@ -100,27 +100,27 @@ public partial class Gui
         ImGui.DockSpaceOverViewport();
         if (ImGui.BeginMainMenuBar())
         {
-            if (_backend.Config["debug"]["showMenu"] && ImGui.BeginMenu("Debug"))
+            if (_ctx.Config["debug"]["showMenu"] && ImGui.BeginMenu("Debug"))
             {
                 ImGui.MenuItem("Open ImGui Demo Window", string.Empty, ref _showDemoWindow);
-                _backend.Events["onMainMenuBar"]["Debug"].Invoke();
+                _ctx.Events["onMainMenuBar"]["Debug"].Invoke();
                 ImGui.EndMenu();
             }
 
-            _backend.Events["onMainMenuBar"].Invoke();
+            _ctx.Events["onMainMenuBar"].Invoke();
             ImGui.EndMainMenuBar();
         }
 
         if (_showDemoWindow)
             ImGui.ShowDemoWindow(ref _showDemoWindow);
 
-        foreach (var widget in _backend.WidgetReg.Values)
+        foreach (var widget in _ctx.WidgetReg.Values)
             widget.Render();
     }
 
     public void Update(float deltaSeconds)
     {
-        foreach (var widget in _backend.WidgetReg.Values)
+        foreach (var widget in _ctx.WidgetReg.Values)
             widget.Update(deltaSeconds);
     }
 }

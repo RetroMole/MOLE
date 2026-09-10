@@ -11,5 +11,5 @@ public abstract class Package
     public abstract SpdxLicense License { get; }
     public virtual Uri Repository => new($"https://github.com/{Author}/{Name}");
     public string PackageId => $"{Author}/{Name}@{Version}";
-    public abstract void Init(ref Backend backend);
+    public abstract void Init(ref Context ctx);
 }
