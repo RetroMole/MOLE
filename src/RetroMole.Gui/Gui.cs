@@ -15,8 +15,7 @@ public partial class Gui
         _ctx = ctx;
         
         // Auto-register Widgets
-        ctx.Logger.Information("RetroMole Gui v0.1");
-        ctx.Logger.Information("RetroMole Core (todo)");
+        ctx.Logger.Information("Initializing RetroMole Gui v0.1");
         new QuickImGuiNET.Widgets.FileManager(ctx, "FileManager##FileManager00")
         {
             RenderMode = WidgetRenderMode.Modal,

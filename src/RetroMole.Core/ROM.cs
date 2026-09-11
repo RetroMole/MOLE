@@ -9,13 +9,12 @@ public abstract class ROM : IEnumerable<byte>, IEnumerator<byte>
     public List<Chunk> Chunks;
 
     public byte this[int i] => data[i];
-    private int _index = -1;
-    public byte Current => data[_index];
+    public byte Current => GetEnumerator().Current;
     object IEnumerator.Current => Current;
-    public void Dispose() { GC.SuppressFinalize(this); }
-    public IEnumerator<byte> GetEnumerator() => (data.AsEnumerable()).GetEnumerator();
-    public bool MoveNext() { _index++; return true; }
-    public void Reset() { _index = 0; }
+    public void Dispose() { GetEnumerator().Dispose(); GC.SuppressFinalize(this); }
+    public IEnumerator<byte> GetEnumerator() => data.AsEnumerable().GetEnumerator();
+    public bool MoveNext() => GetEnumerator().MoveNext();
+    public void Reset() => GetEnumerator().Reset();
     IEnumerator IEnumerable.GetEnumerator() => data.GetEnumerator();
     
 
@@ -28,32 +27,31 @@ public abstract class ROM : IEnumerable<byte>, IEnumerator<byte>
     public enum ChunkType
     {
         UNKNOWN,
-        PRG,
-        CHR,
-        PAL,
-        MAP,
-        TXT
+        Program,
+        Graphics,
+        Palettes,
+        Maps,
+        Text,
+        Tables,
+        Objects,
+        Tilesets,
+        SpriteObjects
     }
     
-    public class Chunk : IEnumerable<byte>, IEnumerator<byte>
+    public ReadOnlyMemory<byte> Slice(int offset, int length)
+        => data.AsMemory(offset, length);
+
+    public class Chunk
     {
-        public Chunk(byte[] data)
+        public Chunk(ReadOnlyMemory<byte> data)
         {
-            this.data = data;
+            Data = data;
         }
-        protected byte[] data;
+        public ReadOnlyMemory<byte> Data;
         public ChunkType Type;
         public Dictionary<Vector2, SubChunkFormat> ChunkInfo;
         
-        public byte this[int i] => data[i];
-        private int _index = -1;
-        public byte Current => data[_index];
-        object IEnumerator.Current => Current;
-        public void Dispose() { GC.SuppressFinalize(this); }
-        public IEnumerator<byte> GetEnumerator() => (data.AsEnumerable()).GetEnumerator();
-        public bool MoveNext() { _index++; return true; }
-        public void Reset() { _index = 0; }
-        IEnumerator IEnumerable.GetEnumerator() => data.GetEnumerator();
+        public byte this[int i] => Data.Span[i];
     }
     public abstract class SubChunkFormat
     {

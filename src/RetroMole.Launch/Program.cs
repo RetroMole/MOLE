@@ -26,7 +26,7 @@ public static class Launch
         var cfgCli = new Config.Cli(args, ref _ctx);
         
         // Shadow Context
-        Log.Logger.Information("Initializing Veldrid Context (shadow)");
+        Log.Logger.Information("Initializing QIMGUIN Context & Renderer (shadow only)");
         _ctx = new vbk.Context
         {
             // Add Config to shadow ctx
@@ -117,7 +117,7 @@ public static class Launch
         _ctx.Config.From(_ctx.Config.Sources[1]);
 
         // Re-initialize Logger
-        _ctx.Logger.Information("Initializing new logger using config");
+        _ctx.Logger.Information("Flush & Re-Init logger using config settings");
         Log.CloseAndFlush();
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.KeyValuePairs(((TomlTable)_ctx.Config["serilog"]).SelectMany(kvp =>
@@ -134,11 +134,11 @@ public static class Launch
         _ctx.Logger = Log.Logger;
 
         // Initialize shadow -> ready ctx
-        _ctx.Logger.Information("Config Done, fully initializing shadow ctx");
+        _ctx.Logger.Information("Config loaded, fully init Context from shadow");
         _ctx.Init();
 
         // Load Packages
-        _ctx.Logger.Information("Load Packages (todo)");
+        _ctx.Logger.Information("Loading Packages...");
         if (!Directory.Exists(Path.Combine(_ctx.Config["paths"]["exec"], "Packages")))
             Directory.CreateDirectory(Path.Combine(_ctx.Config["paths"]["exec"], "Packages"));
         var packages = ((string[])Directory.GetFileSystemEntries(
@@ -177,7 +177,7 @@ public static class Launch
         var gui = new Gui(_ctx, packages);
 
         // Run ctx loop and handle errors
-        _ctx.Logger.Information("Run Context loop");
+        _ctx.Logger.Information("Run Context Loop (update → draw ui buffer → render frame ↺)");
         try
         {
             _ctx.Run(gui.Draw, UpdateCallback: gui.Update);

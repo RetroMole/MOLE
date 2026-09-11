@@ -15,7 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\submodules\asar\src\Asar#\Asar#.csproj" />
         <ProjectReference Include="..\..\submodules\QuickImGui.NET\src\QuickImGuiNET\QuickImGuiNET.csproj" />
     </ItemGroup>
 </Project>

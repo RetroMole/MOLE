@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetroMole.Gui", "src\RetroM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetroMole.Launch", "src\RetroMole.Launch\RetroMole.Launch.csproj", "{F9D4936C-00AD-4ED2-BF53-0AF79271F770}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetroMole.NES", "src\RetroMole.NES\RetroMole.NES.csproj", "{5922C6D0-C250-478C-9F38-5534359C0742}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,9 +46,13 @@ Global
 		{7D592058-D1A9-449E-B729-74F8C6C6C863}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D592058-D1A9-449E-B729-74F8C6C6C863}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D592058-D1A9-449E-B729-74F8C6C6C863}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F9D4936C-00AD-4ED2-BF53-0AF79271F770}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F9D4936C-00AD-4ED2-BF53-0AF79271F770}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F9D4936C-00AD-4ED2-BF53-0AF79271F770}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F9D4936C-00AD-4ED2-BF53-0AF79271F770}.Release|Any CPU.Build.0 = Release|Any CPU
+	{F9D4936C-00AD-4ED2-BF53-0AF79271F770}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+	{F9D4936C-00AD-4ED2-BF53-0AF79271F770}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	{F9D4936C-00AD-4ED2-BF53-0AF79271F770}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	{F9D4936C-00AD-4ED2-BF53-0AF79271F770}.Release|Any CPU.Build.0 = Release|Any CPU
+	{5922C6D0-C250-478C-9F38-5534359C0742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+	{5922C6D0-C250-478C-9F38-5534359C0742}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	{5922C6D0-C250-478C-9F38-5534359C0742}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	{5922C6D0-C250-478C-9F38-5534359C0742}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

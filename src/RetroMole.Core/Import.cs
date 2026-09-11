@@ -14,7 +14,7 @@ public static class Import
     public static IEnumerable<Package> AssemblyPackages(Assembly asm, Context ctx)
     {
         ctx.Logger.Information(
-            $"Loading Assembly Package container @ {Path.GetFullPath(asm.Location)}");
+            $"Loading Assembly Package container {Path.GetFileName(asm.Location)}");
 
         var res = asm.DefinedTypes
             .Where(t => t.BaseType == typeof(Package))
@@ -23,7 +23,7 @@ public static class Import
                         ?? throw new Exception()
             ).ToList();
 
-        ctx.Logger.Information($"Found {res.Count} Packages in Container: {Path.GetFullPath(asm.Location)}");
+        ctx.Logger.Information($"Found {res.Count} Packages in Container: {Path.GetFileName(asm.Location)}");
         return res;
     }
 
@@ -31,7 +31,7 @@ public static class Import
     public static IEnumerable<Package> CompressedPackages(string path, Context ctx)
     {
         ctx.Logger.Information(
-            $"Loading Compressed Package container: {Path.GetFullPath(path)}");
+            $"Loading Compressed Package container: {Path.GetFileName(path)}");
         using var fs = new FileStream(path, FileMode.Open);
         
         // Decompress
@@ -62,7 +62,7 @@ public static class Import
         // Delete temp files
         Directory.Delete(tempPath, true);
 
-        ctx.Logger.Information($"Found {res.Count} Packages in Container: {Path.GetFullPath(path)}");
+        ctx.Logger.Information($"Found {res.Count} Packages in Container: {Path.GetFileName(path)}");
         return res.ToArray();
     }
 }

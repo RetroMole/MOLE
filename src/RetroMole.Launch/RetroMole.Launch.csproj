@@ -5,6 +5,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <BuildNESPackage>true</BuildNESPackage>
     </PropertyGroup>
 
     <!-- RetroMole Projects -->
@@ -14,8 +15,21 @@
         <ProjectReference Include="..\RetroMole.Core\RetroMole.Core.csproj" />
         <ProjectReference Include="..\RetroMole.Gui\RetroMole.Gui.csproj" />
     </ItemGroup>
-    
+
     <!-- RetroMole Packages -->
+    <ItemGroup Condition="'$(BuildNESPackage)' == 'true'">
+        <ProjectReference Include="..\RetroMole.NES\RetroMole.NES.csproj" />
+    </ItemGroup>
+
+    <Target Name="CopyNESPackage" AfterTargets="Build" Condition="'$(BuildNESPackage)' == 'true'">
+        <PropertyGroup>
+            <TargetPackagesDir>$(OutputPath)Packages\RetroMole.NES\</TargetPackagesDir>
+        </PropertyGroup>
+        <MakeDir Directories="$(TargetPackagesDir)" />
+        <Copy SourceFiles="..\RetroMole.NES\bin\$(Configuration)\net8.0\RetroMole.NES.dll"
+              DestinationFiles="$(TargetPackagesDir)RetroMole.NES.dll"
+              SkipUnchangedFiles="true" />
+    </Target>
 
     <!-- NuGet Stuff -->
     <ItemGroup>
