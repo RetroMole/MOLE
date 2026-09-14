@@ -1,7 +1,7 @@
+namespace RetroMole.Core;
+
 using RetroMole.Core.Detection;
 using RetroMole.Core.Mappers;
-
-namespace RetroMole.Core;
 
 public static class RomFactory
 {
@@ -15,7 +15,9 @@ public static class RomFactory
     {
         var definition = SystemDefinitionRegistry.Detect(data);
         if (definition == null)
+        {
             throw new NotSupportedException("No system definition detected for this ROM.");
+        }
 
         var header = definition.ParseHeader(data);
 
@@ -33,8 +35,11 @@ public static class RomFactory
         foreach (var spec in definition.SupportedMappers)
         {
             if (spec.MapperNumber == mapperNumber)
+            {
                 return (IAddressMapper?)Activator.CreateInstance(spec.MapperType);
+            }
         }
+
         return null;
     }
 }

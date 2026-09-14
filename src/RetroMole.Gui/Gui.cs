@@ -1,19 +1,20 @@
+namespace RetroMole;
+
 using System.Numerics;
 using System.Reflection;
 using ImGuiNET;
 using QuickImGuiNET;
 using RetroMole.Core;
 
-namespace RetroMole;
-
 public partial class Gui
 {
-    private bool _showDemoWindow;
-    private readonly Context _ctx;
+    private bool showDemoWindow;
+    private readonly Context ctx;
+
     public Gui(Context ctx, Package[] packages)
     {
-        _ctx = ctx;
-        
+        this.ctx = ctx;
+
         // Auto-register Widgets
         ctx.Logger.Information("Initializing RetroMole Gui v0.1");
         new QuickImGuiNET.Widgets.FileManager(ctx, "FileManager##FileManager00")
@@ -23,7 +24,7 @@ public partial class Gui
             SizeCond = ImGuiCond.FirstUseEver,
             Position = ImGui.GetMainViewport().GetWorkCenter() - new Vector2(250, 250),
             PositionCond = ImGuiCond.FirstUseEver,
-            
+
             Mode = QuickImGuiNET.Widgets.FileManager.SelectionMode.SaveFile,
             CurrentPath = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) ?? Path.GetFullPath("~"),
             ShowHiddenFiles = true,
@@ -31,9 +32,9 @@ public partial class Gui
             FileTypeQueries = new Dictionary<string, List<string>>
             {
                 { "Images", new List<string> { ".png", ".jpg", ".jpeg" } },
-                { "All", new List<string> { "*" } }
+                { "All", new List<string> { "*" } },
             },
-            CurrentFTQuery = "All"
+            CurrentFTQuery = "All",
         };
         new QuickImGuiNET.Widgets.MemoryEditor(ctx, "MemoryView##MemoryView00")
         {
@@ -43,7 +44,7 @@ public partial class Gui
             Position = new Vector2(100, 380),
             PositionCond = ImGuiCond.FirstUseEver,
             WindowFlags = ImGuiWindowFlags.NoScrollbar,
-            
+
             ReadOnly = false,
             Cols = 16,
             OptShowOptions = true,
@@ -71,8 +72,8 @@ public partial class Gui
                 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
                 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
                 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
-                0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F
-            }
+                0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+            },
         };
         new Widgets.PackageManager(ctx, "PackageManager##PackageManager00")
         {
@@ -81,8 +82,8 @@ public partial class Gui
             SizeCond = ImGuiCond.FirstUseEver,
             PositionCond = ImGuiCond.FirstUseEver,
             Position = new Vector2(100, 380),
-            
-            Packages = packages
+
+            Packages = packages,
         };
         new Widgets.About(ctx, "About##About00")
         {
@@ -90,7 +91,7 @@ public partial class Gui
             Size = new Vector2(300, 300),
             SizeCond = ImGuiCond.FirstUseEver,
             Position = new Vector2(100, 380),
-            PositionCond = ImGuiCond.FirstUseEver
+            PositionCond = ImGuiCond.FirstUseEver,
         };
     }
 
@@ -99,27 +100,33 @@ public partial class Gui
         ImGui.DockSpaceOverViewport();
         if (ImGui.BeginMainMenuBar())
         {
-            if (_ctx.Config["debug"]["showMenu"] && ImGui.BeginMenu("Debug"))
+            if (ctx.Config["debug"]["showMenu"] && ImGui.BeginMenu("Debug"))
             {
-                ImGui.MenuItem("Open ImGui Demo Window", string.Empty, ref _showDemoWindow);
-                _ctx.Events["onMainMenuBar"]["Debug"].Invoke();
+                ImGui.MenuItem("Open ImGui Demo Window", string.Empty, ref showDemoWindow);
+                ctx.Events["onMainMenuBar"]["Debug"].Invoke();
                 ImGui.EndMenu();
             }
 
-            _ctx.Events["onMainMenuBar"].Invoke();
+            ctx.Events["onMainMenuBar"].Invoke();
             ImGui.EndMainMenuBar();
         }
 
-        if (_showDemoWindow)
-            ImGui.ShowDemoWindow(ref _showDemoWindow);
+        if (showDemoWindow)
+        {
+            ImGui.ShowDemoWindow(ref showDemoWindow);
+        }
 
-        foreach (var widget in _ctx.WidgetReg.Values)
+        foreach (var widget in ctx.WidgetReg.Values)
+        {
             widget.Render();
+        }
     }
 
     public void Update(float deltaSeconds)
     {
-        foreach (var widget in _ctx.WidgetReg.Values)
+        foreach (var widget in ctx.WidgetReg.Values)
+        {
             widget.Update(deltaSeconds);
+        }
     }
 }

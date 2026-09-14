@@ -1,3 +1,5 @@
+namespace RetroMole.Core;
+
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text;
@@ -6,11 +8,9 @@ using ICSharpCode.SharpZipLib.Tar;
 using QuickImGuiNET;
 using ZipLib = ICSharpCode.SharpZipLib;
 
-namespace RetroMole.Core;
-
 public static class Import
 {
-    // .NET Assembly (*.dll) containing Core.Interfaces.Package implementations 
+    // .NET Assembly (*.dll) containing Core.Interfaces.Package implementations
     public static IEnumerable<Package> AssemblyPackages(Assembly asm, Context ctx)
     {
         ctx.Logger.Information(
@@ -20,20 +20,20 @@ public static class Import
             .Where(t => t.BaseType == typeof(Package))
             .Select(p => (Package)asm.CreateInstance(p.FullName, args: null, ignoreCase: false,
                         bindingAttr: BindingFlags.Default, binder: null, culture: null, activationAttributes: null)
-                        ?? throw new Exception()
-            ).ToList();
+                        ?? throw new Exception())
+            .ToList();
 
         ctx.Logger.Information($"Found {res.Count} Packages in Container: {Path.GetFileName(asm.Location)}");
         return res;
     }
 
-    // TAR.GZ file (*.mole.pckg) containing Core.Interfaces.Package implementations 
+    // TAR.GZ file (*.mole.pckg) containing Core.Interfaces.Package implementations
     public static IEnumerable<Package> CompressedPackages(string path, Context ctx)
     {
         ctx.Logger.Information(
             $"Loading Compressed Package container: {Path.GetFileName(path)}");
         using var fs = new FileStream(path, FileMode.Open);
-        
+
         // Decompress
         var decompressed = new MemoryStream();
         GZip.Decompress(fs, decompressed, false);

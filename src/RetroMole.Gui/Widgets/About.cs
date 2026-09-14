@@ -1,8 +1,8 @@
+namespace RetroMole;
+
 using ImGuiNET;
 using QuickImGuiNET;
 using Spdx;
-
-namespace RetroMole;
 
 public partial class Gui
 {
@@ -10,13 +10,13 @@ public partial class Gui
     {
         public class About : Widget
         {
-            private readonly QuickImGuiNET.Widgets.Link _link; //Re-usable object
+            private readonly QuickImGuiNET.Widgets.Link link; // Re-usable object
 
-            private readonly List<(string, string, Version, SpdxLicense)> _libraries = new()
+            private readonly List<(string, string, Version, SpdxLicense)> libraries = new()
             {
                 ("RPGHacker/asar", "https://github.com/RPGHacker/asar", new(1, 81),
                     SpdxLicense.GetById("LGPL-3.0-or-later") ?? throw new Exception("oopsie")),
-                ("Vawlpe/QuickImGuiNET", "https://github.com/Vawlpe/QuickImGuiNET", new(1,1),
+                ("Vawlpe/QuickImGuiNET", "https://github.com/Vawlpe/QuickImGuiNET", new(1, 1),
                     SpdxLicense.GetById("GPL-3.0-or-later") ?? throw new Exception("oopsie")),
                 ("mellinoe/ImGui.NET", "https://github.com/mellinoe/ImGui.NET", new(1, 91, 6),
                     SpdxLicense.GetById("MIT") ?? throw new Exception("oopsie")),
@@ -37,20 +37,22 @@ public partial class Gui
                 ("icsharpcode/SharpZipLib", "https://github.com/icsharpcode/SharpZipLib", new(1, 4, 1),
                     SpdxLicense.GetById("MIT") ?? throw new Exception("oopsie")),
                 ("SixLabors/ImageSharp", "https://github.com/SixLabors/ImageSharp", new(2, 1, 13),
-                    SpdxLicense.GetById("Apache-2.0") ?? throw new Exception("oopsie"))
+                    SpdxLicense.GetById("Apache-2.0") ?? throw new Exception("oopsie")),
             };
 
-            public About(Context ctx, string? Name = null, bool AutoRegister = true) : base(ctx, Name,
-                AutoRegister)
+            public About(Context ctx, string? name = null, bool autoRegister = true)
+                : base(ctx, name,
+                autoRegister)
             {
                 // Link
-                _link = new(ctx, $"{Name}_Link", false);
-                ctx.Events["widgetReg"].Children.Add($"{Name}_LicenseLink",
+                link = new(ctx, $"{name}_Link", false);
+                ctx.Events["widgetReg"].Children.Add(
+                    $"{name}_LicenseLink",
                     new Event(new Dictionary<string, Event>
                     {
                         { "open", new Event() },
                         { "close", new Event() },
-                        { "toggle", new Event() }
+                        { "toggle", new Event() },
                     }));
             }
 
@@ -86,16 +88,16 @@ public partial class Gui
                         ImGui.GetCursorPosX() + ImGui.CalcTextSize("If not, see ").X,
                         ImGui.GetCursorPosY() - ImGui.GetTextLineHeightWithSpacing()));
 
-                    _link.DisplayText = "GPL-3.0-or-later";
-                    _link.Url = "https://spdx.org/licenses/GPL-3.0-or-later";
-                    _link.Render();
+                    link.DisplayText = "GPL-3.0-or-later";
+                    link.Url = "https://spdx.org/licenses/GPL-3.0-or-later";
+                    link.Render();
                 }
 
                 if (ImGui.CollapsingHeader("Version"))
                 {
-                    _link.DisplayText = "https://github.com/RetroMole/";
-                    _link.Url = "https://github.com/RetroMole/";
-                    _link.Render();
+                    link.DisplayText = "https://github.com/RetroMole/";
+                    link.Url = "https://github.com/RetroMole/";
+                    link.Render();
                     ImGui.Text("RetroMole Launch v0.1");
                     ImGui.Text("RetroMole GUI    v0.1");
                     ImGui.Text("RetroMole Core   v0.1");
@@ -110,19 +112,19 @@ public partial class Gui
 
                     if (ImGui.BeginTable("AboutLibrariesTbl", 3))
                     {
-                        foreach (var lib in _libraries)
+                        foreach (var lib in libraries)
                         {
                             ImGui.TableNextRow();
                             ImGui.TableSetColumnIndex(0);
-                            _link.DisplayText = lib.Item1;
-                            _link.Url = lib.Item2;
-                            _link.Render();
+                            link.DisplayText = lib.Item1;
+                            link.Url = lib.Item2;
+                            link.Render();
                             ImGui.TableNextColumn();
                             ImGui.Text($"v{lib.Item3}");
                             ImGui.TableNextColumn();
-                            _link.DisplayText = lib.Item4.Id;
-                            _link.Url = $"https://spdx.org/licenses/{lib.Item4.Id}";
-                            _link.Render();
+                            link.DisplayText = lib.Item4.Id;
+                            link.Url = $"https://spdx.org/licenses/{lib.Item4.Id}";
+                            link.Render();
                         }
 
                         ImGui.EndTable();
@@ -131,10 +133,9 @@ public partial class Gui
 
                 if (ImGui.CollapsingHeader("Resources"))
                 {
-                    ImGui.TextWrapped("" +
+                    ImGui.TextWrapped(string.Empty +
                                       "RetroMole Icon   by Tob#3035\n" +
-                                      "RetroMole Splash by Vawlpe\n"
-                    );
+                                      "RetroMole Splash by Vawlpe\n");
                 }
             }
         }

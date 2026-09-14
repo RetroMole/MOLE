@@ -1,8 +1,8 @@
+namespace RetroMole;
+
 using ImGuiNET;
 using QuickImGuiNET;
 using RetroMole.Core;
-
-namespace RetroMole;
 
 public partial class Gui
 {
@@ -12,15 +12,18 @@ public partial class Gui
         {
             public Package[] Packages;
 
-            public PackageManager(Context ctx, string? Name = null, bool AutoRegister = true) : base(ctx, Name,
-                AutoRegister)
+            public PackageManager(Context ctx, string? name = null, bool autoRegister = true)
+                : base(ctx, name,
+                autoRegister)
             {
             }
 
             public override void RenderContent()
             {
                 foreach (var p in Packages)
+                {
                     ImGui.TextColored(new(218, 165, 32, 255), $"{p.PackageId} ({p.License.Id})");
+                }
             }
         }
     }

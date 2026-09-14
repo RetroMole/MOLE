@@ -1,0 +1,180 @@
+# .editorconfig - RetroMole code style
+
+root = true
+
+# C# files
+[*.cs]
+# Use top-level statements and implicit usings
+# (already enabled in csproj)
+
+# Indentation and spacing
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = true
+charset = utf-8
+
+# Organize usings
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+# var preferences
+csharp_style_var_for_built_in_types = true
+csharp_style_var_when_type_is_apparent = true
+csharp_style_var_elsewhere = false
+
+# Expression-bodied members
+csharp_style_expression_bodied_methods = when_on_single_line
+csharp_style_expression_bodied_constructors = when_on_single_line
+csharp_style_expression_bodied_operators = when_on_single_line
+csharp_style_expression_bodied_properties = when_on_single_line
+csharp_style_expression_bodied_indexers = when_on_single_line
+csharp_style_expression_bodied_accessors = when_on_single_line
+csharp_style_expression_bodied_lambdas = when_on_single_line
+csharp_style_expression_bodied_local_functions = when_on_single_line
+
+# Pattern matching
+csharp_style_pattern_matching_over_is_with_cast_check = true
+csharp_style_pattern_matching_over_as_with_null_check = true
+
+# Null checking
+csharp_style_throw_expression = true
+csharp_style_conditional_delegate_call = true
+
+# Code block preferences
+csharp_prefer_braces = true
+
+# File scoped namespaces
+csharp_style_namespace_declarations = file_scoped
+
+# Do not add unnecessary 'this.' qualification
+dotnet_style_qualification_for_field = false
+dotnet_style_qualification_for_property = false
+dotnet_style_qualification_for_method = false
+dotnet_style_qualification_for_event = false
+dotnet_diagnostic.SA1101.severity = none
+
+# Prefer top-level statements in the launch project
+# (do not enforce globally; only the entry point needs it)
+
+# Naming conventions
+# Types / methods / properties / fields / locals / interfaces / events / delegates
+dotnet_naming_rule.types_should_be_pascal_case.symbols = types
+dotnet_naming_rule.types_should_be_pascal_case.style = pascal_case
+dotnet_naming_rule.types_should_be_pascal_case.severity = suggestion
+
+dotnet_naming_rule.methods_should_be_pascal_case.symbols = methods
+dotnet_naming_rule.methods_should_be_pascal_case.style = pascal_case
+dotnet_naming_rule.methods_should_be_pascal_case.severity = suggestion
+
+dotnet_naming_rule.properties_should_be_pascal_case.symbols = properties
+dotnet_naming_rule.properties_should_be_pascal_case.style = pascal_case
+dotnet_naming_rule.properties_should_be_pascal_case.severity = suggestion
+
+dotnet_naming_rule.fields_should_be_camel_case.symbols = fields
+dotnet_naming_rule.fields_should_be_camel_case.style = camel_case
+dotnet_naming_rule.fields_should_be_camel_case.severity = suggestion
+
+dotnet_naming_rule.locals_should_be_camel_case.symbols = local_functions
+dotnet_naming_rule.locals_should_be_camel_case.style = camel_case
+dotnet_naming_rule.locals_should_be_camel_case.severity = suggestion
+
+dotnet_naming_rule.interfaces_should_begin_with_i.symbols = interfaces
+dotnet_naming_rule.interfaces_should_begin_with_i.style = i_prefix
+dotnet_naming_rule.interfaces_should_begin_with_i.severity = suggestion
+
+dotnet_naming_rule.events_should_be_pascal_case.symbols = events
+dotnet_naming_rule.events_should_be_pascal_case.style = pascal_case
+dotnet_naming_rule.events_should_be_pascal_case.severity = suggestion
+
+dotnet_naming_rule.delegates_should_be_pascal_case.symbols = delegates
+dotnet_naming_rule.delegates_should_be_pascal_case.style = pascal_case
+dotnet_naming_rule.delegates_should_be_pascal_case.severity = suggestion
+
+dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum
+dotnet_naming_symbols.types.applicable_accessibilities = *
+dotnet_naming_symbols.types.required_modifiers = *
+
+dotnet_naming_symbols.methods.applicable_kinds = method
+dotnet_naming_symbols.methods.applicable_accessibilities = *
+dotnet_naming_symbols.methods.required_modifiers = *
+
+dotnet_naming_symbols.properties.applicable_kinds = property
+dotnet_naming_symbols.properties.applicable_accessibilities = *
+dotnet_naming_symbols.properties.required_modifiers = *
+
+dotnet_naming_symbols.fields.applicable_kinds = field
+dotnet_naming_symbols.fields.applicable_accessibilities = *
+dotnet_naming_symbols.fields.required_modifiers = *
+
+dotnet_naming_symbols.local_functions.applicable_kinds = local_function
+dotnet_naming_symbols.local_functions.applicable_accessibilities = *
+dotnet_naming_symbols.local_functions.required_modifiers = *
+
+dotnet_naming_symbols.interfaces.applicable_kinds = interface
+dotnet_naming_symbols.interfaces.applicable_accessibilities = *
+dotnet_naming_symbols.interfaces.required_modifiers = *
+
+dotnet_naming_symbols.events.applicable_kinds = event
+dotnet_naming_symbols.events.applicable_accessibilities = *
+dotnet_naming_symbols.events.required_modifiers = *
+
+dotnet_naming_symbols.delegates.applicable_kinds = delegate
+dotnet_naming_symbols.delegates.applicable_accessibilities = *
+dotnet_naming_symbols.delegates.required_modifiers = *
+
+dotnet_naming_style.pascal_case.required_prefix =
+dotnet_naming_style.pascal_case.required_suffix =
+dotnet_naming_style.pascal_case.word_separator =
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+
+dotnet_naming_style.camel_case.required_prefix =
+dotnet_naming_style.camel_case.required_suffix =
+dotnet_naming_style.camel_case.word_separator =
+dotnet_naming_style.camel_case.capitalization = camel_case
+
+dotnet_naming_style.i_prefix.required_prefix = I
+dotnet_naming_style.i_prefix.required_suffix =
+dotnet_naming_style.i_prefix.word_separator =
+dotnet_naming_style.i_prefix.capitalization = pascal_case
+
+# Disable copyright header rules
+dotnet_diagnostic.SA1633.severity = none
+dotnet_diagnostic.SA1634.severity = none
+dotnet_diagnostic.SA1635.severity = none
+dotnet_diagnostic.SA1636.severity = none
+dotnet_diagnostic.SA1637.severity = none
+
+# Do not add 'required' modifier
+dotnet_diagnostic.IDE0270.severity = none
+
+# Suppress certain analyzers where needed for generated code or legacy files
+[*.{Designer.cs,GeneratedCode.cs}]
+generated_code = true
+csharp_style_var_for_built_in_types = false
+csharp_style_var_when_type_is_apparent = false
+csharp_style_var_elsewhere = false
+dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity
+dotnet_style_parentheses_in_other_binary_operators = always_for_clarity
+dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity
+
+# XML project files
+[*.csproj]
+indent_style = space
+indent_size = 2
+tab_width = 2
+insert_final_newline = true
+end_of_line = crlf
+charset = utf-8
+
+# YAML / TOML config
+[*.{yml,yaml,toml}]
+indent_style = space
+indent_size = 2
+tab_width = 2
+insert_final_newline = true
+end_of_line = crlf
+charset = utf-8

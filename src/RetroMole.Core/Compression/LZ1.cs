@@ -1,14 +1,14 @@
-//Modified source file from https://https://github.com/Smallhacker/TerraCompress
+// Modified source file from https://https://github.com/Smallhacker/TerraCompress
 
-//Copyright (c) 2014 Tomas Andreasson
+// Copyright (c) 2014 Tomas Andreasson
 //
-//This software is provided 'as-is', without any express or implied
-//warranty. In no event will the authors be held liable for any damages
-//arising from the use of this software.
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
 //
-//Permission is granted to anyone to use this software for any purpose,
-//including commercial applications, and to alter it and redistribute it
-//freely, subject to the following restrictions:
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
 //
 //    1.The origin of this software must not be misrepresented; you must not
 //    claim that you wrote the original software. If you use this software
@@ -20,11 +20,10 @@
 //
 //    3. This notice may not be removed or altered from any source
 //    distribution.
-
 namespace RetroMole.Core.Compression
 {
     /// <summary>
-    /// LZ1 Compression/Decompression class
+    /// LZ1 Compression/Decompression class.
     /// </summary>
     public class Lz1 : ICompressor, IDecompressor
     {
@@ -36,13 +35,13 @@ namespace RetroMole.Core.Compression
         private const byte LongCommand = 7;
 
         // How many bytes each command must encode to outdo Direct Copy
-        private readonly byte[] _commandWeight =
+        private readonly byte[] commandWeight =
             {
                 0,  // Direct Copy
                 3,  // Byte Fill
                 4,  // Word Fill
                 3,  // Increasing Fill
-                4   // Repeat
+                4,   // Repeat
             };
 
         // Evaluate Byte Fill
@@ -53,7 +52,10 @@ namespace RetroMole.Core.Compression
                 for (var i = position; i < data.Length; i++)
                 {
                     if (data[i] != currentByte)
+                    {
                         break;
+                    }
+
                     byteCount[ByteFill]++;
                 }
             }
@@ -64,7 +66,11 @@ namespace RetroMole.Core.Compression
         {
             byteCount[WordFill] = 1;
             {
-                if (position >= data.Length) return;
+                if (position >= data.Length)
+                {
+                    return;
+                }
+
                 byteCount[WordFill]++;
                 nextByte = data[position];
                 var oddEven = 0;
@@ -72,7 +78,10 @@ namespace RetroMole.Core.Compression
                 {
                     var currentOddEvenByte = (oddEven & 1) == 0 ? currentByte : nextByte;
                     if (data[i] != currentOddEvenByte)
+                    {
                         break;
+                    }
+
                     byteCount[WordFill]++;
                 }
             }
@@ -87,7 +96,10 @@ namespace RetroMole.Core.Compression
                 for (var i = position; i < data.Length; i++)
                 {
                     if (data[i] != increaseByte++)
+                    {
                         break;
+                    }
+
                     byteCount[IncreaseFill]++;
                 }
             }
@@ -98,9 +110,13 @@ namespace RetroMole.Core.Compression
         {
             byteCount[Repeat] = 0;
             {
-                //Slow O(n^2) brute force algorithm for now
+                // Slow O(n^2) brute force algorithm for now
                 var maxAddressInt = Math.Min(0xFFFF, position - 2);
-                if (maxAddressInt < 0) return;
+                if (maxAddressInt < 0)
+                {
+                    return;
+                }
+
                 var maxAddress = (ushort)maxAddressInt;
                 for (var start = 0; start <= maxAddress; start++)
                 {
@@ -109,14 +125,20 @@ namespace RetroMole.Core.Compression
                     for (var pos = position - 1; pos < data.Length && chunkSize < 1023; pos++)
                     {
                         if (data[pos] != data[start + chunkSize])
+                        {
                             break;
+                        }
+
                         chunkSize++;
                     }
 
-                    if (chunkSize <= byteCount[Repeat]) continue;
+                    if (chunkSize <= byteCount[Repeat])
+                    {
+                        continue;
+                    }
+
                     repeatAddress = (ushort)start;
                     byteCount[Repeat] = chunkSize;
-
                 }
             }
         }
@@ -125,7 +147,9 @@ namespace RetroMole.Core.Compression
         {
             // Greedy implementation
             if (data == null)
+            {
                 throw new ArgumentException("Data is null.");
+            }
 
             List<byte> output = new();
             var position = 0;
@@ -152,9 +176,17 @@ namespace RetroMole.Core.Compression
                 for (byte commandSuggestion = 1; commandSuggestion < byteCount.Length; commandSuggestion++)
                 {
                     // Would this command save any space?
-                    if (byteCount[commandSuggestion] < _commandWeight[commandSuggestion]) continue;
+                    if (byteCount[commandSuggestion] < commandWeight[commandSuggestion])
+                    {
+                        continue;
+                    }
+
                     // Is it better than what we already have?
-                    if (byteCount[commandSuggestion] <= nextCommandByteCount) continue;
+                    if (byteCount[commandSuggestion] <= nextCommandByteCount)
+                    {
+                        continue;
+                    }
+
                     nextCommand = commandSuggestion;
                     nextCommandByteCount = byteCount[commandSuggestion];
                 }
@@ -229,7 +261,10 @@ namespace RetroMole.Core.Compression
         public byte[] Decompress(byte[] compressedData, uint start)
         {
             if (compressedData == null)
+            {
                 throw new ArgumentException("Compressed data is null.");
+            }
+
             try
             {
                 List<byte> output = new();
@@ -239,47 +274,65 @@ namespace RetroMole.Core.Compression
                 {
                     var commandLength = compressedData[position++];
                     if (commandLength == 0xFF)
+                    {
                         break;
+                    }
 
                     var command = (byte)(commandLength >> 5);
                     int length;
                     if (command == LongCommand) // Long command
                     {
                         length = compressedData[position++];
-                        length |= ((commandLength & 3) << 8);
+                        length |= (commandLength & 3) << 8;
                         length++;
                         command = (byte)((commandLength >> 2) & 7);
-
                     }
                     else
+                    {
                         length = (commandLength & 0x1F) + 1;
+                    }
 
                     switch (command)
                     {
                         case DirectCopy: // Direct Copy
                             for (var i = 0; i < length; i++)
+                            {
                                 output.Add(compressedData[position++]);
+                            }
+
                             break;
                         case ByteFill: // Byte Fill
                             var fillByte = compressedData[position++];
                             for (var i = 0; i < length; i++)
+                            {
                                 output.Add(fillByte);
+                            }
+
                             break;
                         case WordFill: // Word Fill
                             var fillByteEven = compressedData[position++];
                             var fillByteOdd = compressedData[position++];
                             for (var i = 0; i < length; i++)
+                            {
                                 output.Add((i & 1) == 0 ? fillByteEven : fillByteOdd);
+                            }
+
                             break;
                         case IncreaseFill: // Increasing Fill
                             var increaseFillByte = compressedData[position++];
                             for (var i = 0; i < length; i++)
+                            {
                                 output.Add(increaseFillByte++);
+                            }
+
                             break;
                         case Repeat: // Repeat
                             var origin = (ushort)(compressedData[position++] | (compressedData[position++] << 8));
                             for (var i = 0; i < length; i++)
+                            {
                                 output.Add(output[origin++]);
+                            }
+
                             break;
 
                         default:
@@ -306,23 +359,24 @@ namespace RetroMole.Core.Compression
                 case < 1 or >= 1024:
                     throw new ArgumentException("Internal error: Length assertion failed.");
                 case > 32:
-                {
-                    // Long command
-                    length--;
-                    var firstByte = (byte)(0xE0 | (command << 2) | (length >> 8));
-                    var secondByte = (byte)length;
-                    output.Add(firstByte);
-                    output.Add(secondByte);
-                    break;
-                }
+                    {
+                        // Long command
+                        length--;
+                        var firstByte = (byte)(0xE0 | (command << 2) | (length >> 8));
+                        var secondByte = (byte)length;
+                        output.Add(firstByte);
+                        output.Add(secondByte);
+                        break;
+                    }
+
                 default:
-                {
-                    // Short command
-                    length--;
-                    var commandLength = (byte)(command << 5 | length);
-                    output.Add(commandLength);
-                    break;
-                }
+                    {
+                        // Short command
+                        length--;
+                        var commandLength = (byte)(command << 5 | length);
+                        output.Add(commandLength);
+                        break;
+                    }
             }
         }
     }

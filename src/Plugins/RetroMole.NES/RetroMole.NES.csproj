@@ -10,7 +10,7 @@
     <ItemGroup>
         <PackageReference Include="spdx" Version="0.8.0" />
         <ProjectReference Include="..\..\submodules\QuickImGui.NET\src\QuickImGuiNET\QuickImGuiNET.csproj" />
-        <ProjectReference Include="..\RetroMole.Core\RetroMole.Core.csproj" />
+        <ProjectReference Include="..\..\RetroMole.Core\RetroMole.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>

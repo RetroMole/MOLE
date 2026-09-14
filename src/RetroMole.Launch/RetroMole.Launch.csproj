@@ -5,7 +5,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <BuildNESPackage>true</BuildNESPackage>
+        <BuildOptionalPlugins>true</BuildOptionalPlugins>
     </PropertyGroup>
 
     <!-- RetroMole Projects -->
@@ -16,19 +16,23 @@
         <ProjectReference Include="..\RetroMole.Gui\RetroMole.Gui.csproj" />
     </ItemGroup>
 
-    <!-- RetroMole Packages -->
-    <ItemGroup Condition="'$(BuildNESPackage)' == 'true'">
-        <ProjectReference Include="..\RetroMole.NES\RetroMole.NES.csproj" />
+    <!-- Optional Plugins -->
+    <ItemGroup Condition="'$(BuildOptionalPlugins)' == 'true'">
+        <ProjectReference Include="..\..\Plugins\**\*.csproj" />
     </ItemGroup>
 
-    <Target Name="CopyNESPackage" AfterTargets="Build" Condition="'$(BuildNESPackage)' == 'true'">
+    <Target Name="CopyPluginAssemblies" AfterTargets="Build" Condition="'$(BuildOptionalPlugins)' == 'true'">
         <PropertyGroup>
-            <TargetPackagesDir>$(OutputPath)Packages\RetroMole.NES\</TargetPackagesDir>
+            <TargetPluginsDir>$(OutputPath)Packages\</TargetPluginsDir>
         </PropertyGroup>
-        <MakeDir Directories="$(TargetPackagesDir)" />
-        <Copy SourceFiles="..\RetroMole.NES\bin\$(Configuration)\net8.0\RetroMole.NES.dll"
-              DestinationFiles="$(TargetPackagesDir)RetroMole.NES.dll"
-              SkipUnchangedFiles="true" />
+        <MakeDir Directories="$(TargetPluginsDir)" />
+        <ItemGroup>
+            <PluginProject Include="..\..\Plugins\**\*.csproj" />
+        </ItemGroup>
+        <Copy
+            SourceFiles="@(PluginProject->'%(RootDir)%(Directory)bin\$(Configuration)\net8.0\%(Filename).dll')"
+            DestinationFiles="@(PluginProject->'$(TargetPluginsDir)%(Filename)\%(Filename).dll')"
+            SkipUnchangedFiles="true" />
     </Target>
 
     <!-- NuGet Stuff -->

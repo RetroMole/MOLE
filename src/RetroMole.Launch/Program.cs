@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Loader;
 using QuickImGuiNET;
@@ -20,11 +20,11 @@ public static class Launch
             .MinimumLevel.Debug()
             .CreateLogger();
         Log.Information("RetroMole Launch v0.1");
-        
+
         // Config Sinks/Sources
         var cfgToml = new Config.Toml("RetroMole.cfg", ref _ctx);
         var cfgCli = new Config.Cli(args, ref _ctx);
-        
+
         // Shadow Context
         Log.Logger.Information("Initializing QIMGUIN Context & Renderer (shadow only)");
         _ctx = new vbk.Context
@@ -35,7 +35,7 @@ public static class Launch
                 _default = new TomlTable
                 {
                     { "debug", new TomlTable {
-                        {"showMenu", true} 
+                        {"showMenu", true}
                     }},
                     { "window", new TomlTable {
                         { "width", 1280 },
@@ -70,7 +70,7 @@ public static class Launch
                             {"home", (Environment.OSVersion.Platform is PlatformID.Unix or PlatformID.MacOSX
                                     ? Environment.GetEnvironmentVariable("HOME")
                                     : Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%"
-                                    )) ?? string.Empty 
+                                    )) ?? string.Empty
                             },
                             { "temp", Path.GetFullPath(Path.Combine(Path.GetTempPath(), "RetroMoleTemp")) },
                             { "exec", Path.GetFullPath(
@@ -90,7 +90,7 @@ public static class Launch
                     cfgCli
                 }
             },
-            
+
             // Add default Logger to shadow ctx
             Logger = Log.Logger,
 
@@ -109,7 +109,7 @@ public static class Launch
             // Add Widget Registry to shadow ctx
             WidgetReg = new Dictionary<string, Widget>()
         };
-        
+
         // Loading config sources
         _ctx.Logger.Information($"Loading default config + ({_ctx.Config.Sources.Length}) source(s)");
         _ctx.Config.LoadDefault();
@@ -172,7 +172,7 @@ public static class Launch
             _ctx.Logger.Information($"Intializing Package: {p.PackageId} ({p.License.Id})");
             p.Init(ref _ctx);
         }
-        
+
         // Initialize RetroMole UI
         var gui = new Gui(_ctx, packages);
 

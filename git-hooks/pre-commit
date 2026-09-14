@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$HOOK_DIR/../" && pwd)"
+
+cd "$REPO_ROOT"
+
+echo "Running dotnet format..."
+dotnet format RetroMole.sln --exclude submodules/** style
+dotnet format RetroMole.sln --exclude submodules/** whitespace
+
+#echo "Running dotnet build..."
+#dotnet build RetroMole.sln
+
+echo "Pre-commit checks passed."
